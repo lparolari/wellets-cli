@@ -39,3 +39,12 @@ def get_auth_token() -> Optional[str]:
         return auth.token
 
     return None
+
+
+def get_email() -> Optional[str]:
+    auth = retrieve_auth()
+
+    if auth:
+        return auth.email
+
+    return None

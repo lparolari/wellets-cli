@@ -13,7 +13,7 @@ from tabulate import tabulate
 
 import wellets_cli.api as api
 from wellets_cli.api import get_currencies, get_wallets
-from wellets_cli.auth import get_auth_token, persist_auth
+from wellets_cli.auth import get_auth_token, get_email, persist_auth
 from wellets_cli.util import get_currency_acronym_by_id
 
 
@@ -137,11 +137,22 @@ def create_wallet(auth_token: str, alias: str, currency_id: str):
     print(wallet.id)
 
 
+@click.command()
+def whoami():
+    email = get_email()
+
+    if email:
+        print(email)
+    else:
+        print("Not logged in")
+
+
 def main():  # pragma: no cover
     wallet.add_command(list_wallets)
     wallet.add_command(create_wallet)
 
     cli.add_command(wallet)
     cli.add_command(login)
+    cli.add_command(whoami)
 
     cli()
