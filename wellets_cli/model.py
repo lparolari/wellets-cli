@@ -21,4 +21,4 @@ class Wallet(BaseModel):
     currency_id: str
     created_at: datetime
     updated_at: datetime
-    portfolios: List[str]
+    portfolios: List[str] = None
