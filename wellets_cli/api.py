@@ -1,0 +1,36 @@
+import requests
+
+from wellets_cli.model import Currency, Wallet
+
+BASE_URL = "http://localhost:3333"
+
+
+def get_currencies(headers: dict) -> list[Currency]:
+    response = requests.get(
+        f"{BASE_URL}/currencies",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise ValueError(response)
+
+    currencies = response.json()
+    currencies = map(lambda c: Currency(**c), currencies)
+    currencies = list(currencies)
+    return currencies
+
+
+def get_wallets(headers: dict, params: dict) -> list[Wallet]:
+    response = requests.get(
+        "http://localhost:3333/wallets",
+        headers=headers,
+        params=params,
+    )
+
+    if not response.ok:
+        raise ValueError(response)
+
+    wallets = response.json()["wallets"]
+    wallets = map(lambda w: Wallet(**w), wallets)
+    wallets = list(wallets)
+    return wallets
