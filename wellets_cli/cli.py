@@ -1,6 +1,7 @@
 import getpass
 import json
 from locale import currency
+from pathlib import Path
 from pprint import pprint
 from typing import Optional
 
@@ -12,6 +13,7 @@ from tabulate import tabulate
 
 import wellets_cli.api as api
 from wellets_cli.api import get_currencies, get_wallets
+from wellets_cli.auth import get_auth_token, persist_auth
 from wellets_cli.util import get_currency_acronym_by_id
 
 
@@ -39,6 +41,9 @@ def login(email: Optional[str], password: Optional[str]):
 
     if response.ok:
         print(response.json())
+
+        persist_auth(response.json())
+
     else:
         raise ValueError(response)
 
@@ -46,6 +51,7 @@ def login(email: Optional[str], password: Optional[str]):
 @click.command(name="list")
 @click.option("--auth-token")
 def list_wallets(auth_token):
+    auth_token = auth_token or get_auth_token()
     currencies = get_currencies(
         headers={"Authorization": f"Bearer {auth_token}"}
     )
@@ -124,7 +130,9 @@ def create_wallet(auth_token: str, alias: str, currency_id: str):
 
     prompt([question])
 
-    wallet = api.create_wallet(answers, headers={"Authorization": f"Bearer {auth_token}"})
+    wallet = api.create_wallet(
+        answers, headers={"Authorization": f"Bearer {auth_token}"}
+    )
 
     print(wallet.id)
 
