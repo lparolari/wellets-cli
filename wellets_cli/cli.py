@@ -14,7 +14,7 @@ from tabulate import tabulate
 import wellets_cli.api as api
 from wellets_cli.api import get_currencies, get_wallets
 from wellets_cli.auth import get_auth_token, get_email, persist_auth
-from wellets_cli.util import get_currency_acronym_by_id
+from wellets_cli.util import confirm, get_currency_acronym_by_id
 
 
 @click.group()
@@ -80,6 +80,8 @@ def list_wallets(auth_token):
 @click.option("--alias")
 @click.option("--currency-id")
 def create_wallet(auth_token: str, alias: str, currency_id: str):
+    auth_token = auth_token or get_auth_token()
+
     currencies = get_currencies(
         headers={"Authorization": f"Bearer {auth_token}"}
     )
@@ -92,7 +94,7 @@ def create_wallet(auth_token: str, alias: str, currency_id: str):
                 {
                     "type": "input",
                     "name": "alias",
-                    "message": "Alias?",
+                    "message": "Alias",
                     "validate": lambda val: True
                     if val != ""
                     else "Cannot be empty",
@@ -116,22 +118,46 @@ def create_wallet(auth_token: str, alias: str, currency_id: str):
         ),
     ]
 
-    answers = prompt(questions)
-
-    print("Wallet")
-    print(json.dumps(answers, indent=4))
-
-    question = {
-        "type": "confirm",
-        "message": "Do you want to continue?",
-        "name": "continue",
-        "default": True,
-    }
-
-    prompt([question])
+    data = prompt(questions)
 
     wallet = api.create_wallet(
-        answers, headers={"Authorization": f"Bearer {auth_token}"}
+        data, headers={"Authorization": f"Bearer {auth_token}"}
+    )
+
+    print(wallet.id)
+
+
+@click.command(name="delete")
+@click.option("--auth-token")
+@click.option("--wallet-id")
+def delete_wallet(auth_token, wallet_id):
+    auth_token = auth_token or get_auth_token()
+    requires_interaction = wallet_id is None
+
+    wallets = api.get_wallets(
+        headers={"Authorization": f"Bearer {auth_token}"},
+        params={"limit": 25, "page": 1},
+    )
+
+    if requires_interaction:
+        questions = [
+            {
+                "type": "list",
+                "name": "wallet",
+                "message": "Wallet",
+                "choices": map(lambda w: w.alias, wallets),
+            }
+        ]
+
+        answer = prompt(questions)
+
+        to_delete = answer["wallet"]
+
+        wallet_id = list(filter(lambda w: w.alias == to_delete, wallets))[0].id
+
+    wallet = api.delete_wallet(
+        wallet_id=wallet_id,
+        headers={"Authorization": f"Bearer {auth_token}"},
     )
 
     print(wallet.id)
@@ -150,6 +176,7 @@ def whoami():
 def main():  # pragma: no cover
     wallet.add_command(list_wallets)
     wallet.add_command(create_wallet)
+    wallet.add_command(delete_wallet)
 
     cli.add_command(wallet)
     cli.add_command(login)

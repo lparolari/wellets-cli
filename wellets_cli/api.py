@@ -42,10 +42,24 @@ def get_wallets(headers: dict, params: dict) -> List[Wallet]:
     return wallets
 
 
-def create_wallet(data: dict, headers: dict):
+def create_wallet(data: dict, headers: dict) -> Wallet:
     response = requests.post(
         "http://localhost:3333/wallets",
         json=data,
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    wallet = response.json()
+    wallet = Wallet(**wallet)
+    return wallet
+
+
+def delete_wallet(wallet_id: str, headers: dict) -> Wallet:
+    response = requests.delete(
+        f"{BASE_URL}/wallets/{wallet_id}",
         headers=headers,
     )
 
