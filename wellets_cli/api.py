@@ -7,6 +7,10 @@ from wellets_cli.model import Currency, Wallet
 BASE_URL = "http://localhost:3333"
 
 
+class APIError(ValueError):
+    pass
+
+
 def get_currencies(headers: dict) -> List[Currency]:
     response = requests.get(
         f"{BASE_URL}/currencies",
@@ -14,7 +18,7 @@ def get_currencies(headers: dict) -> List[Currency]:
     )
 
     if not response.ok:
-        raise ValueError(response)
+        raise APIError(response.json())
 
     currencies = response.json()
     currencies = map(lambda c: Currency(**c), currencies)
@@ -30,7 +34,7 @@ def get_wallets(headers: dict, params: dict) -> List[Wallet]:
     )
 
     if not response.ok:
-        raise ValueError(response)
+        raise APIError(response.json())
 
     wallets = response.json()["wallets"]
     wallets = map(lambda w: Wallet(**w), wallets)
@@ -46,7 +50,7 @@ def create_wallet(data: dict, headers: dict):
     )
 
     if not response.ok:
-        raise ValueError(response.json())
+        raise APIError(response.json())
 
     wallet = response.json()
     wallet = Wallet(**wallet)
