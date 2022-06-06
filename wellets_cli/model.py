@@ -22,3 +22,21 @@ class Wallet(BaseModel):
     created_at: datetime
     updated_at: datetime
     portfolios: List[str] = None
+
+
+class PlainCurrency(BaseModel):
+    id: str
+    acronym: str
+    alias: str
+    dollar_rate: float
+    created_at: datetime
+    updated_at: datetime
+
+
+class UserSettings(BaseModel):
+    id: str
+    user_id: str
+    currency_id: str
+    created_at: str
+    updated_at: str
+    currency: PlainCurrency

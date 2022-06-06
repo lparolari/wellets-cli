@@ -14,7 +14,8 @@ from tabulate import tabulate
 import wellets_cli.api as api
 from wellets_cli.api import get_currencies, get_wallets
 from wellets_cli.auth import get_auth_token, get_email, persist_auth
-from wellets_cli.util import confirm, get_currency_acronym_by_id
+from wellets_cli.model import Wallet
+from wellets_cli.util import change_value, get_currency_by_id
 
 
 @click.group()
@@ -59,19 +60,22 @@ def list_wallets(auth_token):
         headers={"Authorization": f"Bearer {auth_token}"},
         params={"limit": 25, "page": 1},
     )
+    base_currency = api.get_preferred_currency(headers={"Authorization": f"Bearer {auth_token}"})
+    print(list(filter(lambda c: c.id == wallets[1].currency_id, currencies))[0].acronym)
 
-    data = map(
-        lambda x: {
-            "id": x.id,
-            "alias": x.alias,
-            "balance": x.balance,
-            "currency": get_currency_acronym_by_id(
-                currencies, currency_id=x.currency_id
-            ),
-            "created_at": x.created_at.strftime("%Y-%m-%d"),
-        },
-        wallets,
-    )
+    def get_row_value(wallet: Wallet):
+        currency = get_currency_by_id(currencies, wallet.currency_id)
+        return {
+                "id": wallet.id,
+                "alias": wallet.alias,
+                "currency": currency.acronym,
+                "balance": wallet.balance,
+                "countervalue": change_value(currency.dollar_rate, base_currency.dollar_rate, wallet.balance),
+                "created_at": wallet.created_at.strftime("%Y-%m-%d"),
+            }
+
+    data = list(map(get_row_value, wallets))
+
     print(tabulate(data, headers="keys"))
 
 

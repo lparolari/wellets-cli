@@ -2,7 +2,7 @@ from typing import List
 
 import requests
 
-from wellets_cli.model import Currency, Wallet
+from wellets_cli.model import Currency, UserSettings, Wallet
 
 BASE_URL = "http://localhost:3333"
 
@@ -69,3 +69,22 @@ def delete_wallet(wallet_id: str, headers: dict) -> Wallet:
     wallet = response.json()
     wallet = Wallet(**wallet)
     return wallet
+
+
+def get_user_settings(headers: dict) -> UserSettings:
+    response = requests.get(
+        f"{BASE_URL}/users/settings",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+    
+    user_settings = response.json()
+    user_settings = UserSettings(**user_settings)
+    return user_settings
+
+
+def get_preferred_currency(headers: dict) -> Currency:
+    user_settings = get_user_settings(headers=headers)
+    return user_settings.currency
