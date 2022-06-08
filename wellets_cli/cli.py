@@ -15,7 +15,8 @@ import wellets_cli.api as api
 from wellets_cli.api import get_currencies, get_wallets
 from wellets_cli.auth import get_auth_token, get_email, persist_auth
 from wellets_cli.model import Wallet
-from wellets_cli.util import change_value, get_currency_by_id
+from wellets_cli.prompt import prompt_wallet
+from wellets_cli.util import change_value, get_currency_by_id, make_headers
 
 
 @click.group()
@@ -60,19 +61,27 @@ def list_wallets(auth_token):
         headers={"Authorization": f"Bearer {auth_token}"},
         params={"limit": 25, "page": 1},
     )
-    base_currency = api.get_preferred_currency(headers={"Authorization": f"Bearer {auth_token}"})
-    print(list(filter(lambda c: c.id == wallets[1].currency_id, currencies))[0].acronym)
+    base_currency = api.get_preferred_currency(
+        headers={"Authorization": f"Bearer {auth_token}"}
+    )
+    print(
+        list(filter(lambda c: c.id == wallets[1].currency_id, currencies))[
+            0
+        ].acronym
+    )
 
     def get_row_value(wallet: Wallet):
         currency = get_currency_by_id(currencies, wallet.currency_id)
         return {
-                "id": wallet.id,
-                "alias": wallet.alias,
-                "currency": currency.acronym,
-                "balance": wallet.balance,
-                "countervalue": change_value(currency.dollar_rate, base_currency.dollar_rate, wallet.balance),
-                "created_at": wallet.created_at.strftime("%Y-%m-%d"),
-            }
+            "id": wallet.id,
+            "alias": wallet.alias,
+            "currency": currency.acronym,
+            "balance": wallet.balance,
+            "countervalue": change_value(
+                currency.dollar_rate, base_currency.dollar_rate, wallet.balance
+            ),
+            "created_at": wallet.created_at.strftime("%Y-%m-%d"),
+        }
 
     data = list(map(get_row_value, wallets))
 
@@ -167,6 +176,30 @@ def delete_wallet(auth_token, wallet_id):
     print(wallet.id)
 
 
+@click.command(name="average-load-price")
+@click.option("--auth-token")
+@click.option("--wallet-id")
+def show_wallet_average_load_price(wallet_id, auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+    requires_interaction = wallet_id is None
+
+    wallets = api.get_wallets(
+        headers=headers,
+        params={"limit": 25, "page": 1},
+    )
+
+    if requires_interaction:
+        wallet_id = prompt_wallet(wallets)
+
+    result = api.get_wallet_average_load_price(
+        wallet_id=wallet_id,
+        headers=headers,
+    )
+
+    print(f"{result.average_load_price} {result.base_currency.acronym}")
+
+
 @click.command()
 def whoami():
     email = get_email()
@@ -181,6 +214,7 @@ def main():  # pragma: no cover
     wallet.add_command(list_wallets)
     wallet.add_command(create_wallet)
     wallet.add_command(delete_wallet)
+    wallet.add_command(show_wallet_average_load_price)
 
     cli.add_command(wallet)
     cli.add_command(login)

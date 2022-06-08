@@ -2,7 +2,12 @@ from typing import List
 
 import requests
 
-from wellets_cli.model import Currency, UserSettings, Wallet
+from wellets_cli.model import (
+    Currency,
+    UserSettings,
+    Wallet,
+    WalletAverageLoadPrice,
+)
 
 BASE_URL = "http://localhost:3333"
 
@@ -71,6 +76,22 @@ def delete_wallet(wallet_id: str, headers: dict) -> Wallet:
     return wallet
 
 
+def get_wallet_average_load_price(
+    wallet_id: str, headers: dict
+) -> WalletAverageLoadPrice:
+    response = requests.get(
+        f"{BASE_URL}/wallets/{wallet_id}/average-load-price",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    avg_load_price = response.json()
+    avg_load_price = WalletAverageLoadPrice(**avg_load_price)
+    return avg_load_price
+
+
 def get_user_settings(headers: dict) -> UserSettings:
     response = requests.get(
         f"{BASE_URL}/users/settings",
@@ -79,7 +100,7 @@ def get_user_settings(headers: dict) -> UserSettings:
 
     if not response.ok:
         raise APIError(response.json())
-    
+
     user_settings = response.json()
     user_settings = UserSettings(**user_settings)
     return user_settings

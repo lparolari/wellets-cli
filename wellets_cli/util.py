@@ -6,24 +6,18 @@ def get_currency_by_id(currencies, currency_id: str) -> str:
     return currency_by_id[0]
 
 
-def confirm():
-    question = {
-        "type": "confirm",
-        "message": "Do you want to continue?",
-        "name": "continue",
-        "default": True,
-    }
-
-    answers = prompt([question])
-
-    return answers["continue"]
-
+def make_headers(auth_token: str) -> dict:
+    return {"Authorization": f"Bearer {auth_token}"}
 
 
 ### Converters
 
+
 def change_from(from_dollar_rate: float, to_dollar_rate: float) -> float:
     return from_dollar_rate / to_dollar_rate
 
-def change_value(from_dollar_rate: float, to_dollar_rate: float, value: float) -> float:
+
+def change_value(
+    from_dollar_rate: float, to_dollar_rate: float, value: float
+) -> float:
     return 1 / change_from(from_dollar_rate, to_dollar_rate) * value

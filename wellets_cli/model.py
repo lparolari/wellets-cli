@@ -40,3 +40,8 @@ class UserSettings(BaseModel):
     created_at: str
     updated_at: str
     currency: PlainCurrency
+
+
+class WalletAverageLoadPrice(BaseModel):
+    average_load_price: float = None
+    base_currency: PlainCurrency
