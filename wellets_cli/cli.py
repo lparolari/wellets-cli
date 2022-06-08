@@ -36,39 +36,20 @@ def login(email: Optional[str], password: Optional[str]):
     email = email or input("Email: ")
     password = password or getpass.getpass()
 
-    response = requests.post(
-        "http://localhost:3333/users/sessions",
-        json={"email": email, "password": password},
-    )
+    user_session = api.login(email, password)
 
-    if response.ok:
-        print(response.json())
-
-        persist_auth(response.json())
-
-    else:
-        raise ValueError(response)
+    persist_auth(user_session.json())
 
 
 @click.command(name="list")
 @click.option("--auth-token")
 def list_wallets(auth_token):
     auth_token = auth_token or get_auth_token()
-    currencies = get_currencies(
-        headers={"Authorization": f"Bearer {auth_token}"}
-    )
-    wallets = get_wallets(
-        headers={"Authorization": f"Bearer {auth_token}"},
-        params={"limit": 25, "page": 1},
-    )
-    base_currency = api.get_preferred_currency(
-        headers={"Authorization": f"Bearer {auth_token}"}
-    )
-    print(
-        list(filter(lambda c: c.id == wallets[1].currency_id, currencies))[
-            0
-        ].acronym
-    )
+    headers = make_headers(auth_token)
+
+    currencies = get_currencies(headers=headers)
+    wallets = get_wallets(headers=headers)
+    base_currency = api.get_preferred_currency(headers=headers)
 
     def get_row_value(wallet: Wallet):
         currency = get_currency_by_id(currencies, wallet.currency_id)
@@ -94,10 +75,9 @@ def list_wallets(auth_token):
 @click.option("--currency-id")
 def create_wallet(auth_token: str, alias: str, currency_id: str):
     auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
 
-    currencies = get_currencies(
-        headers={"Authorization": f"Bearer {auth_token}"}
-    )
+    currencies = get_currencies(headers=headers)
 
     questions = [
         *(
@@ -121,7 +101,7 @@ def create_wallet(auth_token: str, alias: str, currency_id: str):
                 {
                     "type": "list",
                     "name": "currency_id",
-                    "message": "Currency?",
+                    "message": "Currency",
                     "choices": list(map(lambda x: x.acronym, currencies)),
                     "filter": lambda currency: list(
                         filter(lambda x: x.acronym == currency, currencies)
@@ -133,9 +113,7 @@ def create_wallet(auth_token: str, alias: str, currency_id: str):
 
     data = prompt(questions)
 
-    wallet = api.create_wallet(
-        data, headers={"Authorization": f"Bearer {auth_token}"}
-    )
+    wallet = api.create_wallet(data, headers=headers)
 
     print(wallet.id)
 
@@ -145,28 +123,13 @@ def create_wallet(auth_token: str, alias: str, currency_id: str):
 @click.option("--wallet-id")
 def delete_wallet(auth_token, wallet_id):
     auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
     requires_interaction = wallet_id is None
 
-    wallets = api.get_wallets(
-        headers={"Authorization": f"Bearer {auth_token}"},
-        params={"limit": 25, "page": 1},
-    )
+    wallets = api.get_wallets(headers=headers)
 
     if requires_interaction:
-        questions = [
-            {
-                "type": "list",
-                "name": "wallet",
-                "message": "Wallet",
-                "choices": map(lambda w: w.alias, wallets),
-            }
-        ]
-
-        answer = prompt(questions)
-
-        to_delete = answer["wallet"]
-
-        wallet_id = list(filter(lambda w: w.alias == to_delete, wallets))[0].id
+        wallet_id = prompt_wallet(wallets)
 
     wallet = api.delete_wallet(
         wallet_id=wallet_id,
@@ -184,10 +147,7 @@ def show_wallet_average_load_price(wallet_id, auth_token):
     headers = make_headers(auth_token)
     requires_interaction = wallet_id is None
 
-    wallets = api.get_wallets(
-        headers=headers,
-        params={"limit": 25, "page": 1},
-    )
+    wallets = api.get_wallets(headers=headers)
 
     if requires_interaction:
         wallet_id = prompt_wallet(wallets)

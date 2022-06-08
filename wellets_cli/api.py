@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Optional
 
 import requests
 
+from wellets_cli.auth import UserSession
 from wellets_cli.model import (
     Currency,
     UserSettings,
@@ -14,6 +15,20 @@ BASE_URL = "http://localhost:3333"
 
 class APIError(ValueError):
     pass
+
+
+def login(email: str, password: str) -> UserSession:
+    response = requests.post(
+        "http://localhost:3333/users/sessions",
+        json={"email": email, "password": password},
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    user_session = response.json()
+    user_session = UserSession(**user_session)
+    return user_session
 
 
 def get_currencies(headers: dict) -> List[Currency]:
@@ -31,7 +46,7 @@ def get_currencies(headers: dict) -> List[Currency]:
     return currencies
 
 
-def get_wallets(headers: dict, params: dict) -> List[Wallet]:
+def get_wallets(headers: dict, params: Optional[dict] = None) -> List[Wallet]:
     response = requests.get(
         "http://localhost:3333/wallets",
         headers=headers,

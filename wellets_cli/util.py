@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from PyInquirer import prompt
 
 
@@ -8,6 +10,10 @@ def get_currency_by_id(currencies, currency_id: str) -> str:
 
 def make_headers(auth_token: str) -> dict:
     return {"Authorization": f"Bearer {auth_token}"}
+
+
+def datetime2str(dt: datetime) -> str:
+    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 ### Converters
