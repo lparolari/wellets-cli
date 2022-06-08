@@ -19,7 +19,7 @@ class APIError(ValueError):
 
 def login(email: str, password: str) -> UserSession:
     response = requests.post(
-        "http://localhost:3333/users/sessions",
+        f"{BASE_URL}/users/sessions",
         json={"email": email, "password": password},
     )
 
@@ -48,7 +48,7 @@ def get_currencies(headers: dict) -> List[Currency]:
 
 def get_wallets(headers: dict, params: Optional[dict] = None) -> List[Wallet]:
     response = requests.get(
-        "http://localhost:3333/wallets",
+        f"{BASE_URL}/wallets",
         headers=headers,
         params=params,
     )
@@ -64,7 +64,7 @@ def get_wallets(headers: dict, params: Optional[dict] = None) -> List[Wallet]:
 
 def create_wallet(data: dict, headers: dict) -> Wallet:
     response = requests.post(
-        "http://localhost:3333/wallets",
+        f"{BASE_URL}/wallets",
         json=data,
         headers=headers,
     )
