@@ -128,10 +128,9 @@ def get_preferred_currency(headers: dict) -> UserCurrency:
     return user_settings.currency
 
 
-def get_portfolios(
-    portfolio_id: str, params: dict, headers: dict
-) -> List[Portfolio]:
-    show_all = params["show_all"]
+def get_portfolios(params: dict, headers: dict) -> List[Portfolio]:
+    portfolio_id = params.get("portfolio_id")
+    show_all = params.get("show_all")
 
     response = requests.get(
         f"{BASE_URL}/portfolios"
@@ -181,6 +180,21 @@ def get_total_balance(headers: dict) -> Balance:
 def get_wallets_total_balance(headers: dict) -> Balance:
     response = requests.get(
         f"{BASE_URL}/wallets/total-balance",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    balance = response.json()
+    balance = Balance(**balance)
+    return balance
+
+
+def get_portfolios_balance(params: dict, headers: dict):
+    response = requests.get(
+        f"{BASE_URL}/portfolios/balance",
+        params=params,
         headers=headers,
     )
 

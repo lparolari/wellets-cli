@@ -2,7 +2,7 @@ from typing import List
 
 from PyInquirer import prompt
 
-from wellets_cli.model import Wallet
+from wellets_cli.model import Portfolio, Wallet
 
 
 def prompt_confirmation() -> bool:
@@ -30,6 +30,23 @@ def prompt_wallet(wallets: List[Wallet]) -> str:
 
     answer = prompt(questions)
 
-    to_delete = answer["wallet"]
+    wallet_alias = answer["wallet"]
 
-    return list(filter(lambda w: w.alias == to_delete, wallets))[0].id
+    return list(filter(lambda w: w.alias == wallet_alias, wallets))[0].id
+
+
+def prompt_portfolio(portfolios: List[Portfolio]) -> str:
+    questions = [
+        {
+            "type": "list",
+            "name": "portfolio",
+            "message": "Portfolio",
+            "choices": map(lambda p: p.alias, portfolios),
+        }
+    ]
+
+    answer = prompt(questions)
+
+    portfolio_alias = answer["portfolio"]
+
+    return list(filter(lambda p: p.alias == portfolio_alias, portfolios))[0].id
