@@ -4,7 +4,7 @@ from typing import List
 from pydantic import BaseModel
 
 
-class Currency(BaseModel):
+class UserCurrency(BaseModel):
     id: str
     acronym: str
     alias: str
@@ -24,7 +24,7 @@ class Wallet(BaseModel):
     portfolios: List[str] = None
 
 
-class PlainCurrency(BaseModel):
+class Currency(BaseModel):
     id: str
     acronym: str
     alias: str
@@ -39,17 +39,17 @@ class UserSettings(BaseModel):
     currency_id: str
     created_at: str
     updated_at: str
-    currency: PlainCurrency
+    currency: Currency
 
 
 class WalletAverageLoadPrice(BaseModel):
     average_load_price: float = None
-    base_currency: PlainCurrency
+    base_currency: Currency
 
 
 class Balance(BaseModel):
     balance: float
-    currency: PlainCurrency
+    currency: Currency
 
 
 class Portfolio(BaseModel):
