@@ -132,3 +132,21 @@ def show_wallet_average_load_price(wallet_id, auth_token):
     )
 
     print(f"{result.average_load_price} {result.base_currency.acronym}")
+
+
+@wallet.command(name="balance")
+@click.option("--wallet-id")
+@click.option("--auth-token")
+def show_wallet_balance(wallet_id, auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+    requires_interaction = wallet_id is None
+
+    currency = api.get_preferred_currency(headers=headers)
+
+    if requires_interaction:
+        wallet_id = prompt_wallet(api.get_wallets(headers=headers))
+
+    result = api.get_wallet_balance(wallet_id, headers=headers)
+
+    print(f"{result.balance} {currency.acronym}")

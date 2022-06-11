@@ -9,6 +9,7 @@ from wellets_cli.model import (
     UserSettings,
     Wallet,
     WalletAverageLoadPrice,
+    WalletBalance,
 )
 
 BASE_URL = "http://localhost:3333"
@@ -140,3 +141,18 @@ def get_portfolios(portfolio_id: str, headers: dict) -> List[Portfolio]:
     portfolios = map(lambda w: Portfolio(**w), portfolios)
     portfolios = list(portfolios)
     return portfolios
+
+
+def get_wallet_balance(wallet_id: str, headers: dict) -> WalletBalance:
+    response = requests.get(
+        f"{BASE_URL}/wallets/balance",
+        params={"wallet_id": wallet_id},
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    balance = response.json()
+    balance = WalletBalance(**balance)
+    return balance
