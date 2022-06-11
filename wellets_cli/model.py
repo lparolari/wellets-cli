@@ -45,3 +45,15 @@ class UserSettings(BaseModel):
 class WalletAverageLoadPrice(BaseModel):
     average_load_price: float = None
     base_currency: PlainCurrency
+
+
+class Portfolio(BaseModel):
+    id: str
+    alias: str
+    weight: float
+    created_at: datetime
+    updated_at: datetime
+    user_id: str
+    parent_id: str = None
+    parent: "Portfolio" = None
+    children: List["Portfolio"] = []

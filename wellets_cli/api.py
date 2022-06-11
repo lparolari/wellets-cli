@@ -5,6 +5,7 @@ import requests
 from wellets_cli.auth import UserSession
 from wellets_cli.model import (
     Currency,
+    Portfolio,
     UserSettings,
     Wallet,
     WalletAverageLoadPrice,
@@ -124,3 +125,18 @@ def get_user_settings(headers: dict) -> UserSettings:
 def get_preferred_currency(headers: dict) -> Currency:
     user_settings = get_user_settings(headers=headers)
     return user_settings.currency
+
+
+def get_portfolios(portfolio_id: str, headers: dict) -> List[Portfolio]:
+    response = requests.get(
+        f"{BASE_URL}/portfolios/{portfolio_id if portfolio_id else ''}",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    portfolios = response.json()
+    portfolios = map(lambda w: Portfolio(**w), portfolios)
+    portfolios = list(portfolios)
+    return portfolios
