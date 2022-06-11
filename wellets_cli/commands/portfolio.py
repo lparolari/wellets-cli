@@ -3,9 +3,9 @@ from tabulate import tabulate
 
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
-from wellets_cli.model import Portfolio
+from wellets_cli.model import Portfolio, RebalanceChange
 from wellets_cli.prompt import prompt_portfolio
-from wellets_cli.util import make_headers
+from wellets_cli.util import make_headers, percent, pp
 
 
 @click.group()
@@ -82,3 +82,38 @@ def show_portfolio_balance(portfolio_id, interactive, auth_token):
     )
 
     print(f"{result.balance} {result.currency.acronym}")
+
+
+@portfolio.command(name="rebalance")
+@click.option("-id", "--portfolio-id")
+@click.option("--auth-token")
+def show_portfolio_rebalance(portfolio_id, auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+    requires_interaction = portfolio_id is None
+
+    if requires_interaction:
+        portfolio_id = prompt_portfolio(
+            api.get_portfolios(
+                params={"show_all": True},
+                headers=headers,
+            )
+        )
+
+    result = api.get_portfolios_rebalance(
+        params={"portfolio_id": portfolio_id}, headers=headers
+    )
+
+    def get_row_value(change: RebalanceChange):
+        return {
+            "portfolio": change.portfolio.alias,
+            "weight": f"{percent(change.portfolio.weight)}%",
+            "target": pp(change.target),
+            "actual": pp(change.actual),
+            "off_by": f"{pp(percent(change.off_by))}%",
+            "rebalance": f"{change.action.type} {pp(change.action.amount)} {result.currency.acronym}",
+        }
+
+    data = list(map(get_row_value, result.changes))
+
+    print(tabulate(data, headers="keys"))

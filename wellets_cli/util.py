@@ -16,6 +16,13 @@ def datetime2str(dt: datetime) -> str:
     return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def percent(x: float) -> float:
+    return x * 100
+
+
+def pp(x: float) -> str:
+    return f"{x:.2f}"
+
 ### Converters
 
 

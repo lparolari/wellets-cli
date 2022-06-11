@@ -6,6 +6,7 @@ from wellets_cli.auth import UserSession
 from wellets_cli.model import (
     Balance,
     Portfolio,
+    PortfolioRebalance,
     UserCurrency,
     UserSettings,
     Wallet,
@@ -191,7 +192,7 @@ def get_wallets_total_balance(headers: dict) -> Balance:
     return balance
 
 
-def get_portfolios_balance(params: dict, headers: dict):
+def get_portfolios_balance(params: dict, headers: dict) -> Balance:
     response = requests.get(
         f"{BASE_URL}/portfolios/balance",
         params=params,
@@ -204,3 +205,19 @@ def get_portfolios_balance(params: dict, headers: dict):
     balance = response.json()
     balance = Balance(**balance)
     return balance
+
+
+def get_portfolios_rebalance(params: dict, headers: dict) -> PortfolioRebalance:
+    portfolio_id = params["portfolio_id"]
+
+    response = requests.get(
+        f"{BASE_URL}/portfolios/{portfolio_id}/rebalance",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    rebalance = response.json()
+    rebalance = PortfolioRebalance(**rebalance)
+    return rebalance

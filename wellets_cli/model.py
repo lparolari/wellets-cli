@@ -62,3 +62,21 @@ class Portfolio(BaseModel):
     parent_id: str = None
     parent: "Portfolio" = None
     children: List["Portfolio"] = []
+
+
+class RebalanceAction(BaseModel):
+    type: str
+    amount: float
+
+class RebalanceChange(BaseModel):
+    portfolio: Portfolio
+    wallets: List[Wallet]
+    target: float
+    actual: float
+    off_by: float
+    action: RebalanceAction
+
+
+class PortfolioRebalance(BaseModel):
+    changes: List[RebalanceChange]
+    currency: Currency
