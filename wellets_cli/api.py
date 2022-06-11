@@ -9,7 +9,7 @@ from wellets_cli.model import (
     UserSettings,
     Wallet,
     WalletAverageLoadPrice,
-    WalletBalance,
+    Balance,
 )
 
 BASE_URL = "http://localhost:3333"
@@ -143,7 +143,7 @@ def get_portfolios(portfolio_id: str, headers: dict) -> List[Portfolio]:
     return portfolios
 
 
-def get_wallet_balance(wallet_id: str, headers: dict) -> WalletBalance:
+def get_wallet_balance(wallet_id: str, headers: dict) -> Balance:
     response = requests.get(
         f"{BASE_URL}/wallets/balance",
         params={"wallet_id": wallet_id},
@@ -154,11 +154,11 @@ def get_wallet_balance(wallet_id: str, headers: dict) -> WalletBalance:
         raise APIError(response.json())
 
     balance = response.json()
-    balance = WalletBalance(**balance)
+    balance = Balance(**balance)
     return balance
 
 
-def get_total_balance(headers: dict) -> WalletBalance:
+def get_total_balance(headers: dict) -> Balance:
     response = requests.get(
         f"{BASE_URL}/wallets/total-balance",
         headers=headers,
@@ -168,11 +168,11 @@ def get_total_balance(headers: dict) -> WalletBalance:
         raise APIError(response.json())
 
     balance = response.json()
-    balance = WalletBalance(**balance)
+    balance = Balance(**balance)
     return balance
 
 
-def get_wallets_total_balance(headers: dict) -> WalletBalance:
+def get_wallets_total_balance(headers: dict) -> Balance:
     response = requests.get(
         f"{BASE_URL}/wallets/total-balance",
         headers=headers,
@@ -182,5 +182,5 @@ def get_wallets_total_balance(headers: dict) -> WalletBalance:
         raise APIError(response.json())
 
     balance = response.json()
-    balance = WalletBalance(**balance)
+    balance = Balance(**balance)
     return balance

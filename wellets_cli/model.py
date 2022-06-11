@@ -47,7 +47,7 @@ class WalletAverageLoadPrice(BaseModel):
     base_currency: PlainCurrency
 
 
-class WalletBalance(BaseModel):
+class Balance(BaseModel):
     balance: float
     currency: PlainCurrency
 
