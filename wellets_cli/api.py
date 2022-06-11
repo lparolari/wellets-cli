@@ -156,3 +156,31 @@ def get_wallet_balance(wallet_id: str, headers: dict) -> WalletBalance:
     balance = response.json()
     balance = WalletBalance(**balance)
     return balance
+
+
+def get_total_balance(headers: dict) -> WalletBalance:
+    response = requests.get(
+        f"{BASE_URL}/wallets/total-balance",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    balance = response.json()
+    balance = WalletBalance(**balance)
+    return balance
+
+
+def get_wallets_total_balance(headers: dict) -> WalletBalance:
+    response = requests.get(
+        f"{BASE_URL}/wallets/total-balance",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    balance = response.json()
+    balance = WalletBalance(**balance)
+    return balance

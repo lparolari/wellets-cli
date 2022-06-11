@@ -49,6 +49,7 @@ class WalletAverageLoadPrice(BaseModel):
 
 class WalletBalance(BaseModel):
     balance: float
+    currency: PlainCurrency
 
 
 class Portfolio(BaseModel):
