@@ -15,12 +15,15 @@ def portfolio():
 @portfolio.command(name="list")
 @click.option("--portfolio-id")
 @click.option("--flatten", is_flag=True)
+@click.option("--all", "show_all", is_flag=True)
 @click.option("--auth-token")
-def list_portfolios(portfolio_id, flatten, auth_token):
+def list_portfolios(portfolio_id, flatten, show_all, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    portfolios = api.get_portfolios(portfolio_id, headers)
+    portfolios = api.get_portfolios(
+        portfolio_id, params={"show_all": show_all}, headers=headers
+    )
 
     def flatten_portfolios():
         for portfolio in portfolios:

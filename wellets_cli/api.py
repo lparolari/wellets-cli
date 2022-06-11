@@ -4,12 +4,12 @@ import requests
 
 from wellets_cli.auth import UserSession
 from wellets_cli.model import (
-    UserCurrency,
+    Balance,
     Portfolio,
+    UserCurrency,
     UserSettings,
     Wallet,
     WalletAverageLoadPrice,
-    Balance,
 )
 
 BASE_URL = "http://localhost:3333"
@@ -128,9 +128,15 @@ def get_preferred_currency(headers: dict) -> UserCurrency:
     return user_settings.currency
 
 
-def get_portfolios(portfolio_id: str, headers: dict) -> List[Portfolio]:
+def get_portfolios(
+    portfolio_id: str, params: dict, headers: dict
+) -> List[Portfolio]:
+    show_all = params["show_all"]
+
     response = requests.get(
-        f"{BASE_URL}/portfolios/{portfolio_id if portfolio_id else ''}",
+        f"{BASE_URL}/portfolios"
+        f"/{portfolio_id if portfolio_id else ''}"
+        f"{'/all' if show_all else ''}",
         headers=headers,
     )
 
