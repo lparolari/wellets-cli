@@ -73,6 +73,7 @@ class RebalanceChange(BaseModel):
     wallets: List[Wallet]
     target: float
     actual: float
+    weight: float
     off_by: float
     action: RebalanceAction
 

@@ -20,8 +20,9 @@ def percent(x: float) -> float:
     return x * 100
 
 
-def pp(x: float) -> str:
-    return f"{x:.2f}"
+def pp(x: float, percent=False, decimals=2) -> str:
+    x = x * 100 if percent else x
+    return f"{x:.{decimals}f}"
 
 ### Converters
 
