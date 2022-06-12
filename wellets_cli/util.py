@@ -24,6 +24,7 @@ def pp(x: float, percent=False, decimals=2) -> str:
     x = x * 100 if percent else x
     return f"{x:.{decimals}f}"
 
+
 ### Converters
 
 

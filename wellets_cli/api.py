@@ -149,6 +149,21 @@ def get_portfolios(params: dict, headers: dict) -> List[Portfolio]:
     return portfolios
 
 
+def create_portfolio(data: dict, headers: dict) -> Portfolio:
+    response = requests.post(
+        f"{BASE_URL}/portfolios",
+        json=data,
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    portfolio = response.json()
+    portfolio = Portfolio(**portfolio)
+    return portfolio
+
+
 def get_wallet_balance(wallet_id: str, headers: dict) -> Balance:
     response = requests.get(
         f"{BASE_URL}/wallets/balance",
@@ -207,7 +222,9 @@ def get_portfolios_balance(params: dict, headers: dict) -> Balance:
     return balance
 
 
-def get_portfolios_rebalance(params: dict, headers: dict) -> PortfolioRebalance:
+def get_portfolios_rebalance(
+    params: dict, headers: dict
+) -> PortfolioRebalance:
     portfolio_id = params["portfolio_id"]
 
     response = requests.get(

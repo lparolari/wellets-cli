@@ -5,12 +5,21 @@ from PyInquirer import prompt
 from wellets_cli.model import Portfolio, Wallet
 
 
-def prompt_confirmation() -> bool:
+def prompt_confirmation(
+    name="continue",
+    message="Do you want to continue?",
+    default=True,
+    when=None,
+) -> bool:
+    if when is None:
+        when = lambda _: True
+
     question = {
         "type": "confirm",
-        "message": "Do you want to continue?",
-        "name": "continue",
-        "default": True,
+        "name": name,
+        "message": message,
+        "default": default,
+        "when": when,
     }
 
     answers = prompt([question])

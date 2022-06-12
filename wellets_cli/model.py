@@ -62,11 +62,13 @@ class Portfolio(BaseModel):
     parent_id: str = None
     parent: "Portfolio" = None
     children: List["Portfolio"] = []
+    wallets: List[Wallet] = []
 
 
 class RebalanceAction(BaseModel):
     type: str
     amount: float
+
 
 class RebalanceChange(BaseModel):
     portfolio: Portfolio
