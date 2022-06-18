@@ -4,11 +4,13 @@ from typing import List, Optional
 import requests
 
 from wellets_cli.auth import UserSession
+from wellets_cli.commands.transaction import transaction
 from wellets_cli.config import Config
 from wellets_cli.model import (
     Balance,
     Portfolio,
     PortfolioRebalance,
+    Transaction,
     UserCurrency,
     UserSettings,
     Wallet,
@@ -269,3 +271,18 @@ def get_portfolios_rebalance(
     rebalance = response.json()
     rebalance = PortfolioRebalance(**rebalance)
     return rebalance
+
+
+def get_transactions(params: dict, headers: dict) -> List[Transaction]:
+    response = requests.get(
+        f"{BASE_URL}/transactions/",
+        params=params,
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    transactions = response.json()["transactions"]
+    transactions = [Transaction(**t) for t in transactions]
+    return transactions

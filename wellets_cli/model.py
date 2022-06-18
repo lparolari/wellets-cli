@@ -14,19 +14,6 @@ class UserCurrency(BaseModel):
     favorite: bool
 
 
-class Wallet(BaseModel):
-    id: str
-    alias: str
-    balance: float
-    currency_id: str
-    created_at: datetime
-    updated_at: datetime
-    portfolios: List[str] = None
-
-    def __eq__(self, other: "Wallet"):
-        return self.id == other.id
-
-
 class Currency(BaseModel):
     id: str
     acronym: str
@@ -35,6 +22,19 @@ class Currency(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+
+class Wallet(BaseModel):
+    id: str
+    alias: str
+    balance: float
+    currency_id: str
+    created_at: datetime
+    updated_at: datetime
+    portfolios: List[str] = None
+    currency: Currency = None
+
+    def __eq__(self, other: "Wallet"):
+        return self.id == other.id
 
 class UserSettings(BaseModel):
     id: str
@@ -89,3 +89,14 @@ class RebalanceChange(BaseModel):
 class PortfolioRebalance(BaseModel):
     changes: List[RebalanceChange]
     currency: Currency
+
+
+class Transaction(BaseModel):
+    id: str
+    value: float
+    description: str
+    dollar_rate: float
+    wallet_id: str
+    created_at: datetime
+    updated_at: datetime
+    wallet: Wallet
