@@ -4,6 +4,7 @@ from typing import List, Optional
 import requests
 
 from wellets_cli.auth import UserSession
+from wellets_cli.config import Config
 from wellets_cli.model import (
     Balance,
     Portfolio,
@@ -14,7 +15,8 @@ from wellets_cli.model import (
     WalletAverageLoadPrice,
 )
 
-BASE_URL = os.getenv("API_URL") or "http://localhost:3333"
+BASE_URL = Config.api_url
+
 
 class APIError(ValueError):
     pass
