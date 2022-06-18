@@ -81,83 +81,71 @@ def list_portfolios(portfolio_id, flatten, show_all, interactive, auth_token):
 
 @portfolio.command(name="create")
 @click.option("--auth-token")
-@click.option("--alias")
-@click.option("--weight")
-@click.option("--parent-id")
-@click.option("--wallet-ids", multiple=True)
-def create_portfolio(alias, weight, parent_id, wallet_ids, auth_token):
+@click.option("--alias", type=str)
+@click.option("--weight", type=click.FloatRange(0, 100))
+@click.option("--parent-id", type=click.UUID)
+@click.option(
+    "--wallet-ids",
+    multiple=True,
+    callback=lambda _1, _2, value: validate(
+        each_validator(uuid_validator), value
+    ),
+)
+@click.option("-y", "--yes", is_flag=True, type=bool)
+def create_portfolio(
+    alias, weight, parent_id, wallet_ids, auth_token, yes
+):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
     weight = weight and float(weight) / 100
 
-    validate(not_empty_validator, alias)
-    validate(
-        and_validator(
-            [not_empty_validator, number_validator, percent_validator]
-        ),
-        weight,
-    )
-    validate(uuid_validator, parent_id)
-    validate(each_validator(uuid_validator), wallet_ids)
+    portfolios = api.get_portfolios(params={"show_all": True}, headers=headers)
+    wallets = api.get_wallets(headers=headers)
 
-    alias_q = {
-        "type": "input",
-        "name": "alias",
-        "message": "Alias",
-        "validate": not_empty_validator,
-    }
-    weight_q = {
-        "type": "input",
-        "name": "weight",
-        "message": "Weight",
-        "filter": lambda val: float(val) / 100,
-        "validate": and_validator(
-            [not_empty_validator, number_validator, percent_validator]
-        ),
-    }
-    has_parent_q = {
-        "type": "confirm",
-        "name": "has_parent",
-        "message": "Has parent",
-        "default": False,
-    }
-    portfolio_q = portfolio_question(
-        api.get_portfolios(params={"show_all": True}, headers=headers),
-        name="parent_id",
-        message="Parent",
-        when=lambda answers: answers.get("has_parent"),
+    alias = (
+        alias
+        or inquirer.text(
+            message="Alias",
+            validate=EmptyInputValidator(),
+        ).execute()
     )
-    wallet_q = wallets_question(
-        api.get_wallets(headers=headers),
-        name="wallet_ids",
-        message="Wallets",
+    weight = (
+        weight
+        or inquirer.number(
+            message="Weight",
+            float_allowed=True,
+            min_allowed=0,
+            max_allowed=100,
+            validate=EmptyInputValidator(),
+            filter=lambda v: float(v) / 100,
+        ).execute()
     )
-
-    questions = [
-        *q(alias_q, alias),
-        *q(weight_q, weight),
-        *q(has_parent_q, parent_id),
-        *q(portfolio_q, parent_id),
-        *q(wallet_q, wallet_ids),
-        confirm_question(when=lambda answers: answers),
-    ]
-
-    answers = prompt(questions)
+    parent_id = (
+        parent_id
+        or portfolio_question(
+            portfolios=portfolios,
+            message="Parent",
+            allow_none=True,
+        ).execute()
+    )
+    wallet_ids = (
+        wallet_ids
+        or wallets_question(
+            wallets=wallets,
+            allow_none=True
+        ).execute()
+    )
 
     data = {
-        **{
-            "alias": alias,
-            "weight": weight,
-            "parent_id": parent_id,
-            "wallet_ids": wallet_ids,
-        },
-        **answers,
+        "alias": alias,
+        "weight": weight,
+        "parent_id": parent_id,
+        "wallet_ids": wallet_ids,
     }
 
-    # remove prompt data
-    data.pop("has_parent", None)
-    data.pop("continue", None)
+    if not yes and not confirm_question().execute():
+        return
 
     portfolio = api.create_portfolio(data, headers=headers)
 
@@ -232,6 +220,7 @@ def edit_portfolio(
         or wallets_question(
             wallets=wallets,
             default=portfolio.wallets,
+            allow_none=True
         ).execute()
     )
 

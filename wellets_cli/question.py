@@ -21,15 +21,23 @@ def wallets_question(
     wallets: List[Wallet],
     message: str = "Wallets",
     default: List[Wallet] = None,
+    allow_none: bool = False,
 ) -> ListPrompt:
+    no_option = (
+        [Separator(), Choice(value=None, name="No parent")]
+        if allow_none
+        else []
+    )
 
     return inquirer.select(
         message=message,
         choices=[
             Choice(w.id, name=w.alias, enabled=default and w in default)
             for w in wallets
-        ],
+        ]
+        + no_option,
         multiselect=True,
+        filter=lambda xs: [x for x in xs if x is not None],
     )
 
 
