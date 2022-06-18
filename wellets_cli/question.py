@@ -1,16 +1,10 @@
-from typing import Callable, List, Optional, Union
+from typing import List, Optional
 
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice, Separator
-from InquirerPy.prompts import ConfirmPrompt, InputPrompt, ListPrompt
+from InquirerPy.prompts import ConfirmPrompt, ListPrompt
 
 from wellets_cli.model import Portfolio, Wallet
-
-
-def q(question, value):
-    if value:
-        return []
-    return [question]
 
 
 def confirm_question(message="Confirm", default=True) -> ConfirmPrompt:

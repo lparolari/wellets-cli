@@ -1,28 +1,18 @@
 import click
-from InquirerPy import inquirer, prompt
+from InquirerPy import inquirer
 from InquirerPy.validator import EmptyInputValidator
 from tabulate import tabulate
 
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
 from wellets_cli.model import Portfolio, RebalanceChange
-from wellets_cli.prompt import prompt_portfolio
 from wellets_cli.question import (
     confirm_question,
     portfolio_question,
-    q,
     wallets_question,
 )
 from wellets_cli.util import make_headers, pp
-from wellets_cli.validator import (
-    and_validator,
-    each_validator,
-    not_empty_validator,
-    number_validator,
-    percent_validator,
-    uuid_validator,
-    validate,
-)
+from wellets_cli.validator import each_validator, uuid_validator, validate
 
 
 @click.group()
@@ -31,7 +21,7 @@ def portfolio():
 
 
 @portfolio.command(name="list")
-@click.option("-id", "--portfolio-id")
+@click.option("-id", "--portfolio-id", type=click.UUID)
 @click.option("-f", "--flatten", is_flag=True)
 @click.option("-a", "--all", "show_all", is_flag=True)
 @click.option("-i", "--interactive", is_flag=True)
@@ -40,11 +30,15 @@ def list_portfolios(portfolio_id, flatten, show_all, interactive, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    if interactive:
-        portfolio_id = prompt_portfolio(
-            api.get_portfolios(params={"show_all": True}, headers=headers)
-        )
-    print(portfolio_id)
+    portfolio_id = portfolio_id or (
+        interactive
+        and portfolio_question(
+            portfolios=api.get_portfolios(
+                params={"show_all": True},
+                headers=headers,
+            )
+        ).execute()
+    )
 
     portfolios = api.get_portfolios(
         params={"portfolio_id": portfolio_id, "show_all": show_all},
@@ -92,9 +86,7 @@ def list_portfolios(portfolio_id, flatten, show_all, interactive, auth_token):
     ),
 )
 @click.option("-y", "--yes", is_flag=True, type=bool)
-def create_portfolio(
-    alias, weight, parent_id, wallet_ids, auth_token, yes
-):
+def create_portfolio(alias, weight, parent_id, wallet_ids, auth_token, yes):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -131,10 +123,7 @@ def create_portfolio(
     )
     wallet_ids = (
         wallet_ids
-        or wallets_question(
-            wallets=wallets,
-            allow_none=True
-        ).execute()
+        or wallets_question(wallets=wallets, allow_none=True).execute()
     )
 
     data = {
@@ -218,9 +207,7 @@ def edit_portfolio(
     wallet_ids = (
         wallet_ids
         or wallets_question(
-            wallets=wallets,
-            default=portfolio.wallets,
-            allow_none=True
+            wallets=wallets, default=portfolio.wallets, allow_none=True
         ).execute()
     )
 
@@ -240,20 +227,22 @@ def edit_portfolio(
 
 
 @portfolio.command(name="balance")
-@click.option("-id", "--portfolio-id")
+@click.option("-id", "--portfolio-id", type=click.UUID)
 @click.option("-i", "--interactive", is_flag=True)
 @click.option("--auth-token")
 def show_portfolio_balance(portfolio_id, interactive, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    if interactive:
-        portfolio_id = prompt_portfolio(
-            api.get_portfolios(
+    portfolio_id = (
+        portfolio_id
+        or portfolio_question(
+            portfolios=api.get_portfolios(
                 params={"show_all": True},
                 headers=headers,
             )
-        )
+        ).execute()
+    )
 
     result = api.get_portfolios_balance(
         params={"portfolio_id": portfolio_id}, headers=headers
@@ -263,20 +252,21 @@ def show_portfolio_balance(portfolio_id, interactive, auth_token):
 
 
 @portfolio.command(name="rebalance")
-@click.option("-id", "--portfolio-id")
+@click.option("-id", "--portfolio-id", type=click.UUID)
 @click.option("--auth-token")
 def show_portfolio_rebalance(portfolio_id, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
-    requires_interaction = portfolio_id is None
 
-    if requires_interaction:
-        portfolio_id = prompt_portfolio(
-            api.get_portfolios(
+    portfolio_id = (
+        portfolio_id
+        or portfolio_question(
+            portfolios=api.get_portfolios(
                 params={"show_all": True},
                 headers=headers,
             )
-        )
+        ).execute()
+    )
 
     result = api.get_portfolios_rebalance(
         params={"portfolio_id": portfolio_id}, headers=headers

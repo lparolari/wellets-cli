@@ -42,21 +42,3 @@ def prompt_wallet(wallets: List[Wallet]) -> str:
     wallet_alias = answer["wallet"]
 
     return list(filter(lambda w: w.alias == wallet_alias, wallets))[0].id
-
-
-def prompt_portfolio(portfolios: List[Portfolio]) -> str:
-    questions = [
-        {
-            "type": "list",
-            "name": "portfolio",
-            "message": "Portfolio",
-            "choices": ["foo"]
-            # "choices": list(map(lambda p: p.alias, portfolios)),
-        }
-    ]
-
-    answer = prompt(questions)
-
-    portfolio_alias = answer["portfolio"]
-
-    return list(filter(lambda p: p.alias == portfolio_alias, portfolios))[0].id
