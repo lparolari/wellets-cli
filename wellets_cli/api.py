@@ -149,9 +149,38 @@ def get_portfolios(params: dict, headers: dict) -> List[Portfolio]:
     return portfolios
 
 
+def get_portfolio(portfolio_id: str, headers: dict) -> Portfolio:
+    response = requests.get(
+        f"{BASE_URL}/portfolios/{portfolio_id}/details",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    portfolio = response.json()
+    portfolio = Portfolio(**portfolio)
+    return portfolio
+
+
 def create_portfolio(data: dict, headers: dict) -> Portfolio:
     response = requests.post(
         f"{BASE_URL}/portfolios",
+        json=data,
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    portfolio = response.json()
+    portfolio = Portfolio(**portfolio)
+    return portfolio
+
+
+def edit_portfolio(portfolio_id: str, data: dict, headers: dict) -> Portfolio:
+    response = requests.put(
+        f"{BASE_URL}/portfolios/{portfolio_id}",
         json=data,
         headers=headers,
     )

@@ -23,6 +23,9 @@ class Wallet(BaseModel):
     updated_at: datetime
     portfolios: List[str] = None
 
+    def __eq__(self, other: "Wallet"):
+        return self.id == other.id
+
 
 class Currency(BaseModel):
     id: str
@@ -63,6 +66,9 @@ class Portfolio(BaseModel):
     parent: "Portfolio" = None
     children: List["Portfolio"] = []
     wallets: List[Wallet] = []
+
+    def __eq__(self, other: "Portfolio"):
+        return self.id == other.id
 
 
 class RebalanceAction(BaseModel):

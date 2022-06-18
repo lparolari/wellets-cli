@@ -1,5 +1,5 @@
 import click
-from PyInquirer import prompt
+from InquirerPy import prompt
 from tabulate import tabulate
 
 import wellets_cli.api as api

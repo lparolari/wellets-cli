@@ -1,5 +1,6 @@
 import click
-from PyInquirer import prompt
+from InquirerPy import inquirer, prompt
+from InquirerPy.validator import EmptyInputValidator
 from tabulate import tabulate
 
 import wellets_cli.api as api
@@ -88,7 +89,7 @@ def create_portfolio(alias, weight, parent_id, wallet_ids, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    weight and float(weight) / 100
+    weight = weight and float(weight) / 100
 
     validate(not_empty_validator, alias)
     validate(
@@ -98,7 +99,7 @@ def create_portfolio(alias, weight, parent_id, wallet_ids, auth_token):
         weight,
     )
     validate(uuid_validator, parent_id)
-    validate(and_validator([each_validator(uuid_validator)]), wallet_ids)
+    validate(each_validator(uuid_validator), wallet_ids)
 
     alias_q = {
         "type": "input",
@@ -159,6 +160,92 @@ def create_portfolio(alias, weight, parent_id, wallet_ids, auth_token):
     data.pop("continue", None)
 
     portfolio = api.create_portfolio(data, headers=headers)
+
+    print(portfolio.id)
+
+
+@portfolio.command(name="edit")
+@click.option("--auth-token")
+@click.option("-id", "--portfolio-id", type=click.UUID)
+@click.option("--alias", type=str)
+@click.option("--weight", type=click.FloatRange(0, 100))
+@click.option("--parent-id", type=click.UUID)
+@click.option(
+    "--wallet-ids",
+    multiple=True,
+    callback=lambda _1, _2, value: validate(
+        each_validator(uuid_validator), value
+    ),
+)
+@click.option("-y", "--yes", is_flag=True, type=bool)
+def edit_portfolio(
+    portfolio_id, alias, weight, parent_id, wallet_ids, auth_token, yes
+):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    weight = weight and float(weight) / 100
+
+    portfolio_id = (
+        portfolio_id
+        or portfolio_question(
+            api.get_portfolios(params={"show_all": True}, headers=headers),
+            message="Portfolio",
+        ).execute()
+    )
+
+    portfolio = api.get_portfolio(portfolio_id, headers=headers)
+    portfolios = api.get_portfolios(params={"show_all": True}, headers=headers)
+    wallets = api.get_wallets(headers=headers)
+
+    alias = (
+        alias
+        or inquirer.text(
+            message="Alias",
+            default=portfolio.alias,
+            validate=EmptyInputValidator(),
+        ).execute()
+    )
+    weight = (
+        weight
+        or inquirer.number(
+            message="Weight",
+            float_allowed=True,
+            min_allowed=0,
+            max_allowed=100,
+            validate=EmptyInputValidator(),
+            default=portfolio.weight * 100,
+            filter=lambda v: float(v) / 100,
+        ).execute()
+    )
+    parent_id = (
+        parent_id
+        or portfolio_question(
+            portfolios=portfolios,
+            default=portfolio.parent,
+            message="Parent",
+            allow_none=True,
+        ).execute()
+    )
+    wallet_ids = (
+        wallet_ids
+        or wallets_question(
+            wallets=wallets,
+            default=portfolio.wallets,
+        ).execute()
+    )
+
+    data = {
+        "alias": alias,
+        "weight": weight,
+        "parent_id": parent_id,
+        "wallet_ids": wallet_ids,
+    }
+
+    if not yes and not confirm_question().execute():
+        return
+
+    portfolio = api.edit_portfolio(portfolio_id, data, headers=headers)
 
     print(portfolio.id)
 

@@ -1,6 +1,6 @@
 from typing import List
 
-from PyInquirer import prompt
+from InquirerPy import prompt
 
 from wellets_cli.model import Portfolio, Wallet
 
@@ -50,7 +50,8 @@ def prompt_portfolio(portfolios: List[Portfolio]) -> str:
             "type": "list",
             "name": "portfolio",
             "message": "Portfolio",
-            "choices": map(lambda p: p.alias, portfolios),
+            "choices": ["foo"]
+            # "choices": list(map(lambda p: p.alias, portfolios)),
         }
     ]
 

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from PyInquirer import prompt
+from InquirerPy import prompt
 
 
 def get_currency_by_id(currencies, currency_id: str) -> str:

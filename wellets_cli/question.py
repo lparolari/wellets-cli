@@ -1,4 +1,8 @@
-from typing import List, Union
+from typing import Callable, List, Optional, Union
+
+from InquirerPy import inquirer
+from InquirerPy.base.control import Choice, Separator
+from InquirerPy.prompts import ConfirmPrompt, InputPrompt, ListPrompt
 
 from wellets_cli.model import Portfolio, Wallet
 
@@ -9,63 +13,44 @@ def q(question, value):
     return [question]
 
 
-def confirm_question(
-    name="continue", message="Confirm", default=True, when=None
-):
-    if when is None:
-        when = lambda _: True
-
-    return {
-        "type": "confirm",
-        "name": name,
-        "message": message,
-        "default": default,
-        "when": when,
-    }
+def confirm_question(message="Confirm", default=True) -> ConfirmPrompt:
+    return inquirer.confirm(message, default=default)
 
 
 def wallets_question(
-    wallets: List[Wallet], name="wallet_id", message="Wallet", when=None
-):
-    if when is None:
-        when = lambda _: True
+    wallets: List[Wallet],
+    message: str = "Wallets",
+    default: List[Wallet] = None,
+) -> ListPrompt:
 
-    def get_wallet_id_by_alias(alias: str) -> Union[str, None]:
-        result = list(filter(lambda w: w.alias == alias, wallets))
-        if result:
-            return result[0].id
-        return None
-
-    return {
-        "type": "checkbox",
-        "name": name,
-        "message": message,
-        "choices": list(map(lambda w: {"name": w.alias}, wallets)),
-        "filter": lambda vals: list(map(get_wallet_id_by_alias, vals)),
-        "when": when,
-    }
+    return inquirer.select(
+        message=message,
+        choices=[
+            Choice(w.id, name=w.alias, enabled=default and w in default)
+            for w in wallets
+        ],
+        multiselect=True,
+    )
 
 
 def portfolio_question(
     portfolios: List[Portfolio],
-    name="portfolio_id",
-    message="Portfolio",
-    when=None,
-):
-    if when is None:
-        when = lambda _: True
+    message: str = "Portfolio",
+    default: Optional[Portfolio] = None,
+    allow_none: bool = False,
+) -> ListPrompt:
+    no_option = (
+        [Separator(), Choice(value=None, name="No parent")]
+        if allow_none
+        else []
+    )
 
-    def get_portfolio_id_by_alias(alias: str) -> Union[str, None]:
-        result = list(filter(lambda w: w.alias == alias, portfolios))
-        if result:
-            return result[0].id
-        return None
-
-    return {
-        "type": "list",
-        "name": name,
-        "message": message,
-        "choices": map(lambda p: p.alias, portfolios),
-        "filter": get_portfolio_id_by_alias,
-        "when": when,
-    }
+    return inquirer.select(
+        message=message,
+        choices=[
+            Choice(p.id, name=p.alias, enabled=default and default == p)
+            for p in portfolios
+        ]
+        + no_option,
+        default=default and default.id,
+    )
