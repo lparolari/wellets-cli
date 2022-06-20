@@ -18,10 +18,7 @@ def wallet_question(
 ) -> ListPrompt:
     return inquirer.select(
         message=message,
-        choices=[
-            Choice(w.id, name=w.alias)
-            for w in wallets
-        ],
+        choices=[Choice(w.id, name=w.alias) for w in wallets],
         default=default and default.id,
     )
 

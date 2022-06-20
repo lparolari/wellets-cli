@@ -36,6 +36,7 @@ class Wallet(BaseModel):
     def __eq__(self, other: "Wallet"):
         return self.id == other.id
 
+
 class UserSettings(BaseModel):
     id: str
     user_id: str
