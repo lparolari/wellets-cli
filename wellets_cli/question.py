@@ -3,8 +3,9 @@ from typing import List, Optional
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice, Separator
 from InquirerPy.prompts import ConfirmPrompt, ListPrompt
+from InquirerPy.validator import EmptyInputValidator
 
-from wellets_cli.model import Portfolio, Wallet
+from wellets_cli.model import Currency, Portfolio, Wallet
 
 
 def confirm_question(message="Confirm", default=True) -> ConfirmPrompt:
@@ -67,4 +68,12 @@ def portfolio_question(
         ]
         + no_option,
         default=default and default.id,
+    )
+
+
+def dollar_rate_question(currencies: List[Currency]):
+    return inquirer.number(
+        message="Dollar rate",
+        float_allowed=True,
+        validate=EmptyInputValidator(),
     )
