@@ -286,3 +286,18 @@ def get_transactions(params: dict, headers: dict) -> List[Transaction]:
     transactions = response.json()["transactions"]
     transactions = [Transaction(**t) for t in transactions]
     return transactions
+
+
+def create_transaction(data: dict, headers: dict) -> Transaction:
+    response = requests.post(
+        f"{BASE_URL}/transactions",
+        json=data,
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    transaction = response.json()
+    transaction = Transaction(**transaction)
+    return transaction

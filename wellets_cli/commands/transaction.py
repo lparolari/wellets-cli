@@ -100,8 +100,12 @@ def create_transaction(
         description
         or inquirer.text(
             message="Description",
+            validate=EmptyInputValidator(),
         ).execute()
     )
+
+    if not yes and not confirm_question().execute():
+        return
 
     data = {
         "wallet_id": wallet_id,
@@ -110,7 +114,6 @@ def create_transaction(
         "description": description,
     }
 
-    if not yes and not confirm_question().execute():
-        return
+    transaction = api.create_transaction(data, headers=headers)
 
-    print("TODO")
+    print(transaction.id)

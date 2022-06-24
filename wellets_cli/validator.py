@@ -1,7 +1,16 @@
 import uuid
 from typing import Any, Callable, List, Union
 
-Validator = Callable[[str], Union[str, bool]]
+from InquirerPy.validator import ValidationError, Validator
+
+Validator2 = Callable[[str], Union[str, bool]]
+
+# TODO: replace this validators in favor of `Validator` subclasses
+def validate(validator: Validator2, value: Any):
+    if value is not None:
+        outcome = validator(value)
+        if outcome != True:
+            raise ValueError(outcome)
 
 
 def percent_validator(val: str):
@@ -24,7 +33,7 @@ def number_validator(val: str):
         return "Should be a number"
 
 
-def and_validator(validators: List[Validator]):
+def and_validator(validators: List[Validator2]):
     def wrapper(val: str):
         for validator in validators:
             validated = validator(val)
@@ -43,7 +52,7 @@ def uuid_validator(val: str):
         return "Should be a UUID"
 
 
-def each_validator(validator: Validator):
+def each_validator(validator: Validator2):
     def wrapper(vals: List[str]):
         for val in vals:
             outcome = validator(val)
@@ -54,8 +63,27 @@ def each_validator(validator: Validator):
     return wrapper
 
 
-def validate(validator: Validator, value: Any):
-    if value is not None:
-        outcome = validator(value)
-        if outcome != True:
-            raise ValueError(outcome)
+class GreaterThanValidator(Validator):
+    def __init__(
+        self,
+        lower_bound: int = 0,
+        message: str = "Input must be greater than {}",
+    ) -> None:
+        self._lower_bound = lower_bound
+        self._message = message
+
+    def validate(self, document):
+        if float(document.text) <= self._lower_bound:
+            raise ValidationError(
+                message=self._message.format(self._lower_bound),
+                cursor_position=document.cursor_position,
+            )
+
+
+class AndValidator(Validator):
+    def __init__(self, validators: List[Validator]):
+        self._validators = validators
+
+    def validate(self, document):
+        for validator in self._validators:
+            validator.validate(document)
