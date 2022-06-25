@@ -99,10 +99,11 @@ def delete_wallet(wallet_id: str, headers: dict) -> Wallet:
 
 
 def get_wallet_average_load_price(
-    wallet_id: str, headers: dict
+    params: dict, headers: dict
 ) -> WalletAverageLoadPrice:
     response = requests.get(
-        f"{BASE_URL}/wallets/{wallet_id}/average-load-price",
+        f"{BASE_URL}/wallets//average-load-price",
+        params=params,
         headers=headers,
     )
 

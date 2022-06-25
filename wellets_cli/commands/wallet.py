@@ -127,7 +127,7 @@ def show_wallet_average_load_price(wallet_id, auth_token):
         wallet_id = prompt_wallet(wallets)
 
     result = api.get_wallet_average_load_price(
-        wallet_id=wallet_id,
+        params={"wallet_id": wallet_id},
         headers=headers,
     )
 
