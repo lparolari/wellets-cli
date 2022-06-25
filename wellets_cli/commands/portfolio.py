@@ -60,7 +60,7 @@ def list_portfolios(portfolio_id, flatten, show_all, interactive, auth_token):
         return {
             "id": portfolio.id,
             "alias": portfolio.alias,
-            "weight": portfolio.weight,
+            "weight": f"{pp(portfolio.weight, percent=True, decimals=0)}%",
             "parent": portfolio.parent.alias if portfolio.parent else None,
             "children": ", ".join(
                 [child.alias for child in portfolio.children]
