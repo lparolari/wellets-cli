@@ -226,6 +226,30 @@ def edit_portfolio(
     print(portfolio.id)
 
 
+@portfolio.command(name="delete")
+@click.option("--auth-token")
+@click.option("-id", "--portfolio-id", type=click.UUID)
+@click.option("-y", "--yes", is_flag=True, type=bool)
+def delete_portfolio(portfolio_id, auth_token, yes):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    portfolio_id = (
+        portfolio_id
+        or portfolio_question(
+            api.get_portfolios(params={"show_all": True}, headers=headers),
+            message="Portfolio",
+        ).execute()
+    )
+
+    if not yes and not confirm_question().execute():
+        return
+
+    api.delete_portfolio(portfolio_id, headers=headers)
+
+    print(portfolio_id)
+
+
 @portfolio.command(name="balance")
 @click.option("-id", "--portfolio-id", type=click.UUID)
 @click.option("-i", "--interactive", is_flag=True)

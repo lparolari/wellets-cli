@@ -197,6 +197,20 @@ def edit_portfolio(portfolio_id: str, data: dict, headers: dict) -> Portfolio:
     return portfolio
 
 
+def delete_portfolio(portfolio_id: str, headers: dict) -> Portfolio:
+    response = requests.delete(
+        f"{BASE_URL}/portfolios/{portfolio_id}",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    portfolio = response.json()
+    portfolio = Portfolio(**portfolio)
+    return portfolio
+
+
 def get_wallet_balance(wallet_id: str, headers: dict) -> Balance:
     response = requests.get(
         f"{BASE_URL}/wallets/balance",
