@@ -7,7 +7,7 @@ import wellets_cli.commands as commands
 from wellets_cli.auth import get_auth_token
 from wellets_cli.model import Wallet
 from wellets_cli.prompt import prompt_wallet
-from wellets_cli.util import change_value, get_currency_by_id, make_headers
+from wellets_cli.util import change_value, get_currency_by_id, make_headers, pp
 
 
 @click.group()
@@ -35,6 +35,7 @@ def list_wallets(auth_token):
             "countervalue": change_value(
                 currency.dollar_rate, base_currency.dollar_rate, wallet.balance
             ),
+            "allocation": pp(wallet.allocation, percent=True, decimals=1),
             "created_at": wallet.created_at.strftime("%Y-%m-%d"),
         }
 
