@@ -32,7 +32,7 @@ def wallets_question(
     allow_none: bool = False,
 ) -> ListPrompt:
     no_option = (
-        [Separator(), Choice(value=None, name="No parent")]
+        [Separator(), Choice(value=None, name="No wallets")]
         if allow_none
         else []
     )
