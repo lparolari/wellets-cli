@@ -12,7 +12,7 @@ from wellets_cli.auth import persist_auth
 @click.option("--password")
 def login(email: Optional[str], password: Optional[str]):
     email = email or input("Email: ")
-    password = password or getpass.getpass()
+    password = password or getpass()
 
     user_session = api.login(email, password)
 
