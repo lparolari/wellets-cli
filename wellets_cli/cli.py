@@ -6,6 +6,7 @@ from wellets_cli.commands.portfolio import portfolio
 from wellets_cli.commands.transaction import transaction
 from wellets_cli.commands.wallet import wallet
 from wellets_cli.commands.whoami import whoami
+from wellets_cli.commands.currency import currency
 
 
 @click.group()
@@ -20,5 +21,6 @@ def main():  # pragma: no cover
     cli.add_command(portfolio)
     cli.add_command(config)
     cli.add_command(transaction)
+    cli.add_command(currency)
 
     cli()
