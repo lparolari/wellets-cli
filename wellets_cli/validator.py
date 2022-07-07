@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from typing import Any, Callable, List, Union
 
 from InquirerPy.validator import ValidationError, Validator
@@ -80,6 +81,24 @@ class GreaterThanValidator(Validator):
             )
 
 
+class GreaterThanOrEqualValidator(Validator):
+    def __init__(
+        self,
+        lower_bound: int = 0,
+        message: str = "Input must be greater or equal than {}",
+        allow_equal: bool = False,
+    ) -> None:
+        self._lower_bound = lower_bound
+        self._message = message
+
+    def validate(self, document):
+        if float(document.text) < self._lower_bound:
+            raise ValidationError(
+                message=self._message.format(self._lower_bound),
+                cursor_position=document.cursor_position,
+            )
+
+
 class AndValidator(Validator):
     def __init__(self, validators: List[Validator]):
         self._validators = validators
@@ -87,3 +106,23 @@ class AndValidator(Validator):
     def validate(self, document):
         for validator in self._validators:
             validator.validate(document)
+
+
+class DateValidator(Validator):
+    def __init__(
+        self,
+        message: str = "Input should be a date",
+        date_fmt: str = "%Y-%m-%d %H:%M",
+    ) -> None:
+        self._message = message
+        self._date_fmt = date_fmt
+
+    def validate(self, document):
+        if document.text != "":
+            try:
+                datetime.strptime(document.text, self._date_fmt)
+            except ValueError:
+                raise ValidationError(
+                    message=self._message,
+                    cursor_position=document.cursor_position,
+                )

@@ -103,3 +103,37 @@ def currency_question(
         message=message,
         mandatory=mandatory,
     )
+
+
+def change_value_question(
+    source_currency: Currency,
+    target_currency: Currency = None,
+    message: Optional[str] = None,
+    default: Optional[float] = None,
+):
+    from wellets_cli.util import change_from, change_value, pp
+
+    def change_val_transformer(value: str) -> str:
+        v = float(value)
+
+        countervalue_in_currency = f"{pp(v)} {target_currency.acronym}"
+        countervalue_in_usd = (
+            f" ≈ {pp(change_value(change_from(1, v), change_from(1, target_currency.dollar_rate), 1))} USD"
+            if target_currency.acronym != "USD"
+            else ""
+        )
+        return f"{countervalue_in_currency}{countervalue_in_usd}"
+
+    return inquirer.number(
+        message=message
+        or f"Change value (1 {source_currency.acronym} equals ? {target_currency.acronym})",
+        float_allowed=True,
+        min_allowed=0,
+        default=default
+        or change_value(
+            source_currency.dollar_rate, target_currency.dollar_rate, 1
+        ),
+        filter=lambda v: (1 / float(v)) * target_currency.dollar_rate,
+        transformer=change_val_transformer,
+        validate=EmptyInputValidator(),
+    )

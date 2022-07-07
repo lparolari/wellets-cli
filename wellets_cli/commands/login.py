@@ -3,6 +3,7 @@ from typing import Optional
 
 import click
 from InquirerPy import inquirer
+
 import wellets_cli.api as api
 from wellets_cli.auth import persist_auth
 
