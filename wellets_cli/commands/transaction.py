@@ -64,7 +64,11 @@ def list_transactions(wallet_id, description, auth_token):
         buy_price = change_value(
             transaction.dollar_rate, preferred_currency.dollar_rate, 1
         )
-        buy_countervalue = change_value(transaction.dollar_rate, preferred_currency.dollar_rate, transaction.value)
+        buy_countervalue = change_value(
+            transaction.dollar_rate,
+            preferred_currency.dollar_rate,
+            transaction.value,
+        )
 
         return {
             "id": transaction.id,
@@ -108,6 +112,7 @@ def create_transaction(
 
     wallets = api.get_wallets(headers=headers)
     currencies = api.get_currencies(headers=headers)
+    preferred_currency = api.get_preferred_currency(headers=headers)
 
     wallet_id = (
         wallet_id
@@ -182,7 +187,12 @@ def create_transaction(
         ).execute()
     )
 
-    if not yes and not confirm_question().execute():
+    if (
+        not yes
+        and not confirm_question(
+            message=f"Confirm buy/sell of {preferred_currency.acronym} {pp(change_value(dollar_rate, preferred_currency.dollar_rate, value))}"
+        ).execute()
+    ):
         return
 
     data = {
