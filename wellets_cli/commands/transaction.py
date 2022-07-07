@@ -64,11 +64,13 @@ def list_transactions(wallet_id, description, auth_token):
         buy_price = change_value(
             transaction.dollar_rate, preferred_currency.dollar_rate, 1
         )
+        buy_countervalue = change_value(transaction.dollar_rate, preferred_currency.dollar_rate, transaction.value)
 
         return {
             "id": transaction.id,
-            "amount": f"{transaction.wallet.currency.acronym} {pp(transaction.value)}",
+            "amount": f"{transaction.wallet.currency.acronym} {pp(transaction.value, decimals=8, fixed=False)}",
             "countevalue": f"{preferred_currency.acronym} {pp(countervalue)}",
+            "buy_amount": f"{preferred_currency.acronym} {pp(buy_countervalue)}",
             "buy_price": f"{preferred_currency.acronym} {pp(buy_price)}",
             "created_at": transaction.created_at.strftime("%Y-%m-%d %H:%M"),
             "updated_at": transaction.updated_at.strftime("%Y-%m-%d %H:%M"),
