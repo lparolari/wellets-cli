@@ -26,12 +26,13 @@ def list_currencies(auth_token):
     def get_row_value(currency: Currency):
         return {
             "id": currency.id,
+            "acronym": currency.acronym,
             "alias": currency.alias,
             "dollar_rate": currency.dollar_rate,
             "countervalue": change_value(
                 currency.dollar_rate, 1, 1
             ),
-            "updated_at": currency.updated_at.strftime("%Y-%m-%d"),
+            "updated_at": currency.updated_at.strftime("%Y-%m-%d %H:%M"),
             "created_at": currency.created_at.strftime("%Y-%m-%d"),
         }
 
