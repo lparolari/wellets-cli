@@ -1,12 +1,12 @@
 import click
 
 from wellets_cli.commands.config import config
+from wellets_cli.commands.currency import currency
 from wellets_cli.commands.login import login
 from wellets_cli.commands.portfolio import portfolio
 from wellets_cli.commands.transaction import transaction
 from wellets_cli.commands.wallet import wallet
 from wellets_cli.commands.whoami import whoami
-from wellets_cli.commands.currency import currency
 
 
 @click.group()
