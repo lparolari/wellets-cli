@@ -72,9 +72,12 @@ def portfolio_question(
     )
 
 
-def dollar_rate_question(currencies: List[Currency]):
+def dollar_rate_question(
+    message: str = "Dollar rate", default: Optional[float] = None
+):
     return inquirer.number(
-        message="Dollar rate",
+        message=message,
+        default=default,
         float_allowed=True,
         validate=AndValidator(
             [
@@ -83,4 +86,20 @@ def dollar_rate_question(currencies: List[Currency]):
                 GreaterThanValidator(0),
             ]
         ),
+    )
+
+
+def currency_question(
+    currencies: List[Currency],
+    message: str = "Currency",
+    default: Optional[Currency] = None,
+    mandatory=True,
+):
+    return inquirer.select(
+        choices=[
+            Choice(w.id, name=f"{w.acronym} - {w.alias}") for w in currencies
+        ],
+        default=default and default.id,
+        message=message,
+        mandatory=mandatory,
     )

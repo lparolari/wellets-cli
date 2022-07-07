@@ -8,10 +8,19 @@ from wellets_cli.auth import get_auth_token
 from wellets_cli.model import Transaction
 from wellets_cli.question import (
     confirm_question,
+    currency_question,
     dollar_rate_question,
     wallet_question,
 )
-from wellets_cli.util import change_value, make_headers, pp
+from wellets_cli.util import (
+    change_from,
+    change_value,
+    get_by_id,
+    get_currency_by_acronym,
+    get_currency_by_id,
+    make_headers,
+    pp,
+)
 
 
 @click.group()
@@ -52,6 +61,8 @@ def list_transactions(wallet_id, description, auth_token):
             "amount": f"{transaction.wallet.currency.acronym} {pp(transaction.value)}",
             "countevalue": f"{preferred_currency.acronym} {pp(countervalue)}",
             "buy_price": f"{preferred_currency.acronym} {pp(buy_price)}",
+            "created_at": transaction.created_at.strftime("%Y-%m-%d %H:%M"),
+            "updated_at": transaction.updated_at.strftime("%Y-%m-%d %H:%M"),
             **(
                 {"description": transaction.description} if description else {}
             ),
@@ -85,17 +96,48 @@ def create_transaction(
             message="Wallet",
         ).execute()
     )
+    wallet = get_by_id(wallets, wallet_id)
+    wallet_currency = get_by_id(currencies, wallet.currency_id)
+
     value = (
         value
         or inquirer.number(
-            message="Value",
+            message=f"Amount ({wallet_currency.acronym})",
             float_allowed=True,
             validate=EmptyInputValidator(),
         ).execute()
     )
-    dollar_rate = (
-        dollar_rate or dollar_rate_question(currencies=currencies).execute()
-    )
+
+    if not dollar_rate:
+        usd_currency = get_currency_by_acronym(
+            currencies, acronym="USD", safe=True
+        )
+
+        currency_id = currency_question(
+            currencies=currencies,
+            message="Change rate",
+            default=usd_currency,
+            mandatory=False,
+        ).execute()
+        currency = currency_id and get_by_id(currencies, currency_id)
+
+        change_val = (
+            currency
+            and inquirer.number(
+                message=f"Change value (1 {wallet_currency.acronym} equals ? {currency.acronym})",
+                float_allowed=True,
+                min_allowed=0,
+                default=change_value(
+                    wallet_currency.dollar_rate, currency.dollar_rate, 1
+                ),
+                filter=lambda v: (1 / float(v)) * currency.dollar_rate,
+                transformer=lambda v: f"{v} {currency.acronym} ≈ {change_value(1 / float(v), 1 / currency.dollar_rate, 1)} USD",
+                validate=EmptyInputValidator(),
+            ).execute()
+        )
+
+    dollar_rate = dollar_rate or change_val or dollar_rate_question().execute()
+
     description = (
         description
         or inquirer.text(
@@ -110,7 +152,7 @@ def create_transaction(
     data = {
         "wallet_id": wallet_id,
         "value": value,
-        "dollar_rate": dollar_rate,
+        "dollar_rate": change_from(currency.dollar_rate, dollar_rate),
         "description": description,
     }
 
