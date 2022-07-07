@@ -186,7 +186,7 @@ def create_transaction(
     data = {
         "wallet_id": wallet_id,
         "value": value,
-        "dollar_rate": change_from(currency.dollar_rate, dollar_rate),
+        "dollar_rate": dollar_rate,
         "description": description,
         "created_at": created_at,
     }
