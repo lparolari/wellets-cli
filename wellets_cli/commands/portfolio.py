@@ -265,9 +265,9 @@ def delete_portfolio(portfolio_id, auth_token, yes):
 
 @portfolio.command(name="balance")
 @click.option("-id", "--portfolio-id", type=click.UUID)
-@click.option("-i", "--interactive", is_flag=True)
+@click.option("-a", "--show-all", is_flag=True, default=False)
 @click.option("--auth-token")
-def show_portfolio_balance(portfolio_id, interactive, auth_token):
+def show_portfolio_balance(portfolio_id, show_all, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -275,7 +275,7 @@ def show_portfolio_balance(portfolio_id, interactive, auth_token):
         portfolio_id
         or portfolio_question(
             portfolios=api.get_portfolios(
-                params={"show_all": True},
+                params={"show_all": show_all},
                 headers=headers,
             )
         ).execute()
@@ -290,8 +290,9 @@ def show_portfolio_balance(portfolio_id, interactive, auth_token):
 
 @portfolio.command(name="rebalance")
 @click.option("-id", "--portfolio-id", type=click.UUID)
+@click.option("-a", "--show-all", is_flag=True, default=False)
 @click.option("--auth-token")
-def show_portfolio_rebalance(portfolio_id, auth_token):
+def show_portfolio_rebalance(portfolio_id, show_all, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -299,7 +300,7 @@ def show_portfolio_rebalance(portfolio_id, auth_token):
         portfolio_id
         or portfolio_question(
             portfolios=api.get_portfolios(
-                params={"show_all": True},
+                params={"show_all": show_all},
                 headers=headers,
             )
         ).execute()
