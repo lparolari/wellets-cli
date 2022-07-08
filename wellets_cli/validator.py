@@ -64,6 +64,17 @@ def each_validator(validator: Validator2):
     return wrapper
 
 
+import InquirerPy.validator as v
+
+
+class EmptyInputValidator(v.EmptyInputValidator):
+    pass
+
+
+class NumberValidator(v.NumberValidator):
+    pass
+
+
 class GreaterThanValidator(Validator):
     def __init__(
         self,
@@ -86,13 +97,29 @@ class GreaterThanOrEqualValidator(Validator):
         self,
         lower_bound: int = 0,
         message: str = "Input must be greater or equal than {}",
-        allow_equal: bool = False,
     ) -> None:
         self._lower_bound = lower_bound
         self._message = message
 
     def validate(self, document):
         if float(document.text) < self._lower_bound:
+            raise ValidationError(
+                message=self._message.format(self._lower_bound),
+                cursor_position=document.cursor_position,
+            )
+
+
+class LessThanOrEqualValidator(Validator):
+    def __init__(
+        self,
+        lower_bound: int = 0,
+        message: str = "Input must be less or equal than {}",
+    ) -> None:
+        self._lower_bound = lower_bound
+        self._message = message
+
+    def validate(self, document):
+        if float(document.text) > self._lower_bound:
             raise ValidationError(
                 message=self._message.format(self._lower_bound),
                 cursor_position=document.cursor_position,

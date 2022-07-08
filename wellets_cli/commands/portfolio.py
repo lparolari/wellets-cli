@@ -12,7 +12,15 @@ from wellets_cli.question import (
     wallets_question,
 )
 from wellets_cli.util import make_headers, pp
-from wellets_cli.validator import each_validator, uuid_validator, validate
+from wellets_cli.validator import (
+    AndValidator,
+    GreaterThanOrEqualValidator,
+    LessThanOrEqualValidator,
+    NumberValidator,
+    each_validator,
+    uuid_validator,
+    validate,
+)
 
 
 @click.group()
@@ -188,9 +196,14 @@ def edit_portfolio(
         or inquirer.number(
             message="Weight",
             float_allowed=True,
-            min_allowed=0,
-            max_allowed=100,
-            validate=EmptyInputValidator(),
+            validate=AndValidator(
+                [
+                    EmptyInputValidator(),
+                    NumberValidator(float_allowed=True),
+                    GreaterThanOrEqualValidator(0),
+                    LessThanOrEqualValidator(100),
+                ]
+            ),
             default=portfolio.weight * 100,
             filter=lambda v: float(v) / 100,
         ).execute()
@@ -299,7 +312,7 @@ def show_portfolio_rebalance(portfolio_id, auth_token):
     def get_row_value(change: RebalanceChange):
         return {
             "portfolio": change.portfolio.alias,
-            "desired": f"{pp(change.portfolio.weight, percent=True, decimals=0)}%",
+            "desired": f"{pp(change.portfolio.weight, percent=True, decimals=0)}",
             "current": pp(change.weight, percent=True, decimals=2),
             "off_by": pp(change.off_by, percent=True),
             "target": pp(change.target),
