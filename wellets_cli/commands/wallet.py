@@ -1,5 +1,5 @@
 import click
-from InquirerPy import prompt
+from InquirerPy import inquirer, prompt
 from tabulate import tabulate
 
 import wellets_cli.api as api
@@ -7,6 +7,7 @@ import wellets_cli.commands as commands
 from wellets_cli.auth import get_auth_token
 from wellets_cli.model import Wallet
 from wellets_cli.prompt import prompt_wallet
+from wellets_cli.question import currency_question
 from wellets_cli.util import change_value, get_currency_by_id, make_headers, pp
 
 
@@ -48,45 +49,31 @@ def list_wallets(auth_token):
 @click.option("--auth-token")
 @click.option("--alias")
 @click.option("--currency-id")
-def create_wallet(auth_token: str, alias: str, currency_id: str):
+@click.option("--initial-balance", type=float)
+def create_wallet(
+    auth_token: str, alias: str, currency_id: str, initial_balance: float
+):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
     currencies = api.get_currencies(headers=headers)
 
-    questions = [
-        *(
-            []
-            if alias
-            else [
-                {
-                    "type": "input",
-                    "name": "alias",
-                    "message": "Alias",
-                    "validate": lambda val: True
-                    if val != ""
-                    else "Cannot be empty",
-                }
-            ]
-        ),
-        *(
-            []
-            if currency_id
-            else [
-                {
-                    "type": "list",
-                    "name": "currency_id",
-                    "message": "Currency",
-                    "choices": list(map(lambda x: x.acronym, currencies)),
-                    "filter": lambda currency: list(
-                        filter(lambda x: x.acronym == currency, currencies)
-                    )[0].id,
-                }
-            ]
-        ),
-    ]
+    alias = alias or inquirer.text("Alias").execute()
 
-    data = prompt(questions)
+    currency_id = currency_id or currency_question(currencies).execute()
+
+    initial_balance = (
+        initial_balance
+        or inquirer.number(
+            "Initial balance", float_allowed=True, default=0, mandatory=False
+        ).execute()
+    )
+
+    data = {
+        "alias": alias,
+        "currency_id": currency_id,
+        "balance": initial_balance,
+    }
 
     wallet = api.create_wallet(data, headers=headers)
 
