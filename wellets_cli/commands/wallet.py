@@ -28,15 +28,12 @@ def list_wallets(auth_token):
 
     def get_row_value(wallet: Wallet):
         currency = get_currency_by_id(currencies, wallet.currency_id)
+        countervalue = change_value(currency.dollar_rate, base_currency.dollar_rate, wallet.balance)
         return {
             "id": wallet.id,
             "alias": wallet.alias,
-            "currency": currency.acronym,
-            "balance": wallet.balance,
-            "countervalue": change_value(
-                currency.dollar_rate, base_currency.dollar_rate, wallet.balance
-            ),
-            "allocation": pp(wallet.allocation, percent=True, decimals=1),
+            "balance": f"{currency.acronym} {pp(wallet.balance, decimals=8, fixed=False)}",
+            "countervalue": f"{base_currency.acronym} {pp(countervalue, decimals=2, fixed=False)}",
             "created_at": wallet.created_at.strftime("%Y-%m-%d"),
         }
 
