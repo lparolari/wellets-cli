@@ -27,7 +27,6 @@ class Wallet(BaseModel):
     id: str
     alias: str
     balance: float
-    allocation: float = None
     currency_id: str
     created_at: datetime
     updated_at: datetime
