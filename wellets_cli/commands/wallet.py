@@ -28,7 +28,9 @@ def list_wallets(auth_token):
 
     def get_row_value(wallet: Wallet):
         currency = get_currency_by_id(currencies, wallet.currency_id)
-        countervalue = change_value(currency.dollar_rate, base_currency.dollar_rate, wallet.balance)
+        countervalue = change_value(
+            currency.dollar_rate, base_currency.dollar_rate, wallet.balance
+        )
         return {
             "id": wallet.id,
             "alias": wallet.alias,

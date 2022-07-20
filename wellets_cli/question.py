@@ -5,7 +5,7 @@ from InquirerPy.base.control import Choice, Separator
 from InquirerPy.prompts import ConfirmPrompt, ListPrompt
 from InquirerPy.validator import EmptyInputValidator, NumberValidator
 
-from wellets_cli.model import Currency, Portfolio, Wallet
+from wellets_cli.model import Accumulation, Currency, Portfolio, Wallet
 from wellets_cli.validator import AndValidator, GreaterThanValidator
 
 
@@ -136,4 +136,16 @@ def change_value_question(
         filter=lambda v: (1 / float(v)) * target_currency.dollar_rate,
         transformer=change_val_transformer,
         validate=EmptyInputValidator(),
+    )
+
+
+def accumulation_question(
+    accumulations: List[Accumulation],
+    message: str = "Accumulation",
+    default: Optional[Accumulation] = None,
+) -> ListPrompt:
+    return inquirer.select(
+        message=message,
+        choices=[Choice(a.id, name=a.alias) for a in accumulations],
+        default=default and default.id,
     )

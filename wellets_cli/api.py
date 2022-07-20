@@ -7,7 +7,10 @@ from wellets_cli.auth import UserSession
 from wellets_cli.commands.transaction import transaction
 from wellets_cli.config import Config
 from wellets_cli.model import (
+    Accumulation,
+    AccumulationEntry,
     Balance,
+    NextAccumulationEntry,
     Portfolio,
     PortfolioRebalance,
     Transaction,
@@ -316,3 +319,47 @@ def create_transaction(data: dict, headers: dict) -> Transaction:
     transaction = response.json()
     transaction = Transaction(**transaction)
     return transaction
+
+
+def get_wallet(wallet_id: str, headers: dict) -> Wallet:
+    response = requests.get(
+        f"{BASE_URL}/wallets/{wallet_id}",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    wallet = response.json()
+    wallet = Wallet(**wallet)
+    return wallet
+
+
+def get_accumulations(wallet_id: str, headers: dict) -> List[Accumulation]:
+    response = requests.get(
+        f"{BASE_URL}/accumulations/{wallet_id}",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    accumulations = response.json()
+    accumulations = [Accumulation(**a) for a in accumulations]
+    return accumulations
+
+
+def get_next_accumulation_entry(
+    accumulation_id: str, headers: dict
+) -> NextAccumulationEntry:
+    response = requests.get(
+        f"{BASE_URL}/accumulations/{accumulation_id}/next-entry",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    entry = response.json()
+    entry = NextAccumulationEntry(**entry)
+    return entry

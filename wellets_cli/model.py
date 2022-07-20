@@ -101,3 +101,46 @@ class Transaction(BaseModel):
     created_at: datetime
     updated_at: datetime
     wallet: Wallet
+
+
+class Duration(BaseModel):
+    years: int = None
+    months: int = None
+    weeks: int = None
+    days: int = None
+    hours: int = None
+    minutes: int = None
+    seconds: int = None
+
+
+class AccumulationEntry(BaseModel):
+    id: str
+    value: float
+    description: str
+    dollar_rate: float
+    wallet_id: str
+    created_at: datetime
+    updated_at: datetime
+
+
+class Accumulation(BaseModel):
+    id: str
+    alias: str
+    strategy: str
+    quote: float
+    planned_entries: int
+    every: Duration
+    planned_start: datetime
+    planned_end: datetime
+    created_at: datetime
+    updated_at: datetime
+    wallet_id: str
+    entries: List[AccumulationEntry]
+
+
+class NextAccumulationEntry(BaseModel):
+    entry: int
+    amount: float
+    current: float
+    target: float
+    date: datetime

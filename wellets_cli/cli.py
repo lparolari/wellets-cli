@@ -1,5 +1,6 @@
 import click
 
+from wellets_cli.commands.accumulation import accumulation
 from wellets_cli.commands.config import config
 from wellets_cli.commands.currency import currency
 from wellets_cli.commands.login import login
@@ -22,5 +23,6 @@ def main():  # pragma: no cover
     cli.add_command(config)
     cli.add_command(transaction)
     cli.add_command(currency)
+    cli.add_command(accumulation)
 
     cli()

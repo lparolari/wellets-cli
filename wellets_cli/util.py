@@ -3,6 +3,8 @@ from typing import Any, Generic, List, TypeVar
 
 from InquirerPy import prompt
 
+from wellets_cli.model import Duration
+
 T = TypeVar("T")
 
 
@@ -46,6 +48,17 @@ def pp(x: float, percent=False, decimals=2, fixed=True) -> str:
     x = f"{x:.{decimals}f}" if fixed else f"{round(x, decimals)}"
 
     return f"{x}{p}"
+
+
+def format_duration(duration: Duration) -> str:
+    out = ""
+    out += f"{duration.years}y " if duration.years else ""
+    out += f"{duration.months}M " if duration.months else ""
+    out += f"{duration.days}d " if duration.days else ""
+    out += f"{duration.hours}h " if duration.hours else ""
+    out += f"{duration.minutes}m " if duration.minutes else ""
+    out += f"{duration.seconds}s" if duration.seconds else ""
+    return out.strip()
 
 
 ### Converters
