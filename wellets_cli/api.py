@@ -363,3 +363,20 @@ def get_next_accumulation_entry(
     entry = response.json()
     entry = NextAccumulationEntry(**entry)
     return entry
+
+
+def create_accumulation(
+    data: dict, headers: dict
+) -> Accumulation:
+    response = requests.post(
+        f"{BASE_URL}/accumulations",
+        json=data,
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    accumulation = response.json()
+    accumulation = Accumulation(**accumulation)
+    return accumulation

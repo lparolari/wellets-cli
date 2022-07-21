@@ -99,6 +99,28 @@ def show_next_entry(wallet_id, accumulation_id, auth_token):
     )
 
 
+@accumulation.command(name="create")
+@click.option("--auth-token")
+def create_accumulation(auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    data = {
+        "wallet_id": "9944e165-e393-4392-b76b-ee4f94597537",
+        "alias": "Test accumulation",
+        "strategy": "simple",
+        "quote": 15,
+        "planned_entries": 10,
+        "every": {
+            "days": 1
+        },
+        "planned_start": "2020-01-01",
+        "planned_end": "2020-01-31",
+    }
+
+    api.create_accumulation(data=data, headers=headers)
+
+
 def __prompt_wallet(wallet_id, headers):
     wallets = api.get_wallets(headers=headers)
 
