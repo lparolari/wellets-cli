@@ -24,7 +24,7 @@ def list_accumulations(wallet_id, auth_token):
 
     wallet_id = wallet_id or wallet_question(wallets=wallets).execute()
 
-    accumulations = api.get_accumulations(wallet_id, headers=headers)
+    accumulations = api.get_accumulations({"wallet_id": wallet_id}, headers=headers)
 
     def get_accumulation_row(accumulation: Accumulation):
         return {
@@ -130,7 +130,7 @@ def __prompt_wallet(wallet_id, headers):
 
 
 def __prompt_accumulation(wallet_id, accumulation_id, headers):
-    accumulations = api.get_accumulations(wallet_id, headers=headers)
+    accumulations = api.get_accumulations({ "wallet_id": wallet_id }, headers=headers)
 
     accumulation_id = (
         accumulation_id

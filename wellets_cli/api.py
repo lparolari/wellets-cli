@@ -335,10 +335,11 @@ def get_wallet(wallet_id: str, headers: dict) -> Wallet:
     return wallet
 
 
-def get_accumulations(wallet_id: str, headers: dict) -> List[Accumulation]:
+def get_accumulations(params: dict, headers: dict) -> List[Accumulation]:
     response = requests.get(
-        f"{BASE_URL}/accumulations/{wallet_id}",
+        f"{BASE_URL}/accumulations/",
         headers=headers,
+        params=params,
     )
 
     if not response.ok:
