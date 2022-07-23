@@ -68,6 +68,9 @@ def show_accumulation(wallet_id, accumulation_id, auth_token):
     wallet = __prompt_wallet(wallet_id, headers)
     accumulation = __prompt_accumulation(wallet.id, accumulation_id, headers)
 
+    if not accumulation:
+        return
+
     def get_entry_row(entry: AccumulationEntry):
         return {
             "id": entry.id,
@@ -92,6 +95,9 @@ def show_next_entry(wallet_id, accumulation_id, auth_token):
 
     wallet = __prompt_wallet(wallet_id, headers)
     accumulation = __prompt_accumulation(wallet.id, accumulation_id, headers)
+
+    if not accumulation:
+        return
 
     next_accumulation_entry = api.get_next_accumulation_entry(
         accumulation.id, headers=headers
@@ -247,6 +253,9 @@ def __prompt_accumulation(wallet_id, accumulation_id, headers):
     accumulations = api.get_accumulations(
         {"wallet_id": wallet_id}, headers=headers
     )
+    
+    if len(accumulations) == 0:
+        return None
 
     accumulation_id = (
         accumulation_id
