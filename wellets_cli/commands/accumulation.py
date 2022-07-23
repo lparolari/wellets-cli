@@ -1,11 +1,23 @@
 import click
+from InquirerPy import inquirer
 from tabulate import tabulate
 
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
 from wellets_cli.model import Accumulation, AccumulationEntry
-from wellets_cli.question import accumulation_question, wallet_question
+from wellets_cli.question import (
+    accumulation_question,
+    date_question,
+    duration_question,
+    wallet_question,
+)
 from wellets_cli.util import format_duration, get_by_id, make_headers, pp
+from wellets_cli.validator import (
+    AndValidator,
+    EmptyInputValidator,
+    GreaterThanValidator,
+    NumberValidator,
+)
 
 
 @click.group()
@@ -24,7 +36,9 @@ def list_accumulations(wallet_id, auth_token):
 
     wallet_id = wallet_id or wallet_question(wallets=wallets).execute()
 
-    accumulations = api.get_accumulations({"wallet_id": wallet_id}, headers=headers)
+    accumulations = api.get_accumulations(
+        {"wallet_id": wallet_id}, headers=headers
+    )
 
     def get_accumulation_row(accumulation: Accumulation):
         return {
@@ -100,22 +114,100 @@ def show_next_entry(wallet_id, accumulation_id, auth_token):
 
 
 @accumulation.command(name="create")
+@click.option("--wallet-id")
+@click.option("--alias")
+@click.option("--strategy")
+@click.option("--quote")
+@click.option("--planned-entries")
+@click.option("--every")
+@click.option("--planned-start")
+@click.option("--planned-end")
 @click.option("--auth-token")
-def create_accumulation(auth_token):
+def create_accumulation(
+    wallet_id,
+    alias,
+    strategy,
+    quote,
+    planned_entries,
+    every,
+    planned_start,
+    planned_end,
+    auth_token,
+):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
+    wallets = api.get_wallets(headers=headers)
+
+    wallet_id = wallet_id or wallet_question(wallets).execute()
+
+    alias = (
+        alias
+        or inquirer.text(
+            message="Alias",
+            validate=EmptyInputValidator(),
+        ).execute()
+    )
+
+    strategy = (
+        strategy
+        or inquirer.text(
+            message="Strategy", validate=EmptyInputValidator()
+        ).execute()
+    )
+
+    quote = (
+        quote
+        or inquirer.number(
+            message="Quote",
+            float_allowed=True,
+            validate=AndValidator(
+                [
+                    EmptyInputValidator(),
+                    NumberValidator(float_allowed=True),
+                    GreaterThanValidator(0),
+                ]
+            ),
+        ).execute()
+    )
+
+    planned_entries = (
+        planned_entries
+        or inquirer.number(
+            message="Planned entries",
+            validate=AndValidator(
+                [
+                    EmptyInputValidator(),
+                    NumberValidator(float_allowed=False),
+                    GreaterThanValidator(0),
+                ]
+            ),
+        ).execute()
+    )
+
+    every = duration_question(message="Every").execute()
+
+    planned_start = (
+        planned_start
+        or date_question(message="Planned start (yyyy-MM-dd HH:mm)").execute()
+    )
+
+    planned_end = (
+        planned_end
+        or date_question(
+            message="Planned end (yyyy-MM-dd HH:mm)", default=None
+        ).execute()
+    )
+
     data = {
-        "wallet_id": "9944e165-e393-4392-b76b-ee4f94597537",
-        "alias": "Test accumulation",
-        "strategy": "simple",
-        "quote": 15,
-        "planned_entries": 10,
-        "every": {
-            "days": 1
-        },
-        "planned_start": "2020-01-01",
-        "planned_end": "2020-01-31",
+        "wallet_id": wallet_id,
+        "alias": alias,
+        "strategy": strategy,
+        "quote": quote,
+        "planned_entries": planned_entries,
+        "every": every,
+        "planned_start": planned_start,
+        "planned_end": planned_end,
     }
 
     api.create_accumulation(data=data, headers=headers)
@@ -130,7 +222,9 @@ def __prompt_wallet(wallet_id, headers):
 
 
 def __prompt_accumulation(wallet_id, accumulation_id, headers):
-    accumulations = api.get_accumulations({ "wallet_id": wallet_id }, headers=headers)
+    accumulations = api.get_accumulations(
+        {"wallet_id": wallet_id}, headers=headers
+    )
 
     accumulation_id = (
         accumulation_id

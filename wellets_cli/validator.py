@@ -4,6 +4,8 @@ from typing import Any, Callable, List, Union
 
 from InquirerPy.validator import ValidationError, Validator
 
+from wellets_cli.util import parse_duration
+
 Validator2 = Callable[[str], Union[str, bool]]
 
 # TODO: replace this validators in favor of `Validator` subclasses
@@ -148,6 +150,24 @@ class DateValidator(Validator):
         if document.text != "":
             try:
                 datetime.strptime(document.text, self._date_fmt)
+            except ValueError:
+                raise ValidationError(
+                    message=self._message,
+                    cursor_position=document.cursor_position,
+                )
+
+
+class DurationValidator(Validator):
+    def __init__(
+        self,
+        message: str = "Input should be a duration. Examples: '1y 4M', '5d', '2h40m', '12.5s'. ",
+    ) -> None:
+        self._message = message
+
+    def validate(self, document):
+        if document.text != "":
+            try:
+                parse_duration(document.text)
             except ValueError:
                 raise ValidationError(
                     message=self._message,

@@ -366,9 +366,7 @@ def get_next_accumulation_entry(
     return entry
 
 
-def create_accumulation(
-    data: dict, headers: dict
-) -> Accumulation:
+def create_accumulation(data: dict, headers: dict) -> Accumulation:
     response = requests.post(
         f"{BASE_URL}/accumulations",
         json=data,

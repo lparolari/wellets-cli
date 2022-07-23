@@ -1,12 +1,24 @@
+from datetime import datetime
 from typing import List, Optional
 
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice, Separator
-from InquirerPy.prompts import ConfirmPrompt, ListPrompt
+from InquirerPy.prompts import (
+    ConfirmPrompt,
+    InputPrompt,
+    ListPrompt,
+    NumberPrompt,
+)
 from InquirerPy.validator import EmptyInputValidator, NumberValidator
 
 from wellets_cli.model import Accumulation, Currency, Portfolio, Wallet
-from wellets_cli.validator import AndValidator, GreaterThanValidator
+from wellets_cli.util import parse_duration
+from wellets_cli.validator import (
+    AndValidator,
+    DateValidator,
+    DurationValidator,
+    GreaterThanValidator,
+)
 
 
 def confirm_question(message="Confirm", default=True) -> ConfirmPrompt:
@@ -74,7 +86,7 @@ def portfolio_question(
 
 def dollar_rate_question(
     message: str = "Dollar rate", default: Optional[float] = None
-):
+) -> NumberPrompt:
     return inquirer.number(
         message=message,
         default=default,
@@ -94,7 +106,7 @@ def currency_question(
     message: str = "Currency",
     default: Optional[Currency] = None,
     mandatory=True,
-):
+) -> ListPrompt:
     return inquirer.select(
         choices=[
             Choice(w.id, name=f"{w.acronym} - {w.alias}") for w in currencies
@@ -110,7 +122,7 @@ def change_value_question(
     target_currency: Currency = None,
     message: Optional[str] = None,
     default: Optional[float] = None,
-):
+) -> NumberPrompt:
     from wellets_cli.util import change_from, change_value, pp
 
     def change_val_transformer(value: str) -> str:
@@ -148,4 +160,25 @@ def accumulation_question(
         message=message,
         choices=[Choice(a.id, name=a.alias) for a in accumulations],
         default=default and default.id,
+    )
+
+
+def date_question(
+    message: str = "Date (yyyy-MM-dd HH:mm)",
+    default: Optional[str] = datetime.now().strftime("%Y-%m-%d %H:%M"),
+) -> InputPrompt:
+    return inquirer.text(
+        message=message,
+        default=default if default else "",
+        validate=AndValidator([EmptyInputValidator(), DateValidator()]),
+    )
+
+
+def duration_question(
+    message: str = "Duration",
+) -> InputPrompt:
+    return inquirer.text(
+        message=message,
+        validate=AndValidator([EmptyInputValidator(), DurationValidator()]),
+        filter=lambda x: parse_duration(x),
     )
