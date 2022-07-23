@@ -213,6 +213,28 @@ def create_accumulation(
     api.create_accumulation(data=data, headers=headers)
 
 
+@accumulation.command(name="delete")
+@click.option("--wallet-id")
+@click.option("--accumulation-id")
+@click.option("--auth-token")
+def delete_accumulation(wallet_id, accumulation_id, auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    if not accumulation_id:
+        wallet = __prompt_wallet(wallet_id, headers)
+        accumulation = __prompt_accumulation(wallet.id, accumulation_id, headers)
+
+    accumulation_id = accumulation_id or accumulation.id
+
+    accumulation = api.delete_accumulation(
+        accumulation_id=accumulation_id,
+        headers=headers,
+    )
+
+    print(accumulation.id)
+
+
 def __prompt_wallet(wallet_id, headers):
     wallets = api.get_wallets(headers=headers)
 

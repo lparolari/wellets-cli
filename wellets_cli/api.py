@@ -379,3 +379,17 @@ def create_accumulation(data: dict, headers: dict) -> Accumulation:
     accumulation = response.json()
     accumulation = Accumulation(**accumulation)
     return accumulation
+
+
+def delete_accumulation(accumulation_id: str, headers: dict) -> Accumulation:
+    response = requests.delete(
+        f"{BASE_URL}/accumulations/{accumulation_id}",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    accumulation = response.json()
+    accumulation = Accumulation(**accumulation)
+    return accumulation
