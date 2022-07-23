@@ -155,10 +155,18 @@ def accumulation_question(
     accumulations: List[Accumulation],
     message: str = "Accumulation",
     default: Optional[Accumulation] = None,
+    allow_none: bool = False,
 ) -> ListPrompt:
+    no_option = (
+        [Separator(), Choice(value=None, name="No accumulation")]
+        if allow_none
+        else []
+    )
+
     return inquirer.select(
         message=message,
-        choices=[Choice(a.id, name=a.alias) for a in accumulations],
+        choices=[Choice(a.id, name=a.alias) for a in accumulations]
+        + no_option,
         default=default and default.id,
     )
 

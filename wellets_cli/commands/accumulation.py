@@ -229,7 +229,9 @@ def delete_accumulation(wallet_id, accumulation_id, auth_token):
 
     if not accumulation_id:
         wallet = __prompt_wallet(wallet_id, headers)
-        accumulation = __prompt_accumulation(wallet.id, accumulation_id, headers)
+        accumulation = __prompt_accumulation(
+            wallet.id, accumulation_id, headers
+        )
 
     accumulation_id = accumulation_id or accumulation.id
 
@@ -253,7 +255,7 @@ def __prompt_accumulation(wallet_id, accumulation_id, headers):
     accumulations = api.get_accumulations(
         {"wallet_id": wallet_id}, headers=headers
     )
-    
+
     if len(accumulations) == 0:
         return None
 
