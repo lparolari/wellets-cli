@@ -1,9 +1,11 @@
 import click
 from InquirerPy import inquirer
+from pytest import param
 from tabulate import tabulate
 
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
+from wellets_cli.commands.transaction import create_transaction
 from wellets_cli.model import Accumulation, AccumulationEntry
 from wellets_cli.question import (
     accumulation_question,
@@ -242,6 +244,54 @@ def delete_accumulation(wallet_id, accumulation_id, auth_token):
 
     print(accumulation.id)
 
+
+@accumulation.command(name="create-entry")
+@click.option("--wallet-id", type=click.UUID)
+@click.option("--value", type=float)
+@click.option("--dollar-rate", type=float)
+@click.option("--change-currency-id", type=click.UUID)
+@click.option("--change-val", type=float)
+@click.option("--description", type=str)
+@click.option("--accumulation-id", type=click.UUID)
+@click.option("--created-at", type=click.DateTime(formats=["%Y-%m-%d %H:%M"]))
+@click.option("-y", "--yes", is_flag=True, type=bool)
+@click.option("--auth-token")
+@click.pass_context
+def create_entry(ctx, **kwargs):
+    print(kwargs)
+    wallet_id = kwargs["wallet_id"]
+    accumulation_id = kwargs["accumulation_id"]
+    auth_token = kwargs["auth_token"]
+    description = kwargs["description"]
+
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    wallet = __prompt_wallet(wallet_id, headers)
+    accumulation = __prompt_accumulation(wallet.id, accumulation_id, headers)
+
+    if not accumulation:
+        return
+
+    next_entry = api.get_next_accumulation_entry(accumulation.id, headers=headers)
+
+    description = (
+        description
+        or inquirer.text(
+            message="Description",
+            default=f"{accumulation.alias} entry #{next_entry.entry}",
+            validate=EmptyInputValidator(),
+        ).execute()
+    )
+
+    params = {
+        **kwargs,
+        "wallet_id": wallet.id,
+        "accumulation_id": accumulation.id,
+        "description": description,
+    }
+
+    ctx.invoke(create_transaction, **params)
 
 def __prompt_wallet(wallet_id, headers):
     wallets = api.get_wallets(headers=headers)
