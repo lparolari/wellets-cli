@@ -31,9 +31,11 @@ def create_transfer(
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    cont = inquirer.confirm("Please note that transferring funds from a wallet to another fucks up the average load price. Do you want to continue?").execute()
+    cont = inquirer.confirm(
+        "Please note that transferring funds from a wallet to another fucks up the average load price. Do you want to continue?"
+    ).execute()
 
-    if not cont: 
+    if not cont:
         return
 
     wallets = api.get_wallets(headers=headers)
