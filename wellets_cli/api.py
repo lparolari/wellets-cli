@@ -14,6 +14,7 @@ from wellets_cli.model import (
     Portfolio,
     PortfolioRebalance,
     Transaction,
+    Transfer,
     UserCurrency,
     UserSettings,
     Wallet,
@@ -393,3 +394,18 @@ def delete_accumulation(accumulation_id: str, headers: dict) -> Accumulation:
     accumulation = response.json()
     accumulation = Accumulation(**accumulation)
     return accumulation
+
+
+def create_transfer(data: dict, headers: dict) -> Transfer:
+    response = requests.post(
+        f"{BASE_URL}/transfers",
+        json=data,
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    transfer = response.json()
+    transfer = Transfer(**transfer)
+    return transfer

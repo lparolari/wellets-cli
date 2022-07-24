@@ -144,3 +144,7 @@ class NextAccumulationEntry(BaseModel):
     current: float
     target: float
     date: datetime
+
+
+class Transfer(BaseModel):
+    id: str
