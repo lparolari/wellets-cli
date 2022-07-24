@@ -273,7 +273,9 @@ def create_entry(ctx, **kwargs):
     if not accumulation:
         return
 
-    next_entry = api.get_next_accumulation_entry(accumulation.id, headers=headers)
+    next_entry = api.get_next_accumulation_entry(
+        accumulation.id, headers=headers
+    )
 
     description = (
         description
@@ -292,6 +294,7 @@ def create_entry(ctx, **kwargs):
     }
 
     ctx.invoke(create_transaction, **params)
+
 
 def __prompt_wallet(wallet_id, headers):
     wallets = api.get_wallets(headers=headers)
