@@ -258,7 +258,6 @@ def delete_accumulation(wallet_id, accumulation_id, auth_token):
 @click.option("--auth-token")
 @click.pass_context
 def create_entry(ctx, **kwargs):
-    print(kwargs)
     wallet_id = kwargs["wallet_id"]
     accumulation_id = kwargs["accumulation_id"]
     auth_token = kwargs["auth_token"]
