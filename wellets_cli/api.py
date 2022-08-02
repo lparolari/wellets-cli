@@ -9,6 +9,7 @@ from wellets_cli.config import Config
 from wellets_cli.model import (
     Accumulation,
     AccumulationEntry,
+    Asset,
     Balance,
     NextAccumulationEntry,
     Portfolio,
@@ -409,3 +410,17 @@ def create_transfer(data: dict, headers: dict) -> Transfer:
     transfer = response.json()
     transfer = Transfer(**transfer)
     return transfer
+
+
+def get_assets(headers: dict) -> List[Asset]:
+    response = requests.get(
+        f"{BASE_URL}/assets",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    assets = response.json()
+    assets = [Asset(**a) for a in assets]
+    return assets

@@ -148,3 +148,23 @@ class NextAccumulationEntry(BaseModel):
 
 class Transfer(BaseModel):
     id: str
+
+
+class AssetEntry(BaseModel):
+    id: str
+    value: float
+    dollar_rate: float
+    asset_id: str
+    created_at: datetime
+    updated_at: datetime
+
+
+class Asset(BaseModel):
+    id: str
+    balance: float
+    entries: List[AssetEntry]
+    user_id: str
+    currency_id: str
+    created_at: datetime
+    updated_at: datetime
+    currency: Currency
