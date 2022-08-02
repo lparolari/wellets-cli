@@ -119,3 +119,9 @@ def change_value(
     from_dollar_rate: float, to_dollar_rate: float, value: float
 ) -> float:
     return 1 / change_from(from_dollar_rate, to_dollar_rate) * value
+
+
+def change_val(from_currency, to_currency, value):
+    from_dollar_rate = from_currency.dollar_rate
+    to_dollar_rate = to_currency.dollar_rate
+    return change_value(from_dollar_rate, to_dollar_rate, value)
