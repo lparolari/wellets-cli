@@ -168,3 +168,7 @@ class Asset(BaseModel):
     created_at: datetime
     updated_at: datetime
     currency: Currency
+
+
+class AverageLoadPrice(BaseModel):
+    average_load_price: float
