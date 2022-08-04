@@ -10,6 +10,7 @@ from wellets_cli.model import (
     Accumulation,
     AccumulationEntry,
     Asset,
+    AverageLoadPrice,
     Balance,
     NextAccumulationEntry,
     Portfolio,
@@ -107,7 +108,7 @@ def get_wallet_average_load_price(
     params: dict, headers: dict
 ) -> WalletAverageLoadPrice:
     response = requests.get(
-        f"{BASE_URL}/wallets//average-load-price",
+        f"{BASE_URL}/wallets/average-load-price",
         params=params,
         headers=headers,
     )
@@ -424,3 +425,20 @@ def get_assets(headers: dict) -> List[Asset]:
     assets = response.json()
     assets = [Asset(**a) for a in assets]
     return assets
+
+
+def get_asset_average_load_price(
+        params: dict, headers: dict
+) -> AverageLoadPrice:
+    response = requests.get(
+        f"{BASE_URL}/assets/average-load-price",
+        params=params,
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    avg_load_price = response.json()
+    avg_load_price = AverageLoadPrice(**avg_load_price)
+    return avg_load_price
