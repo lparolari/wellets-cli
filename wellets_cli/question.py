@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import List, Optional
 
-from InquirerPy import inquirer
 import InquirerPy
+from InquirerPy import inquirer
 from InquirerPy.base.control import Choice, Separator
 from InquirerPy.prompts import (
     ConfirmPrompt,
@@ -53,7 +53,11 @@ def wallets_question(
     return inquirer.select(
         message=message,
         choices=[
-            Choice(w.id, name=w.alias, enabled=default is not None and w in default)
+            Choice(
+                w.id,
+                name=w.alias,
+                enabled=default is not None and w in default,
+            )
             for w in wallets
         ]
         + no_option,  # type: ignore
@@ -77,7 +81,11 @@ def portfolio_question(
     return inquirer.select(
         message=message,
         choices=[
-            Choice(p.id, name=p.alias, enabled=default is not None and default == p)
+            Choice(
+                p.id,
+                name=p.alias,
+                enabled=default is not None and default == p,
+            )
             for p in portfolios
         ]
         + no_option,  # type: ignore
