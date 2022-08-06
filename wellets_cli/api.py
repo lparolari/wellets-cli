@@ -1,14 +1,11 @@
-import os
 from typing import List, Optional
 
 import requests
 
 from wellets_cli.auth import UserSession
-from wellets_cli.commands.transaction import transaction
 from wellets_cli.config import Config
 from wellets_cli.model import (
     Accumulation,
-    AccumulationEntry,
     Asset,
     AssetAllocation,
     AssetBalance,

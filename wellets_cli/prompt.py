@@ -2,29 +2,7 @@ from typing import List
 
 from InquirerPy import prompt
 
-from wellets_cli.model import Portfolio, Wallet
-
-
-def prompt_confirmation(
-    name="continue",
-    message="Do you want to continue?",
-    default=True,
-    when=None,
-) -> bool:
-    if when is None:
-        when = lambda _: True
-
-    question = {
-        "type": "confirm",
-        "name": name,
-        "message": message,
-        "default": default,
-        "when": when,
-    }
-
-    answers = prompt([question])
-
-    return answers["continue"]
+from wellets_cli.model import Wallet
 
 
 def prompt_wallet(wallets: List[Wallet]) -> str:

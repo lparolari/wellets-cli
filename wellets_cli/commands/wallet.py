@@ -1,9 +1,8 @@
 import click
-from InquirerPy import inquirer, prompt
+from InquirerPy import inquirer
 from tabulate import tabulate
 
 import wellets_cli.api as api
-import wellets_cli.commands as commands
 from wellets_cli.auth import get_auth_token
 from wellets_cli.model import Wallet
 from wellets_cli.prompt import prompt_wallet
