@@ -3,7 +3,7 @@ from tabulate import tabulate
 
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
-from wellets_cli.model import Asset
+from wellets_cli.model import Asset, AssetAllocation
 from wellets_cli.question import asset_question
 from wellets_cli.util import change_val, make_headers, pp
 
@@ -36,10 +36,10 @@ def list_assets(auth_token):
     print(tabulate(data, headers="keys"))
 
 
-@asset.command(name="average-load-price")
+@asset.command(name="exposition")
 @click.option("--asset-id")
 @click.option("--auth-token")
-def show_wallet_average_load_price(asset_id, auth_token):
+def show_asset_exposition(asset_id, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -59,7 +59,7 @@ def show_wallet_average_load_price(asset_id, auth_token):
 @asset.command(name="balance")
 @click.option("--asset-id")
 @click.option("--auth-token")
-def show_wallet_balance(asset_id, auth_token):
+def show_asset_balance(asset_id, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -74,3 +74,29 @@ def show_wallet_balance(asset_id, auth_token):
     )
 
     print(f"{result.balance} {currency.acronym}")
+
+
+@asset.command(name="allocation")
+@click.option("--auth-token")
+def show_asset_allocations(auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    currency = api.get_preferred_currency(headers=headers)
+    allocations = api.get_asset_allocations(headers=headers)
+
+    def get_row_value(allocation: AssetAllocation):
+        equivalent = change_val(
+            allocation.asset.currency, currency, allocation.balance
+        )
+        return {
+            "id": f"{allocation.asset.id}",
+            "asset": f"{allocation.asset.currency.acronym}",
+            "balance": f"{allocation.asset.currency.acronym} {pp(allocation.balance)}",
+            "equivalent": f"{currency.acronym} {pp(equivalent)}",
+            "allocation": f"{pp(allocation.allocation, percent=True, decimals=0)}",
+        }
+
+    data = [get_row_value(allocation) for allocation in allocations]
+
+    print(tabulate(data, headers="keys"))
