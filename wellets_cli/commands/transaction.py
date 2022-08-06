@@ -58,7 +58,7 @@ def list_transactions(wallet_id, description, auth_token):
 
     def get_row_value(transaction: Transaction):
         countervalue = change_value(
-            transaction.wallet.currency.dollar_rate,
+            transaction.wallet.currency.dollar_rate,  # type: ignore
             preferred_currency.dollar_rate,
             transaction.value,
         )
@@ -73,7 +73,7 @@ def list_transactions(wallet_id, description, auth_token):
 
         return {
             "id": transaction.id,
-            "amount": f"{transaction.wallet.currency.acronym} {pp(transaction.value, decimals=8, fixed=False)}",
+            "amount": f"{transaction.wallet.currency.acronym} {pp(transaction.value, decimals=8, fixed=False)}",  # type: ignore
             "countevalue": f"{preferred_currency.acronym} {pp(countervalue)}",
             "buy_amount": f"{preferred_currency.acronym} {pp(buy_countervalue)}",
             "buy_price": f"{preferred_currency.acronym} {pp(buy_price)}",

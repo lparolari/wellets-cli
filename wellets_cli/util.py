@@ -1,26 +1,36 @@
 import re
 from datetime import datetime
-from typing import List, TypeVar
+from typing import List, Optional, TypeVar
 
 from dateutil.relativedelta import relativedelta
 
-from wellets_cli.model import Duration
-
-T = TypeVar("T")
+from wellets_cli.model import Currency, Duration
 
 
-def get_by_id(xs: List[T], id: str) -> T:
+class Resource:
+    id: str
+
+
+class NamedCurrency:
+    acronym: str
+
+
+T1 = TypeVar("T1", bound=Resource)
+T2 = TypeVar("T2", bound=NamedCurrency)
+
+
+def get_by_id(xs: List[T1], id: str) -> T1:
     return next(filter(lambda x: x.id == id, xs))
 
 
-def get_currency_by_id(currencies: List[T], currency_id: str) -> T:
+def get_currency_by_id(currencies: List[T1], currency_id: str) -> T1:
     currency = list(filter(lambda x: x.id == currency_id, currencies))
     return currency[0]
 
 
 def get_currency_by_acronym(
-    currencies: List[T], acronym: str, safe=False
-) -> T:
+    currencies: List[T2], acronym: str, safe=False
+) -> Optional[T2]:
     currency = list(filter(lambda x: x.acronym == acronym, currencies))
     if safe and len(currency) == 0:
         return None
@@ -46,9 +56,9 @@ def pp(x: float, percent=False, decimals=2, fixed=True) -> str:
     x = x * 100 if percent else x
     p = "%" if percent else ""
 
-    x = f"{x:.{decimals}f}" if fixed else f"{round(x, decimals)}"
+    val = f"{x:.{decimals}f}" if fixed else f"{round(x, decimals)}"
 
-    return f"{x}{p}"
+    return f"{val}{p}"
 
 
 def format_duration(duration: Duration) -> str:
@@ -95,7 +105,7 @@ def parse_duration(duration_str: str):
         if param
     }
 
-    delta = relativedelta(**duration_params)
+    delta = relativedelta(**duration_params)  # type: ignore
 
     return {
         "years": delta.years,
