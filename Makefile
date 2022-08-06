@@ -1,11 +1,8 @@
 .ONESHELL:
 USING_POETRY=$(sh test -f pyproject.toml && echo 1 || echo 0)
 VENV_PREFIX=$(s python -c "if __import__('pathlib').Path('.venv/bin/pip').exists(): print('.venv/bin/')")
-POETRY_PREFIX="poetry run "
-ENV_PREFIX="poetry run "
-
-foo:
-	echo ${ENV_PREFIX}
+POETRY_PREFIX=$(shell echo "poetry run ")
+ENV_PREFIX=${POETRY_PREFIX}
 
 .PHONY: help
 help:             ## Show the help.
