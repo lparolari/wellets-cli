@@ -54,3 +54,23 @@ def show_wallet_average_load_price(asset_id, auth_token):
     )
 
     print(f"{result.average_load_price} {currency.acronym}")
+
+
+@asset.command(name="balance")
+@click.option("--asset-id")
+@click.option("--auth-token")
+def show_wallet_balance(asset_id, auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    assets = api.get_assets(headers=headers)
+    currency = api.get_preferred_currency(headers=headers)
+
+    asset_id = asset_id or asset_question(assets=assets).execute()
+
+    result = api.get_asset_balance(
+        params={"asset_id": asset_id},
+        headers=headers,
+    )
+
+    print(f"{result.balance} {currency.acronym}")

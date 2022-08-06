@@ -10,6 +10,7 @@ from wellets_cli.model import (
     Accumulation,
     AccumulationEntry,
     Asset,
+    AssetBalance,
     AverageLoadPrice,
     Balance,
     NextAccumulationEntry,
@@ -428,7 +429,7 @@ def get_assets(headers: dict) -> List[Asset]:
 
 
 def get_asset_average_load_price(
-        params: dict, headers: dict
+    params: dict, headers: dict
 ) -> AverageLoadPrice:
     response = requests.get(
         f"{BASE_URL}/assets/average-load-price",
@@ -442,3 +443,18 @@ def get_asset_average_load_price(
     avg_load_price = response.json()
     avg_load_price = AverageLoadPrice(**avg_load_price)
     return avg_load_price
+
+
+def get_asset_balance(params: dict, headers: dict) -> Balance:
+    response = requests.get(
+        f"{BASE_URL}/assets/balance",
+        params=params,
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    asset_balance = response.json()
+    asset_balance = AssetBalance(**asset_balance)
+    return asset_balance
