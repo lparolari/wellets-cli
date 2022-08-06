@@ -8,6 +8,7 @@ from wellets_cli.util import parse_duration
 
 Validator2 = Callable[[str], Union[str, bool]]
 
+
 # TODO: replace this validators in favor of `Validator` subclasses
 def validate(validator: Validator2, value: Any):
     if value is not None:

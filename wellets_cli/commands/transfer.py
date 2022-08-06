@@ -4,7 +4,7 @@ from InquirerPy import inquirer
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
 from wellets_cli.question import wallet_question
-from wellets_cli.util import format_duration, get_by_id, make_headers, pp
+from wellets_cli.util import make_headers, pp
 from wellets_cli.validator import (
     AndValidator,
     EmptyInputValidator,

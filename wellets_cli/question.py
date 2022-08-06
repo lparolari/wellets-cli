@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from InquirerPy import inquirer
+import InquirerPy
 from InquirerPy.base.control import Choice, Separator
 from InquirerPy.prompts import (
     ConfirmPrompt,
@@ -52,10 +53,10 @@ def wallets_question(
     return inquirer.select(
         message=message,
         choices=[
-            Choice(w.id, name=w.alias, enabled=default and w in default)
+            Choice(w.id, name=w.alias, enabled=default is not None and w in default)
             for w in wallets
         ]
-        + no_option,
+        + no_option,  # type: ignore
         multiselect=True,
         filter=lambda xs: [x for x in xs if x is not None],
     )
@@ -76,10 +77,10 @@ def portfolio_question(
     return inquirer.select(
         message=message,
         choices=[
-            Choice(p.id, name=p.alias, enabled=default and default == p)
+            Choice(p.id, name=p.alias, enabled=default is not None and default == p)
             for p in portfolios
         ]
-        + no_option,
+        + no_option,  # type: ignore
         default=default and default.id,
     )
 
@@ -166,7 +167,7 @@ def accumulation_question(
     return inquirer.select(
         message=message,
         choices=[Choice(a.id, name=a.alias) for a in accumulations]
-        + no_option,
+        + no_option,  # type: ignore
         default=default and default.id,
     )
 

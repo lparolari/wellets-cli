@@ -17,11 +17,9 @@ from wellets_cli.question import (
     wallet_question,
 )
 from wellets_cli.util import (
-    change_from,
     change_value,
     get_by_id,
     get_currency_by_acronym,
-    get_currency_by_id,
     make_headers,
     pp,
 )
@@ -29,7 +27,6 @@ from wellets_cli.validator import (
     AndValidator,
     DateValidator,
     GreaterThanOrEqualValidator,
-    GreaterThanValidator,
 )
 
 

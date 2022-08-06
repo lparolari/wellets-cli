@@ -4,7 +4,7 @@ from typing import List, Optional, TypeVar
 
 from dateutil.relativedelta import relativedelta
 
-from wellets_cli.model import Currency, Duration
+from wellets_cli.model import Duration
 
 
 class Resource:

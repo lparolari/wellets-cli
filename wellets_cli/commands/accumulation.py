@@ -1,6 +1,5 @@
 import click
 from InquirerPy import inquirer
-from pytest import param
 from tabulate import tabulate
 
 import wellets_cli.api as api

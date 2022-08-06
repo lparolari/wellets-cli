@@ -1,13 +1,10 @@
 import click
-from InquirerPy import prompt
 from tabulate import tabulate
 
 import wellets_cli.api as api
-import wellets_cli.commands as commands
 from wellets_cli.auth import get_auth_token
-from wellets_cli.model import Currency, Wallet
-from wellets_cli.prompt import prompt_wallet
-from wellets_cli.util import change_value, get_currency_by_id, make_headers, pp
+from wellets_cli.model import Currency
+from wellets_cli.util import change_value, make_headers
 
 
 @click.group()
