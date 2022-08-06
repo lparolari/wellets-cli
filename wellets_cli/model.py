@@ -172,3 +172,7 @@ class Asset(BaseModel):
 
 class AverageLoadPrice(BaseModel):
     average_load_price: float
+
+
+class AssetBalance(BaseModel):
+    balance: float
