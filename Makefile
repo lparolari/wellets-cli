@@ -1,6 +1,8 @@
 .ONESHELL:
-ENV_PREFIX=$(shell python -c "if __import__('pathlib').Path('.venv/bin/pip').exists(): print('.venv/bin/')")
-USING_POETRY=$(shell grep "tool.poetry" pyproject.toml && echo "yes")
+USING_POETRY=$(shell test -f pyproject.toml && echo 1 || echo 0)
+VENV_PREFIX=$(shell python -c "if __import__('pathlib').Path('.venv/bin/pip').exists(): print('.venv/bin/')")
+POETRY_PREFIX="poetry run "
+ENV_PREFIX=$(shell test ${USING_POETRY} == 0 && echo ${VENV_PREFIX} || echo ${POETRY_PREFIX})
 
 .PHONY: help
 help:             ## Show the help.
@@ -8,7 +10,6 @@ help:             ## Show the help.
 	@echo ""
 	@echo "Targets:"
 	@fgrep "##" Makefile | fgrep -v fgrep
-
 
 .PHONY: show
 show:             ## Show the current environment.
