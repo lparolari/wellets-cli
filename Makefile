@@ -1,8 +1,11 @@
 .ONESHELL:
-USING_POETRY=$(shell test -f pyproject.toml && echo 1 || echo 0)
-VENV_PREFIX=$(shell python -c "if __import__('pathlib').Path('.venv/bin/pip').exists(): print('.venv/bin/')")
+USING_POETRY=$(sh test -f pyproject.toml && echo 1 || echo 0)
+VENV_PREFIX=$(s python -c "if __import__('pathlib').Path('.venv/bin/pip').exists(): print('.venv/bin/')")
 POETRY_PREFIX="poetry run "
-ENV_PREFIX=$(shell test ${USING_POETRY} == 0 && echo ${VENV_PREFIX} || echo ${POETRY_PREFIX})
+ENV_PREFIX="poetry run "
+
+foo:
+	echo ${ENV_PREFIX}
 
 .PHONY: help
 help:             ## Show the help.
@@ -21,9 +24,7 @@ show:             ## Show the current environment.
 
 .PHONY: install
 install:          ## Install the project in dev mode.
-	@if [ "$(USING_POETRY)" ]; then poetry install && exit; fi
-	@echo "Don't forget to run 'make virtualenv' if you got errors."
-	$(ENV_PREFIX)pip install -e .[test]
+	@poetry install
 
 .PHONY: fmt
 fmt:              ## Format code using black & isort.
