@@ -176,3 +176,9 @@ class AverageLoadPrice(BaseModel):
 
 class AssetBalance(BaseModel):
     balance: float
+
+
+class AssetAllocation(BaseModel):
+    balance: float
+    allocation: float
+    asset: Asset

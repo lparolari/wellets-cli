@@ -10,6 +10,7 @@ from wellets_cli.model import (
     Accumulation,
     AccumulationEntry,
     Asset,
+    AssetAllocation,
     AssetBalance,
     AverageLoadPrice,
     Balance,
@@ -458,3 +459,17 @@ def get_asset_balance(params: dict, headers: dict) -> Balance:
     asset_balance = response.json()
     asset_balance = AssetBalance(**asset_balance)
     return asset_balance
+
+
+def get_asset_allocations(headers: dict) -> List[AssetAllocation]:
+    response = requests.get(
+        f"{BASE_URL}/assets/allocations",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    allocations = response.json()
+    allocations = [AssetAllocation(**a) for a in allocations]
+    return allocations
