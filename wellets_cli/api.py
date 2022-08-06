@@ -14,6 +14,7 @@ from wellets_cli.model import (
     AssetBalance,
     AverageLoadPrice,
     Balance,
+    Currency,
     NextAccumulationEntry,
     Portfolio,
     PortfolioRebalance,
@@ -137,7 +138,7 @@ def get_user_settings(headers: dict) -> UserSettings:
     return user_settings
 
 
-def get_preferred_currency(headers: dict) -> UserCurrency:
+def get_preferred_currency(headers: dict) -> Currency:
     user_settings = get_user_settings(headers=headers)
     return user_settings.currency
 

@@ -1,17 +1,7 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
-
-
-class UserCurrency(BaseModel):
-    id: str
-    acronym: str
-    alias: str
-    dollar_rate: float
-    created_at: datetime
-    updated_at: datetime
-    favorite: bool
 
 
 class Currency(BaseModel):
@@ -23,6 +13,10 @@ class Currency(BaseModel):
     updated_at: datetime
 
 
+class UserCurrency(Currency):
+    favorite: bool
+
+
 class Wallet(BaseModel):
     id: str
     alias: str
@@ -30,10 +24,12 @@ class Wallet(BaseModel):
     currency_id: str
     created_at: datetime
     updated_at: datetime
-    portfolios: List[str] = None
-    currency: Currency = None
+    portfolios: Optional[List[str]] = None
+    currency: Optional[Currency] = None
 
-    def __eq__(self, other: "Wallet"):
+    def __eq__(self, other: object):
+        if not isinstance(other, Wallet):
+            return False
         return self.id == other.id
 
 
@@ -47,7 +43,7 @@ class UserSettings(BaseModel):
 
 
 class WalletAverageLoadPrice(BaseModel):
-    average_load_price: float = None
+    average_load_price: Optional[float] = None
     base_currency: Currency
 
 
@@ -63,12 +59,14 @@ class Portfolio(BaseModel):
     created_at: datetime
     updated_at: datetime
     user_id: str
-    parent_id: str = None
-    parent: "Portfolio" = None
+    parent_id: Optional[str] = None
+    parent: Optional["Portfolio"] = None
     children: List["Portfolio"] = []
     wallets: List[Wallet] = []
 
-    def __eq__(self, other: "Portfolio"):
+    def __eq__(self, other: object):
+        if not isinstance(other, Portfolio):
+            return False
         return self.id == other.id
 
 
@@ -104,13 +102,13 @@ class Transaction(BaseModel):
 
 
 class Duration(BaseModel):
-    years: int = None
-    months: int = None
-    weeks: int = None
-    days: int = None
-    hours: int = None
-    minutes: int = None
-    seconds: int = None
+    years: Optional[int] = None
+    months: Optional[int] = None
+    weeks: Optional[int] = None
+    days: Optional[int] = None
+    hours: Optional[int] = None
+    minutes: Optional[int] = None
+    seconds: Optional[int] = None
 
 
 class AccumulationEntry(BaseModel):

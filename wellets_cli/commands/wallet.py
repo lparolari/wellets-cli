@@ -49,9 +49,7 @@ def list_wallets(auth_token):
 @click.option("--alias")
 @click.option("--currency-id")
 @click.option("--initial-balance", type=float)
-def create_wallet(
-    auth_token: str, alias: str, currency_id: str, initial_balance: float
-):
+def create_wallet(auth_token, alias, currency_id, initial_balance):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 

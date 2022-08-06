@@ -119,7 +119,7 @@ def currency_question(
 
 def change_value_question(
     source_currency: Currency,
-    target_currency: Currency = None,
+    target_currency: Currency,
     message: Optional[str] = None,
     default: Optional[float] = None,
 ) -> NumberPrompt:
