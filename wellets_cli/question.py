@@ -12,7 +12,14 @@ from InquirerPy.prompts import (
 )
 from InquirerPy.validator import EmptyInputValidator, NumberValidator
 
-from wellets_cli.model import Accumulation, Asset, Currency, Portfolio, Wallet
+from wellets_cli.model import (
+    Accumulation,
+    Asset,
+    Currency,
+    Portfolio,
+    Transaction,
+    Wallet,
+)
 from wellets_cli.util import parse_duration
 from wellets_cli.validator import (
     AndValidator,
@@ -208,4 +215,14 @@ def asset_question(
     return inquirer.select(
         message=message,
         choices=[Choice(a.id, name=a.currency.acronym) for a in assets],
+    )
+
+
+def transaction_question(
+    transactions: List[Transaction],
+    message: str = "Transaction",
+) -> ListPrompt:
+    return inquirer.select(
+        message=message,
+        choices=[Choice(t.id, name=t.description) for t in transactions],
     )
