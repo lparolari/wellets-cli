@@ -96,3 +96,15 @@ def show_asset_allocations(auth_token):
     data = [get_row_value(allocation) for allocation in allocations]
 
     print(tabulate(data, headers="keys"))
+
+
+@asset.command(name="total-balance")
+@click.option("--auth-token")
+def show_total_asset_balance(auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    currency = api.get_preferred_currency(headers=headers)
+    result = api.get_total_asset_balance(headers=headers)
+
+    print(f"{currency.acronym} {pp(result.balance)}")

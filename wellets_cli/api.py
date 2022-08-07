@@ -471,3 +471,17 @@ def get_asset_allocations(headers: dict) -> List[AssetAllocation]:
     allocations = response.json()
     allocations = [AssetAllocation(**a) for a in allocations]
     return allocations
+
+
+def get_total_asset_balance(headers: dict) -> Balance:
+    response = requests.get(
+        f"{BASE_URL}/assets/total-balance",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    balance = response.json()
+    balance = AssetBalance(**balance)
+    return balance
