@@ -53,7 +53,7 @@ def show_asset_exposition(asset_id, auth_token):
         headers=headers,
     )
 
-    print(f"{result.average_load_price} {currency.acronym}")
+    print(f"{currency.acronym} {pp(result.average_load_price)}")
 
 
 @asset.command(name="balance")
@@ -73,7 +73,7 @@ def show_asset_balance(asset_id, auth_token):
         headers=headers,
     )
 
-    print(f"{result.balance} {currency.acronym}")
+    print(f"{currency.acronym} {pp(result.balance)}")
 
 
 @asset.command(name="allocation")
