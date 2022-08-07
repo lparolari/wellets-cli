@@ -86,14 +86,10 @@ def show_asset_allocations(auth_token):
     allocations = api.get_asset_allocations(headers=headers)
 
     def get_row_value(allocation: AssetAllocation):
-        equivalent = change_val(
-            allocation.asset.currency, currency, allocation.balance
-        )
         return {
             "id": f"{allocation.asset.id}",
             "asset": f"{allocation.asset.currency.acronym}",
-            "balance": f"{allocation.asset.currency.acronym} {pp(allocation.balance)}",
-            "equivalent": f"{currency.acronym} {pp(equivalent)}",
+            "balance": f"{currency.acronym} {pp(allocation.balance)}",
             "allocation": f"{pp(allocation.allocation, percent=True, decimals=0)}",
         }
 
