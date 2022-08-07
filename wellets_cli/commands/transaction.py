@@ -14,6 +14,7 @@ from wellets_cli.question import (
     confirm_question,
     currency_question,
     dollar_rate_question,
+    transaction_question,
     wallet_question,
 )
 from wellets_cli.util import (
@@ -217,3 +218,26 @@ def create_transaction(
     transaction = api.create_transaction(data, headers=headers)
 
     print(transaction.id)
+
+
+@transaction.command(name="revert")
+@click.option("--wallet-id", type=click.UUID)
+@click.option("--transaction-id", type=click.UUID)
+@click.option("--auth-token")
+def revert_transaction(wallet_id, transaction_id, auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    wallets = api.get_wallets(headers=headers)
+    wallet_id = wallet_id or wallet_question(wallets).execute()
+
+    transactions = api.get_transactions(
+        {"wallet_id": wallet_id}, headers=headers
+    )
+    transaction_id = (
+        transaction_id or transaction_question(transactions).execute()
+    )
+
+    reverted = api.revert_transaction(transaction_id, headers=headers)
+
+    print(reverted.id)

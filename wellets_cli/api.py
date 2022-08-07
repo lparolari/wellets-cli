@@ -485,3 +485,17 @@ def get_total_asset_balance(headers: dict) -> Balance:
     balance = response.json()
     balance = AssetBalance(**balance)
     return balance
+
+
+def revert_transaction(transaction_id: str, headers: dict) -> Transaction:
+    response = requests.post(
+        f"{BASE_URL}/transactions/{transaction_id}/revert",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    transaction = response.json()
+    transaction = Transaction(**transaction)
+    return transaction
