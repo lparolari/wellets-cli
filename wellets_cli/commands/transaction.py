@@ -125,9 +125,7 @@ def create_transaction(
     wallet = get_by_id(wallets, wallet_id)
     wallet_currency = get_by_id(currencies, wallet.currency_id)
 
-    accumulations = api.get_accumulations(
-        params={"wallet_id": wallet_id}, headers=headers
-    )
+    accumulations = api.get_accumulations(params={}, headers=headers)
 
     accumulation_id = accumulation_id or (
         accumulation_question(accumulations, allow_none=True).execute()
