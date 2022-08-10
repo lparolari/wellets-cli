@@ -132,7 +132,7 @@ class Accumulation(BaseModel):
     planned_end: datetime
     created_at: datetime
     updated_at: datetime
-    wallet_id: str
+    asset_id: str
     entries: List[AccumulationEntry]
 
 

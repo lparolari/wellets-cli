@@ -1,3 +1,5 @@
+from typing import Optional
+
 import click
 from InquirerPy import inquirer
 from tabulate import tabulate
@@ -8,6 +10,7 @@ from wellets_cli.commands.transaction import create_transaction
 from wellets_cli.model import Accumulation, AccumulationEntry
 from wellets_cli.question import (
     accumulation_question,
+    asset_question,
     date_question,
     duration_question,
     wallet_question,
@@ -27,18 +30,21 @@ def accumulation():
 
 
 @accumulation.command(name="list")
-@click.option("--wallet-id")
+@click.option("--asset-id")
+@click.option("-i", "--interactive")
 @click.option("--auth-token")
-def list_accumulations(wallet_id, auth_token):
+def list_accumulations(asset_id, interactive, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
     wallets = api.get_wallets(headers=headers)
 
-    wallet_id = wallet_id or wallet_question(wallets=wallets).execute()
+    asset_id = asset_id or (
+        asset_question(wallets=wallets).execute() if interactive else None
+    )
 
     accumulations = api.get_accumulations(
-        {"wallet_id": wallet_id}, headers=headers
+        {"asset_id": asset_id}, headers=headers
     )
 
     def get_accumulation_row(accumulation: Accumulation):
@@ -59,23 +65,25 @@ def list_accumulations(wallet_id, auth_token):
 
 
 @accumulation.command(name="show")
-@click.option("--wallet-id")
 @click.option("--accumulation-id")
 @click.option("--auth-token")
-def show_accumulation(wallet_id, accumulation_id, auth_token):
+def show_accumulation(accumulation_id, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    wallet = __prompt_wallet(wallet_id, headers)
-    accumulation = __prompt_accumulation(wallet.id, accumulation_id, headers)
+    assets = api.get_assets(headers=headers)
+
+    accumulation = __prompt_accumulation(accumulation_id, headers)
 
     if not accumulation:
         return
 
+    asset = get_by_id(assets, accumulation.asset_id)
+
     def get_entry_row(entry: AccumulationEntry):
         return {
             "id": entry.id,
-            "amount": f"{wallet.currency.acronym} {pp(entry.value, decimals=8, fixed=False)}",
+            "amount": f"{asset.currency.acronym} {pp(entry.value, decimals=8, fixed=False)}",
             "created_at": entry.created_at.strftime("%Y-%m-%d %H:%M"),
             "updated_at": entry.updated_at.strftime("%Y-%m-%d %H:%M"),
             "description": entry.description,
@@ -87,15 +95,13 @@ def show_accumulation(wallet_id, accumulation_id, auth_token):
 
 
 @accumulation.command(name="next-entry")
-@click.option("--wallet-id")
 @click.option("--accumulation-id")
 @click.option("--auth-token")
-def show_next_entry(wallet_id, accumulation_id, auth_token):
+def show_next_entry(accumulation_id, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    wallet = __prompt_wallet(wallet_id, headers)
-    accumulation = __prompt_accumulation(wallet.id, accumulation_id, headers)
+    accumulation = __prompt_accumulation(accumulation_id, headers)
 
     if not accumulation:
         return
@@ -121,7 +127,7 @@ def show_next_entry(wallet_id, accumulation_id, auth_token):
 
 
 @accumulation.command(name="create")
-@click.option("--wallet-id")
+@click.option("--asset-id")
 @click.option("--alias")
 @click.option("--strategy")
 @click.option("--quote")
@@ -131,7 +137,7 @@ def show_next_entry(wallet_id, accumulation_id, auth_token):
 @click.option("--planned-end")
 @click.option("--auth-token")
 def create_accumulation(
-    wallet_id,
+    asset_id,
     alias,
     strategy,
     quote,
@@ -144,9 +150,9 @@ def create_accumulation(
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    wallets = api.get_wallets(headers=headers)
+    assets = api.get_assets(headers=headers)
 
-    wallet_id = wallet_id or wallet_question(wallets).execute()
+    asset_id = asset_id or asset_question(assets).execute()
 
     alias = (
         alias
@@ -207,7 +213,7 @@ def create_accumulation(
     )
 
     data = {
-        "wallet_id": wallet_id,
+        "asset_id": asset_id,
         "alias": alias,
         "strategy": strategy,
         "quote": quote,
@@ -221,20 +227,14 @@ def create_accumulation(
 
 
 @accumulation.command(name="delete")
-@click.option("--wallet-id")
 @click.option("--accumulation-id")
 @click.option("--auth-token")
-def delete_accumulation(wallet_id, accumulation_id, auth_token):
+def delete_accumulation(accumulation_id, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    if not accumulation_id:
-        wallet = __prompt_wallet(wallet_id, headers)
-        accumulation = __prompt_accumulation(
-            wallet.id, accumulation_id, headers
-        )
-
-    accumulation_id = accumulation_id or accumulation.id
+    accumulation = __prompt_accumulation(accumulation_id, headers)
+    accumulation_id = accumulation.id
 
     accumulation = api.delete_accumulation(
         accumulation_id=accumulation_id,
@@ -245,7 +245,6 @@ def delete_accumulation(wallet_id, accumulation_id, auth_token):
 
 
 @accumulation.command(name="create-entry")
-@click.option("--wallet-id", type=click.UUID)
 @click.option("--value", type=float)
 @click.option("--dollar-rate", type=float)
 @click.option("--change-currency-id", type=click.UUID)
@@ -257,7 +256,6 @@ def delete_accumulation(wallet_id, accumulation_id, auth_token):
 @click.option("--auth-token")
 @click.pass_context
 def create_entry(ctx, **kwargs):
-    wallet_id = kwargs["wallet_id"]
     accumulation_id = kwargs["accumulation_id"]
     auth_token = kwargs["auth_token"]
     description = kwargs["description"]
@@ -265,8 +263,7 @@ def create_entry(ctx, **kwargs):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    wallet = __prompt_wallet(wallet_id, headers)
-    accumulation = __prompt_accumulation(wallet.id, accumulation_id, headers)
+    accumulation = __prompt_accumulation(accumulation_id, headers)
 
     if not accumulation:
         return
@@ -286,7 +283,6 @@ def create_entry(ctx, **kwargs):
 
     params = {
         **kwargs,
-        "wallet_id": wallet.id,
         "accumulation_id": accumulation.id,
         "description": description,
     }
@@ -294,18 +290,8 @@ def create_entry(ctx, **kwargs):
     ctx.invoke(create_transaction, **params)
 
 
-def __prompt_wallet(wallet_id, headers):
-    wallets = api.get_wallets(headers=headers)
-
-    wallet_id = wallet_id or wallet_question(wallets=wallets).execute()
-
-    return api.get_wallet(wallet_id, headers=headers)
-
-
-def __prompt_accumulation(wallet_id, accumulation_id, headers):
-    accumulations = api.get_accumulations(
-        {"wallet_id": wallet_id}, headers=headers
-    )
+def __prompt_accumulation(accumulation_id: str, headers) -> Optional[Accumulation]:
+    accumulations = api.get_accumulations(params={}, headers=headers)
 
     if len(accumulations) == 0:
         return None
@@ -315,6 +301,6 @@ def __prompt_accumulation(wallet_id, accumulation_id, headers):
         or accumulation_question(accumulations=accumulations).execute()
     )
 
-    accumulation = get_by_id(accumulations, accumulation_id)
+    accumulation = get_by_id(accumulations, accumulation_id)  # type: ignore
 
     return accumulation
