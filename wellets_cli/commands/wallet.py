@@ -97,27 +97,6 @@ def delete_wallet(auth_token, wallet_id):
     print(wallet.id)
 
 
-@wallet.command(name="average-load-price")
-@click.option("--auth-token")
-@click.option("--wallet-id")
-def show_wallet_average_load_price(wallet_id, auth_token):
-    auth_token = auth_token or get_auth_token()
-    headers = make_headers(auth_token)
-    requires_interaction = wallet_id is None
-
-    wallets = api.get_wallets(headers=headers)
-
-    if requires_interaction:
-        wallet_id = prompt_wallet(wallets)
-
-    result = api.get_wallet_average_load_price(
-        params={"wallet_id": wallet_id},
-        headers=headers,
-    )
-
-    print(f"{result.average_load_price} {result.base_currency.acronym}")
-
-
 @wallet.command(name="balance")
 @click.option("--wallet-id")
 @click.option("--auth-token")
