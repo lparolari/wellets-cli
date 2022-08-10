@@ -38,9 +38,8 @@ def transaction():
 
 @transaction.command(name="list")
 @click.option("-id", "--wallet-id", type=click.UUID)
-@click.option("-d", "--description", is_flag=True)
 @click.option("--auth-token")
-def list_transactions(wallet_id, description, auth_token):
+def list_transactions(wallet_id, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -55,16 +54,8 @@ def list_transactions(wallet_id, description, auth_token):
     preferred_currency = api.get_preferred_currency(headers=headers)
 
     def get_row_value(transaction: Transaction):
-        countervalue = change_value(
+        equivalent = change_value(
             transaction.wallet.currency.dollar_rate,  # type: ignore
-            preferred_currency.dollar_rate,
-            transaction.value,
-        )
-        buy_price = change_value(
-            transaction.dollar_rate, preferred_currency.dollar_rate, 1
-        )
-        buy_countervalue = change_value(
-            transaction.dollar_rate,
             preferred_currency.dollar_rate,
             transaction.value,
         )
@@ -72,12 +63,9 @@ def list_transactions(wallet_id, description, auth_token):
         return {
             "id": transaction.id,
             "amount": f"{transaction.wallet.currency.acronym} {pp(transaction.value, decimals=8, fixed=False)}",  # type: ignore
-            "countevalue": f"{preferred_currency.acronym} {pp(countervalue)}",
-            "buy_amount": f"{preferred_currency.acronym} {pp(buy_countervalue)}",
-            "buy_price": f"{preferred_currency.acronym} {pp(buy_price)}",
-            "created_at": transaction.created_at.strftime("%Y-%m-%d %H:%M"),
-            "updated_at": transaction.updated_at.strftime("%Y-%m-%d %H:%M"),
+            "equivalent": f"{preferred_currency.acronym} {pp(equivalent)}",
             "description": transaction.description,
+            "created_at": transaction.created_at.strftime("%Y-%m-%d %H:%M"),
         }
 
     data = list(map(get_row_value, transactions))
