@@ -290,7 +290,9 @@ def create_entry(ctx, **kwargs):
     ctx.invoke(create_transaction, **params)
 
 
-def __prompt_accumulation(accumulation_id: str, headers) -> Optional[Accumulation]:
+def __prompt_accumulation(
+    accumulation_id: str, headers
+) -> Optional[Accumulation]:
     accumulations = api.get_accumulations(params={}, headers=headers)
 
     if len(accumulations) == 0:
