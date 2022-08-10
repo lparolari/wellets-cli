@@ -94,7 +94,6 @@ class Transaction(BaseModel):
     id: str
     value: float
     description: str
-    dollar_rate: float
     wallet_id: str
     created_at: datetime
     updated_at: datetime
@@ -115,7 +114,6 @@ class AccumulationEntry(BaseModel):
     id: str
     value: float
     description: str
-    dollar_rate: float
     wallet_id: str
     created_at: datetime
     updated_at: datetime
