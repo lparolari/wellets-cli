@@ -499,3 +499,18 @@ def revert_transaction(transaction_id: str, headers: dict) -> Transaction:
     transaction = response.json()
     transaction = Transaction(**transaction)
     return transaction
+
+
+def set_preferred_currency(data: dict, headers: dict) -> UserSettings:
+    response = requests.put(
+        f"{BASE_URL}/users/settings",
+        json=data,
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    user_settings = response.json()
+    user_settings = UserSettings(**user_settings)
+    return user_settings
