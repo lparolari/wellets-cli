@@ -3,9 +3,15 @@ from tabulate import tabulate
 
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
-from wellets_cli.model import Asset, AssetAllocation
+from wellets_cli.model import Asset, AssetAllocation, AssetEntry
 from wellets_cli.question import asset_question
-from wellets_cli.util import change_val, make_headers, pp
+from wellets_cli.util import (
+    change_val,
+    change_value,
+    get_by_id,
+    make_headers,
+    pp,
+)
 
 
 @click.group()
@@ -108,3 +114,55 @@ def show_total_asset_balance(auth_token):
     result = api.get_total_asset_balance(headers=headers)
 
     print(f"{currency.acronym} {pp(result.balance)}")
+
+
+@asset.command(name="entries")
+@click.option("--asset-id")
+@click.option("--auth-token")
+def show_asset_entries(asset_id, auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    assets = api.get_assets(headers=headers)
+    currency = api.get_preferred_currency(headers=headers)
+
+    asset_id = asset_id or asset_question(assets=assets).execute()
+
+    asset: Asset = get_by_id(assets, asset_id)
+    entries = asset.entries
+
+    ws = 0
+    s = 0
+
+    def get_row_value(entry: AssetEntry):
+        nonlocal ws
+        nonlocal s
+
+        equivalent = change_value(
+            asset.currency.dollar_rate,
+            currency.dollar_rate,
+            entry.value,
+        )
+        buy_price = change_value(entry.dollar_rate, currency.dollar_rate, 1)
+        buy_equivalent = change_value(
+            entry.dollar_rate,
+            currency.dollar_rate,
+            entry.value,
+        )
+        x = (equivalent - buy_equivalent) / buy_equivalent
+
+        ws += equivalent
+        s += equivalent * buy_price
+
+        return {
+            "id": entry.id,
+            "amount": f"{asset.currency.acronym} {pp(entry.value, decimals=8, fixed=False)}",
+            "buy_price": f"{currency.acronym} {pp(buy_price)}",
+            "buy_amount": f"{currency.acronym} {pp(buy_equivalent)}",
+            "equivalent": f"{currency.acronym} {pp(equivalent)} ({pp(x, percent=True, decimals=0)})",
+            "created_at": entry.created_at.strftime("%Y-%m-%d %H:%M"),
+        }
+
+    data = [get_row_value(entry) for entry in entries]
+
+    print(tabulate(data, headers="keys"))
