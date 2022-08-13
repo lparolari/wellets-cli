@@ -131,13 +131,7 @@ def show_asset_entries(asset_id, auth_token):
     asset: Asset = get_by_id(assets, asset_id)
     entries = asset.entries
 
-    ws = 0
-    s = 0
-
     def get_row_value(entry: AssetEntry):
-        nonlocal ws
-        nonlocal s
-
         equivalent = change_value(
             asset.currency.dollar_rate,
             currency.dollar_rate,
@@ -149,17 +143,14 @@ def show_asset_entries(asset_id, auth_token):
             currency.dollar_rate,
             entry.value,
         )
-        x = (equivalent - buy_equivalent) / buy_equivalent
-
-        ws += equivalent
-        s += equivalent * buy_price
+        gain_wrt_buy_price = (equivalent - buy_equivalent) / buy_equivalent
 
         return {
             "id": entry.id,
             "amount": f"{asset.currency.acronym} {pp(entry.value, decimals=8, fixed=False)}",
             "buy_price": f"{currency.acronym} {pp(buy_price)}",
             "buy_amount": f"{currency.acronym} {pp(buy_equivalent)}",
-            "equivalent": f"{currency.acronym} {pp(equivalent)} ({pp(x, percent=True, decimals=0)})",
+            "equivalent": f"{currency.acronym} {pp(equivalent)} ({pp(gain_wrt_buy_price, percent=True, decimals=0)})",
             "created_at": entry.created_at.strftime("%Y-%m-%d %H:%M"),
         }
 
