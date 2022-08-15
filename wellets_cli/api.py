@@ -17,6 +17,7 @@ from wellets_cli.model import (
     PortfolioRebalance,
     Transaction,
     Transfer,
+    User,
     UserCurrency,
     UserSettings,
     Wallet,
@@ -514,3 +515,18 @@ def set_preferred_currency(data: dict, headers: dict) -> UserSettings:
     user_settings = response.json()
     user_settings = UserSettings(**user_settings)
     return user_settings
+
+
+def register(data: dict, headers: dict) -> User:
+    response = requests.post(
+        f"{BASE_URL}/users",
+        json=data,
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    user = response.json()
+    user = User(**user)
+    return user

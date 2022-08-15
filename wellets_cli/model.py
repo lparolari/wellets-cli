@@ -42,6 +42,13 @@ class UserSettings(BaseModel):
     currency: Currency
 
 
+class User(BaseModel):
+    id: str
+    email: str
+    created_at: datetime
+    updated_at: datetime
+
+
 class WalletAverageLoadPrice(BaseModel):
     average_load_price: Optional[float] = None
     base_currency: Currency

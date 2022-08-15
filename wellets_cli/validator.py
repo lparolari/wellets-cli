@@ -174,3 +174,51 @@ class DurationValidator(Validator):
                     message=self._message,
                     cursor_position=document.cursor_position,
                 )
+
+
+class EmailValidator(Validator):
+    def __init__(
+        self,
+        message: str = "Input should be an email",
+    ) -> None:
+        self._message = message
+
+    def validate(self, document):
+        if "@" not in document.text:
+            raise ValidationError(
+                message=self._message,
+                cursor_position=document.cursor_position,
+            )
+
+
+class TextLengthValidator(Validator):
+    def __init__(
+        self,
+        length: int = 8,
+        message: str = "Input should be at least {0} characters",
+    ) -> None:
+        self._length = length
+        self._message = message.format(length)
+
+    def validate(self, document):
+        if len(document.text) < self._length:
+            raise ValidationError(
+                message=self._message,
+                cursor_position=document.cursor_position,
+            )
+
+
+class PasswordMatchValidator(Validator):
+    def __init__(
+        self, password: str, message: str = "Passwords do not match"
+    ) -> None:
+        self._password = password
+        self._message = message
+
+    def validate(self, document):
+        confirm = document.text
+        if confirm != self._password:
+            raise ValidationError(
+                message=self._message,
+                cursor_position=document.cursor_position,
+            )
