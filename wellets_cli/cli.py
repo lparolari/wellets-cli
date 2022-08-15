@@ -6,6 +6,7 @@ from wellets_cli.commands.config import config
 from wellets_cli.commands.currency import currency
 from wellets_cli.commands.login import login
 from wellets_cli.commands.portfolio import portfolio
+from wellets_cli.commands.register import register
 from wellets_cli.commands.transaction import transaction
 from wellets_cli.commands.transfer import transfer
 from wellets_cli.commands.wallet import wallet
@@ -28,5 +29,6 @@ def main():  # pragma: no cover
     cli.add_command(accumulation)
     cli.add_command(transfer)
     cli.add_command(asset)
+    cli.add_command(register)
 
     cli()
