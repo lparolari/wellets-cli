@@ -4,6 +4,14 @@ Changelog
 
 (unreleased)
 ------------
+
+Fix
+~~~
+- Linting errors. [lparolari]
+
+Other
+~~~~~
+- Release: v1.0.1. [lparolari]
 - Chore: update defaults. [lparolari]
 - Feat(register): add register. [lparolari]
 - Docs: readme and pip project desc. [lparolari]
