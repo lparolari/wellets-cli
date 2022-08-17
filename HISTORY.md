@@ -7,11 +7,24 @@ Changelog
 
 Fix
 ~~~
+- Remove initial balance for create wallet. [lparolari]
+
+Other
+~~~~~
+- Chore: add confirmation step for `make release` command. [lparolari]
+
+
+1.0.2 (2022-08-17)
+------------------
+
+Fix
+~~~
 - Linting errors. [lparolari]
 - Linting errors. [lparolari]
 
 Other
 ~~~~~
+- Release: v1.0.2. [lparolari]
 - Chore: update CONTRIBUTING.md. [lparolari]
 - Release: v1.0.1. [lparolari]
 - Release: v1.0.1. [lparolari]
