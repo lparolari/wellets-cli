@@ -85,7 +85,7 @@ release:          ## Create a new tag for release.
 	@echo "creating git tag : v$${TAG}"
 	@git tag $${TAG}
 	@read -p "Are you sure you want to continue? [y/N] " CONFIRM
-	@if [ "$(CONFIRM)" != "y" ]; then echo "Aborted"; exit; fi
+	@if [ "$${CONFIRM}" != "y" ]; then echo "Aborted"; exit; fi
 	@git push -u origin HEAD --tags
 	@echo "Github Actions will detect the new tag and release the new version."
 
