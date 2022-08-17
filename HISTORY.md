@@ -4,6 +4,14 @@ Changelog
 
 (unreleased)
 ------------
+- Chore: update defaults. [lparolari]
+- Feat(register): add register. [lparolari]
+- Docs: readme and pip project desc. [lparolari]
+- Chore: update release command. [lparolari]
+
+
+1.0.0 (2022-08-15)
+------------------
 
 Fix
 ~~~
@@ -18,6 +26,7 @@ Fix
 
 Other
 ~~~~~
+- Release: v1.0.0. [lparolari]
 - Ci: update release pipeline. [lparolari]
 - Feat(config): prettied show/set commands. [lparolari]
 - Chore: cleanup. [lparolari]
