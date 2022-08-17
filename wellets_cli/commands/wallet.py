@@ -47,8 +47,7 @@ def list_wallets(auth_token):
 @click.option("--auth-token")
 @click.option("--alias")
 @click.option("--currency-id")
-@click.option("--initial-balance", type=float)
-def create_wallet(auth_token, alias, currency_id, initial_balance):
+def create_wallet(auth_token, alias, currency_id):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -58,17 +57,10 @@ def create_wallet(auth_token, alias, currency_id, initial_balance):
 
     currency_id = currency_id or currency_question(currencies).execute()
 
-    initial_balance = (
-        initial_balance
-        or inquirer.number(
-            "Initial balance", float_allowed=True, default=0, mandatory=False
-        ).execute()
-    )
-
     data = {
         "alias": alias,
         "currency_id": currency_id,
-        "balance": initial_balance,
+        "balance": 0,
     }
 
     wallet = api.create_wallet(data, headers=headers)
