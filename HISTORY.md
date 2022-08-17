@@ -8,9 +8,62 @@ Changelog
 Fix
 ~~~
 - Linting errors. [lparolari]
+- Linting errors. [lparolari]
 
 Other
 ~~~~~
+- Chore: update CONTRIBUTING.md. [lparolari]
+- Release: v1.0.1. [lparolari]
+- Release: v1.0.1. [lparolari]
+- Chore: update defaults. [lparolari]
+- Feat(register): add register. [lparolari]
+- Docs: readme and pip project desc. [lparolari]
+- Chore: update release command. [lparolari]
+- Release: v1.0.0. [lparolari]
+- Ci: update release pipeline. [lparolari]
+- Feat(config): prettied show/set commands. [lparolari]
+- Chore: cleanup. [lparolari]
+- Feat(asset): show entries. [lparolari]
+- Feat(config): beautify print, set preferred currency. [lparolari]
+- Chore: update .gitignore. [lparolari]
+- Chore: fmt. [lparolari]
+- Chore(transfer): remove disclaimer. [lparolari]
+- Fat(transaction): drop dollar rate. [lparolari]
+- Feat(wallet): remove average load price. [lparolari]
+- Fix(accumulation): belongs to asset instead of wallet. [lparolari]
+- Feat(transaction): revert. [lparolari]
+- Chore: cosmetic. [lparolari]
+- Feat(asset): total balance. [lparolari]
+- Fix(asset): allocation balance. [lparolari]
+- Ci: remove mac tests. [lparolari]
+- Ci: fix pipeline. [lparolari]
+- Ci: fix poetry. [lparolari]
+- Ci: update gh actions. [lparolari]
+- Chore: fmt. [lparolari]
+- Chore: cleanup, linter errors. [lparolari]
+- Chore: switch to poetry. [lparolari]
+- Feat(asset): allocation. [lparolari]
+- Feat(asset): balance. [lparolari]
+- Feat(asset): add average load price. [lparolari]
+- Feat(asset): list. [lparolari]
+- Chore: cleanup. [lparolari]
+- Feat(login): load credentials from env. [lparolari]
+- Chore: cosmetic. [lparolari]
+- Feat(transfer): create transfer. [lparolari]
+- Chore: cosmetic. [lparolari]
+- Feat(accumulation): create entry. [lparolari]
+
+
+1.0.1 (2022-08-17)
+------------------
+
+Fix
+~~~
+- Linting errors. [lparolari]
+
+Other
+~~~~~
+- Release: v1.0.1. [lparolari]
 - Release: v1.0.1. [lparolari]
 - Chore: update defaults. [lparolari]
 - Feat(register): add register. [lparolari]
