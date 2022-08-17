@@ -1,10 +1,10 @@
 # How to develop on this project
 
-wellets_cli welcomes contributions from the community.
-
-**You need PYTHON3!**
+Any type of help is really appreciated. If you want to push me some changes,
+please follow instructions below, otherwise just leave an issue or contact me.
 
 This instructions are for linux base systems. (Linux, MacOS, BSD, etc.)
+
 ## Setting up your own fork of this repo.
 
 - On github interface click on `Fork` button.
@@ -14,16 +14,13 @@ This instructions are for linux base systems. (Linux, MacOS, BSD, etc.)
 
 ## Setting up your own virtual environment
 
-Run `make virtualenv` to create a virtual environment.
-then activate it with `source .venv/bin/activate`.
-
-## Install the project in develop mode
-
-Run `make install` to install the project in develop mode.
+We use **Poetry**. It's enough to run `poetry install` to install all
+dependencies and setup the project in develop mode.
 
 ## Run the tests to ensure everything is working
 
-Run `make test` to run the tests.
+~~Run `make test` to run the tests.~~ Wellets CLI is at its very primary stages and thus uncovered from tests. Every
+type of help in this sense is really appreciated.
 
 ## Create a new branch to work on your contribution
 
@@ -43,9 +40,9 @@ Run `make lint` to run the linter.
 
 ## Test your changes
 
-Run `make test` to run the tests.
+~~Run `make test` to run the tests.~~
 
-Ensure code coverage report shows `100%` coverage, add tests to your PR.
+~~Ensure code coverage report shows `100%` coverage, add tests to your PR.~~
 
 ## Build the docs locally
 
@@ -93,12 +90,14 @@ init:             ## Initialize the project based on an application template.
 
 ## Making a new release
 
-This project uses [semantic versioning](https://semver.org/) and tags releases with `X.Y.Z`
-Every time a new tag is created and pushed to the remote repo, github actions will
-automatically create a new release on github and trigger a release on PyPI.
+This project uses [semantic versioning](https://semver.org/) and tags releases
+with `X.Y.Z` Every time a new tag is created and pushed to the remote repo,
+github actions will automatically create a new release on github and trigger a
+release on PyPI.
 
-For this to work you need to setup a secret called `PIPY_API_TOKEN` on the project settings>secrets, 
-this token can be generated on [pypi.org](https://pypi.org/account/).
+For this to work you need to setup a secret called `PIPY_API_TOKEN` on the
+project settings>secrets, this token can be generated on
+[pypi.org](https://pypi.org/account/).
 
 To trigger a new release all you need to do is.
 
@@ -108,6 +107,8 @@ To trigger a new release all you need to do is.
 2. Run the tests to ensure everything is working.
 4. Run `make release` to create a new tag and push it to the remote repo.
 
-the `make release` will ask you the version number to create the tag, ex: type `0.1.1` when you are asked.
+the `make release` will ask you the version number to create the tag, ex: type
+`0.1.1` when you are asked.
 
-> **CAUTION**:  The make release will change local changelog files and commit all the unstaged changes you have.
+> **CAUTION**:  The make release will change local changelog files and commit
+> all the unstaged changes you have.
