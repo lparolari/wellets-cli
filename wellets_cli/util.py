@@ -37,7 +37,9 @@ def get_currency_by_acronym(
     return currency[0]
 
 
-def make_headers(auth_token: str) -> dict:
+def make_headers(auth_token: Optional[str]) -> dict:
+    if auth_token is None:
+        return {}
     return {"Authorization": f"Bearer {auth_token}"}
 
 
