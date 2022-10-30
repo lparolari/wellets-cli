@@ -60,7 +60,6 @@ def create_wallet(auth_token, alias, currency_id):
     data = {
         "alias": alias,
         "currency_id": currency_id,
-        "balance": 0,
     }
 
     wallet = api.create_wallet(data, headers=headers)
