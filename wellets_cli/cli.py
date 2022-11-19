@@ -12,8 +12,11 @@ from wellets_cli.commands.transfer import transfer
 from wellets_cli.commands.wallet import wallet
 from wellets_cli.commands.whoami import whoami
 
+VERSION = open("wellets_cli/VERSION").read().strip()
+
 
 @click.group()
+@click.version_option(VERSION)
 def cli():
     pass
 
