@@ -4,6 +4,15 @@ Changelog
 
 (unreleased)
 ------------
+
+Fix
+~~~
+- Version not found. [lparolari]
+
+
+1.1.1 (2022-11-19)
+------------------
+- Release: v1.1.1. [lparolari]
 - Chore: add --version. [lparolari]
 
 
