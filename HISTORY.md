@@ -4,6 +4,11 @@ Changelog
 
 (unreleased)
 ------------
+- Chore: add --version. [lparolari]
+
+
+1.1.0 (2022-11-19)
+------------------
 
 Fix
 ~~~
@@ -13,6 +18,7 @@ Fix
 
 Other
 ~~~~~
+- Release: v1.1.0. [lparolari]
 - Feat: update wallet. [lparolari]
 - Chore: allow to disable rounding. [lparolari]
 - Feat: revert list of transactions. [lparolari]
