@@ -13,7 +13,6 @@ from wellets_cli.question import (
     asset_question,
     date_question,
     duration_question,
-    wallet_question,
 )
 from wellets_cli.util import format_duration, get_by_id, make_headers, pp
 from wellets_cli.validator import (

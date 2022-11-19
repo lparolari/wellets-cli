@@ -6,8 +6,23 @@ import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
 from wellets_cli.model import Wallet
 from wellets_cli.prompt import prompt_wallet
-from wellets_cli.question import currency_question
-from wellets_cli.util import change_value, get_currency_by_id, make_headers, pp
+from wellets_cli.question import (
+    confirm_question,
+    currency_question,
+    wallet_question,
+)
+from wellets_cli.util import (
+    change_value,
+    get_by_id,
+    get_currency_by_id,
+    make_headers,
+    pp,
+)
+from wellets_cli.validator import (
+    AndValidator,
+    EmptyInputValidator,
+    NumberValidator,
+)
 
 
 @click.group()
@@ -63,6 +78,54 @@ def create_wallet(auth_token, alias, currency_id):
     }
 
     wallet = api.create_wallet(data, headers=headers)
+
+    print(wallet.id)
+
+
+@wallet.command(name="edit")
+@click.option("--auth-token")
+@click.option("--wallet_id")
+@click.option("--alias")
+@click.option("--balance")
+@click.option("-y", "--yes", is_flag=True, default=False)
+def edit_wallet(auth_token, wallet_id, alias, balance, yes):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    wallets = api.get_wallets(headers=headers)
+
+    wallet_id: str = wallet_id or wallet_question(wallets).execute()
+
+    wallet = api.get_wallet(wallet_id, headers=headers)
+
+    alias = (
+        alias
+        or inquirer.text(
+            "Alias", default=wallet.alias, validate=EmptyInputValidator()
+        ).execute()
+    )
+    balance = (
+        balance
+        or inquirer.number(
+            "Balance",
+            default=wallet.balance,
+            long_instruction="Warning: changing the wallet balance may result in inconsistent data",
+            float_allowed=True,
+            validate=AndValidator(
+                [EmptyInputValidator(), NumberValidator(float_allowed=True)]
+            ),
+        ).execute()
+    )
+
+    if not yes and not confirm_question().execute():
+        return
+
+    data = {
+        "alias": alias,
+        "balance": balance,
+    }
+
+    wallet = api.update_wallet(wallet_id, data, headers=headers)
 
     print(wallet.id)
 

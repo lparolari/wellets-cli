@@ -91,6 +91,21 @@ def create_wallet(data: dict, headers: dict) -> Wallet:
     return wallet
 
 
+def update_wallet(wallet_id, data: dict, headers: dict) -> Wallet:
+    response = requests.patch(
+        f"{BASE_URL}/wallets/{wallet_id}",
+        json=data,
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    wallet = response.json()
+    wallet = Wallet(**wallet)
+    return wallet
+
+
 def delete_wallet(wallet_id: str, headers: dict) -> Wallet:
     response = requests.delete(
         f"{BASE_URL}/wallets/{wallet_id}",
