@@ -53,14 +53,23 @@ def percent(x: float) -> float:
 
 def pp(x: float, percent=False, decimals=2, fixed=True) -> str:
     if x is None:
-        return ""
+        return ""  # ignore None values
 
+    # make percentage, if needed
     x = x * 100 if percent else x
     p = "%" if percent else ""
 
-    val = f"{x:.{decimals}f}" if fixed else f"{round(x, decimals)}"
+    # round x to given number of decimals
+    x_rounded = round(x, decimals)
 
-    return f"{val}{p}"
+    # if the number has been rounded, prefix the result with "~" symbol
+    is_rounded = x_rounded != x
+    tilde = "~" if is_rounded else ""
+
+    # format the number with fixed/variable number of decimals
+    val = f"{x:.{decimals}f}" if fixed else f"{x_rounded}"
+
+    return f"{tilde}{val}{p}"
 
 
 def format_duration(duration: Duration) -> str:

@@ -143,7 +143,9 @@ def show_asset_entries(asset_id, auth_token):
             currency.dollar_rate,
             entry.value,
         )
-        gain_wrt_buy_price = (equivalent - buy_equivalent) / (buy_equivalent or 1)
+        gain_wrt_buy_price = (equivalent - buy_equivalent) / (
+            buy_equivalent or 1
+        )
 
         return {
             "id": entry.id,
