@@ -7,10 +7,29 @@ Changelog
 
 Fix
 ~~~
+- Remove balance in wallet creation. [lparolari]
+- Prevent division by zero. [lparolari]
+- Make release. [lparolari]
+
+Other
+~~~~~
+- Feat: update wallet. [lparolari]
+- Chore: allow to disable rounding. [lparolari]
+- Feat: revert list of transactions. [lparolari]
+- Chore: update currency formatter. [lparolari]
+- Feat: transfer max balance, confirm. [lparolari]
+
+
+1.0.3 (2022-08-17)
+------------------
+
+Fix
+~~~
 - Remove initial balance for create wallet. [lparolari]
 
 Other
 ~~~~~
+- Release: v1.0.3. [lparolari]
 - Chore: add confirmation step for `make release` command. [lparolari]
 
 
