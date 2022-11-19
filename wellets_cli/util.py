@@ -51,7 +51,9 @@ def percent(x: float) -> float:
     return x * 100
 
 
-def pp(x: float, percent=False, decimals=2, fixed=True) -> str:
+def pp(
+    x: float, percent=False, decimals=2, fixed=True, with_rounding=True
+) -> str:
     if x is None:
         return ""  # ignore None values
 
@@ -63,7 +65,8 @@ def pp(x: float, percent=False, decimals=2, fixed=True) -> str:
     x_rounded = round(x, decimals)
 
     # if the number has been rounded, prefix the result with "~" symbol
-    is_rounded = x_rounded != x
+    # with_rounding eventually disabled rounding indicator
+    is_rounded = with_rounding and x_rounded != x
     tilde = "~" if is_rounded else ""
 
     # format the number with fixed/variable number of decimals
