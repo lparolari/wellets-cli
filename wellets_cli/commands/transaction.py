@@ -219,7 +219,8 @@ def create_transaction(
     ),
 )
 @click.option("--auth-token")
-def revert_transaction(wallet_id, transaction_ids, auth_token):
+@click.option("-y", "--yes", is_flag=True, type=bool, default=False)
+def revert_transaction(wallet_id, transaction_ids, auth_token, yes):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -233,6 +234,9 @@ def revert_transaction(wallet_id, transaction_ids, auth_token):
     transaction_ids = (
         transaction_ids or transactions_question(transactions).execute()
     )
+
+    if not yes and not confirm_question().execute():
+        return
 
     for transaction_id in transaction_ids:
         reverted = api.revert_transaction(transaction_id, headers=headers)
