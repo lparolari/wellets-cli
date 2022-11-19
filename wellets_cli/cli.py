@@ -1,3 +1,5 @@
+import pathlib
+
 import click
 
 from wellets_cli.commands.accumulation import accumulation
@@ -12,7 +14,11 @@ from wellets_cli.commands.transfer import transfer
 from wellets_cli.commands.wallet import wallet
 from wellets_cli.commands.whoami import whoami
 
-VERSION = open("wellets_cli/VERSION").read().strip()
+try:
+    VERSION_PATH = pathlib.Path(__file__).parent / "VERSION"
+    VERSION = open(VERSION_PATH).read().strip()
+except:
+    VERSION = "unknown"
 
 
 @click.group()
