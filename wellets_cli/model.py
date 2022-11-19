@@ -174,7 +174,7 @@ class Asset(BaseModel):
 
 
 class AverageLoadPrice(BaseModel):
-    average_load_price: float
+    average_load_price: Optional[float] = None
 
 
 class AssetBalance(BaseModel):

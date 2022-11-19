@@ -14,7 +14,7 @@ from wellets_cli.question import (
     confirm_question,
     currency_question,
     dollar_rate_question,
-    transaction_question,
+    transactions_question,
     wallet_question,
 )
 from wellets_cli.util import (
@@ -28,6 +28,9 @@ from wellets_cli.validator import (
     AndValidator,
     DateValidator,
     GreaterThanOrEqualValidator,
+    each_validator,
+    uuid_validator,
+    validate,
 )
 
 
@@ -208,9 +211,15 @@ def create_transaction(
 
 @transaction.command(name="revert")
 @click.option("--wallet-id", type=click.UUID)
-@click.option("--transaction-id", type=click.UUID)
+@click.option(
+    "--transaction-ids",
+    multiple=True,
+    callback=lambda _1, _2, value: validate(
+        each_validator(uuid_validator), value
+    ),
+)
 @click.option("--auth-token")
-def revert_transaction(wallet_id, transaction_id, auth_token):
+def revert_transaction(wallet_id, transaction_ids, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -220,10 +229,11 @@ def revert_transaction(wallet_id, transaction_id, auth_token):
     transactions = api.get_transactions(
         {"wallet_id": wallet_id}, headers=headers
     )
-    transaction_id = (
-        transaction_id or transaction_question(transactions).execute()
+
+    transaction_ids = (
+        transaction_ids or transactions_question(transactions).execute()
     )
 
-    reverted = api.revert_transaction(transaction_id, headers=headers)
-
-    print(reverted.id)
+    for transaction_id in transaction_ids:
+        reverted = api.revert_transaction(transaction_id, headers=headers)
+        print(reverted.id)

@@ -226,3 +226,14 @@ def transaction_question(
         message=message,
         choices=[Choice(t.id, name=t.description) for t in transactions],
     )
+
+
+def transactions_question(
+    transactions: List[Transaction],
+    message: str = "Transaction",
+) -> ListPrompt:
+    return inquirer.select(
+        message=message,
+        multiselect=True,
+        choices=[Choice(t.id, name=t.description) for t in transactions],
+    )
