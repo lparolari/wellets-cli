@@ -13,6 +13,7 @@ from wellets_cli.commands.transaction import transaction
 from wellets_cli.commands.transfer import transfer
 from wellets_cli.commands.wallet import wallet
 from wellets_cli.commands.whoami import whoami
+from wellets_cli.commands.investment import investment
 
 try:
     VERSION_PATH = pathlib.Path(__file__).parent / "VERSION"
@@ -39,5 +40,6 @@ def main():  # pragma: no cover
     cli.add_command(transfer)
     cli.add_command(asset)
     cli.add_command(register)
+    cli.add_command(investment)
 
     cli()

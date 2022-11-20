@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Any
 
 from pydantic import BaseModel
 
@@ -185,3 +185,27 @@ class AssetAllocation(BaseModel):
     balance: float
     allocation: float
     asset: Asset
+
+
+class Investment(BaseModel):
+    CREATED = "created"
+    STARTED = "started"
+    CLOSED = "closed"
+
+    id: str
+    alias: str
+    status: str
+    started_at: Optional[datetime] = None
+    ended_at: Optional[datetime] = None
+    created_at: datetime
+    updated_at: datetime
+    entries: Any = []
+
+    def is_active(self):
+        return self.status == self.STARTED
+    
+    def is_created(self):
+        return self.status == self.CREATED
+    
+    def is_closed(self):
+        return self.status == self.CLOSED
