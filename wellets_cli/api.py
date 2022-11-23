@@ -563,10 +563,11 @@ def create_investment(data: dict, headers: dict) -> Investment:
     return investment
 
 
-def get_investments(headers: dict) -> List[Investment]:
+def get_investments(params: dict, headers: dict) -> List[Investment]:
     response = requests.get(
         f"{BASE_URL}/investments",
         headers=headers,
+        params=params,
     )
 
     if not response.ok:

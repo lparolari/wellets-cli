@@ -19,6 +19,7 @@ from wellets_cli.model import (
     Portfolio,
     Transaction,
     Wallet,
+    Investment
 )
 from wellets_cli.util import parse_duration
 from wellets_cli.validator import (
@@ -237,3 +238,29 @@ def transactions_question(
         multiselect=True,
         choices=[Choice(t.id, name=t.description) for t in transactions],
     )
+
+
+def investment_question(
+    investments: List[Investment],
+    message: str = "Investment",
+) -> ListPrompt:
+    return inquirer.select(
+        message=message,
+        choices=[Choice(i.id, name=i.alias) for i in investments],
+    )
+
+
+def investment_entry_question(wallets):
+    class InvestmentEntryPrompt():  # inherit BaseSimplePrompt (inquirer py)
+        def execute():
+            wallet = wallet_question(wallets).execute()
+
+            return {
+                # TODO: props
+            }
+
+    return InvestmentEntryPrompt()
+    # wallet id
+    # value
+    # dollar rate
+    # kind (in/out) , if out `input_id` (mandatory)

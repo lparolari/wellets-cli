@@ -13,6 +13,7 @@ from wellets_cli.question import (
     asset_question,
     date_question,
     duration_question,
+    investment_question,
 )
 from wellets_cli.util import format_duration, get_by_id, make_headers, pp
 from wellets_cli.validator import (
@@ -68,3 +69,29 @@ def list_investments(auth_token):
     data = [get_row(investment) for investment in investments]
     
     print(tabulate(data, headers="keys"))
+
+
+@investment.command(name="start")
+@click.option("-id", "--investment-id")
+@click.option("--auth-token")
+def start_investment(investment_id, auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    investments = api.get_investments(params={"status": "created"}, headers=headers)
+
+    investment_id = investment_id or investment_question(investments).execute()
+
+    entries = []
+
+    while True:
+        # use investment_entry_question
+        
+        more = inquirer.confirm(message="Add more entries").execute()
+
+        if not more:
+            break
+
+    # investment = api.start_investment(investment_id, headers=headers)
+
+    print(investment_id)
