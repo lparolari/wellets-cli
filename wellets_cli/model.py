@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional, Any
+from typing import Any, List, Optional
 
 from pydantic import BaseModel
 
@@ -203,9 +203,14 @@ class Investment(BaseModel):
 
     def is_active(self):
         return self.status == self.STARTED
-    
+
     def is_created(self):
         return self.status == self.CREATED
-    
+
     def is_closed(self):
         return self.status == self.CLOSED
+
+
+class WalletHistory(BaseModel):
+    timestamp: datetime
+    balance: float

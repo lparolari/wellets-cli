@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 import click
@@ -201,13 +202,15 @@ def create_accumulation(
 
     planned_start = (
         planned_start
-        or date_question(message="Planned start (yyyy-MM-dd HH:mm)").execute()
+        or date_question(
+            message="Planned start (yyyy-MM-dd HH:mm)", default=datetime.now()
+        ).execute()
     )
 
     planned_end = (
         planned_end
         or date_question(
-            message="Planned end (yyyy-MM-dd HH:mm)", default=None
+            message="Planned end (yyyy-MM-dd HH:mm)", default=datetime.now()
         ).execute()
     )
 

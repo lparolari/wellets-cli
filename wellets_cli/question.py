@@ -1,8 +1,8 @@
-from datetime import datetime
-from typing import List, Optional
+from datetime import datetime, timedelta
+from typing import Any, List, Optional
 
-import InquirerPy
 from InquirerPy import inquirer
+from InquirerPy.base import BaseComplexPrompt, BaseSimplePrompt
 from InquirerPy.base.control import Choice, Separator
 from InquirerPy.prompts import (
     ConfirmPrompt,
@@ -188,13 +188,16 @@ def accumulation_question(
 
 
 def date_question(
-    message: str = "Date (yyyy-MM-dd HH:mm)",
-    default: Optional[str] = datetime.now().strftime("%Y-%m-%d %H:%M"),
+    message: str = "Date",
+    default: Optional[datetime] = None,
+    date_fmt="%Y-%m-%d %H:%M",
 ) -> InputPrompt:
     return inquirer.text(
         message=message,
-        default=default if default else "",
-        validate=AndValidator([EmptyInputValidator(), DateValidator()]),
+        default=default.strftime(date_fmt) if default else "",
+        validate=AndValidator(
+            [EmptyInputValidator(), DateValidator(date_fmt=date_fmt)]
+        ),
     )
 
 
@@ -237,3 +240,79 @@ def transactions_question(
         multiselect=True,
         choices=[Choice(t.id, name=t.description) for t in transactions],
     )
+
+
+def interval_question(
+    message: str = "Interval",
+    default: Optional[str] = None,
+) -> ListPrompt:
+    return inquirer.select(
+        message=message,
+        choices=[Choice(i, name=i) for i in ["1d", "1w"]],
+        default=default,
+    )
+
+
+def date_range_question(
+    message: str = "Range",
+    now: Optional[datetime] = None,
+    date_fmt: Optional[str] = None,
+) -> Any:
+    class DateRangePrompt:
+        def __init__(self, message: str, now: Optional[datetime] = None):
+            self._message = message
+            self._now = now or datetime.now()
+            self._date_fmt = "%Y-%m-%d" if date_fmt is None else date_fmt
+
+        def execute(self) -> Any:
+            last_1d = (self._now - timedelta(days=1), self._now)
+            last_7d = (self._now - timedelta(days=7), self._now)
+            last_30d = (self._now - timedelta(days=30), self._now)
+            last_90d = (self._now - timedelta(days=90), self._now)
+            last_180d = (self._now - timedelta(days=180), self._now)
+            last_365d = (self._now - timedelta(days=365), self._now)
+
+            predefined_ranges = [
+                ("Last day", last_1d),
+                ("Last 7 days", last_7d),
+                ("Last 30 days", last_30d),
+                ("Last 90 days", last_90d),
+                ("Last 180 days", last_180d),
+                ("Last 365 days", last_365d),
+            ]
+
+            choices = (
+                [Choice(value, name) for (name, value) in predefined_ranges]
+                + [Separator()]
+                + [
+                    Choice(None, "Custom"),
+                ]
+            )
+
+            the_range = inquirer.select(
+                message,
+                choices,
+                default=last_1d,
+            ).execute()
+
+            if the_range is None:
+                return self._custom_range()
+
+            return the_range
+
+        def _custom_range(self):
+            start = date_question(
+                message="Start date",
+                default=self._now,
+                date_fmt=self.date_fmt,
+            ).execute()
+
+            end = date_question(
+                message="End date",
+                default=self._now,
+                date_fmt=self.date_fmt,
+            ).execute()
+
+            return (start, end)
+
+    return DateRangePrompt(message=message, now=now)

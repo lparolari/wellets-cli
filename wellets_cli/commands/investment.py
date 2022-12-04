@@ -61,10 +61,12 @@ def list_investments(auth_token):
             "id": investment.id,
             "alias": investment.alias,
             "status": investment.status,
-            "started_at": investment.started_at and investment.started_at.strftime("%Y-%m-%d"),
-            "ended_at": investment.ended_at and investment.ended_at.strftime("%Y-%m-%d"),
+            "started_at": investment.started_at
+            and investment.started_at.strftime("%Y-%m-%d"),
+            "ended_at": investment.ended_at
+            and investment.ended_at.strftime("%Y-%m-%d"),
         }
 
     data = [get_row(investment) for investment in investments]
-    
+
     print(tabulate(data, headers="keys"))

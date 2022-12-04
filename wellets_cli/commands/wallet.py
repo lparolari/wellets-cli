@@ -9,15 +9,12 @@ from wellets_cli.prompt import prompt_wallet
 from wellets_cli.question import (
     confirm_question,
     currency_question,
+    date_question,
+    date_range_question,
+    interval_question,
     wallet_question,
 )
-from wellets_cli.util import (
-    change_value,
-    get_by_id,
-    get_currency_by_id,
-    make_headers,
-    pp,
-)
+from wellets_cli.util import change_value, get_currency_by_id, make_headers, pp
 from wellets_cli.validator import (
     AndValidator,
     EmptyInputValidator,
@@ -176,3 +173,50 @@ def show_wallets_total_balance(auth_token):
     result = api.get_wallets_total_balance(headers=headers)
 
     print(f"{result.balance} {result.currency.acronym}")
+
+
+@wallet.command(name="history")
+@click.option("--wallet-id")
+@click.option(
+    "--interval", type=click.Choice(["1d", "1w"], case_sensitive=True)
+)
+@click.option("--start-date", type=click.DateTime())
+@click.option("--end-date", type=click.DateTime())
+@click.option("--path", type=click.Path())
+@click.option("--auth-token")
+def show_wallet_history(wallet_id, interval, start_date, end_date, path, auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    wallets = api.get_wallets(headers=headers)
+
+    wallet_id = wallet_id or wallet_question(wallets).execute()
+    interval = interval or interval_question().execute()
+    start_date, end_date = (
+        start_date and end_date
+    ) or date_range_question().execute()
+
+    params = {
+        "wallet_id": wallet_id,
+        "start": start_date,
+        "end": end_date,
+        "interval": interval,
+    }
+
+    history = api.get_wallet_history(params=params, headers=headers)
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    xs = np.array([x.timestamp for x in history])
+    ys = np.array([x.balance for x in history])
+
+    fig, ax = plt.subplots()
+    fig.autofmt_xdate()
+    ax.plot(xs, ys)
+    
+    if path:
+        plt.savefig(path)
+        print("Saved to", path)
+    else:
+        plt.show()

@@ -12,6 +12,7 @@ from wellets_cli.model import (
     AverageLoadPrice,
     Balance,
     Currency,
+    Investment,
     NextAccumulationEntry,
     Portfolio,
     PortfolioRebalance,
@@ -22,7 +23,7 @@ from wellets_cli.model import (
     UserSettings,
     Wallet,
     WalletAverageLoadPrice,
-    Investment,
+    WalletHistory,
 )
 
 BASE_URL = Config.api_url
@@ -575,3 +576,19 @@ def get_investments(headers: dict) -> List[Investment]:
     investments = response.json()
     investments = [Investment(**i) for i in investments]
     return investments
+
+
+def get_wallet_history(params: dict, headers: dict) -> List[WalletHistory]:
+    response = requests.get(
+        f"{BASE_URL}/wallets-balances/history",
+        params=params,
+        headers=headers,
+    )
+
+    if not response.ok:
+        print(response.status_code)
+        raise APIError(response.json())
+
+    history = response.json()
+    history = [WalletHistory(**h) for h in history]
+    return history

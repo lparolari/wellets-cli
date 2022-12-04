@@ -6,6 +6,7 @@ from wellets_cli.commands.accumulation import accumulation
 from wellets_cli.commands.asset import asset
 from wellets_cli.commands.config import config
 from wellets_cli.commands.currency import currency
+from wellets_cli.commands.investment import investment
 from wellets_cli.commands.login import login
 from wellets_cli.commands.portfolio import portfolio
 from wellets_cli.commands.register import register
@@ -13,7 +14,6 @@ from wellets_cli.commands.transaction import transaction
 from wellets_cli.commands.transfer import transfer
 from wellets_cli.commands.wallet import wallet
 from wellets_cli.commands.whoami import whoami
-from wellets_cli.commands.investment import investment
 
 try:
     VERSION_PATH = pathlib.Path(__file__).parent / "VERSION"
