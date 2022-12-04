@@ -7,7 +7,24 @@ Changelog
 
 Fix
 ~~~
+- Require confirmation before transaction revert. [lparolari]
+
+Other
+~~~~~
+- Feat: show wallet balances. [lparolari]
+- Feat: create/list investments. [lparolari]
+
+
+1.1.2 (2022-11-19)
+------------------
+
+Fix
+~~~
 - Version not found. [lparolari]
+
+Other
+~~~~~
+- Release: v1.1.2. [lparolari]
 
 
 1.1.1 (2022-11-19)
