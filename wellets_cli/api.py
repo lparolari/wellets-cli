@@ -12,6 +12,7 @@ from wellets_cli.model import (
     AverageLoadPrice,
     Balance,
     Currency,
+    Investment,
     NextAccumulationEntry,
     Portfolio,
     PortfolioRebalance,
@@ -22,7 +23,6 @@ from wellets_cli.model import (
     UserSettings,
     Wallet,
     WalletAverageLoadPrice,
-    Investment,
 )
 
 BASE_URL = Config.api_url
@@ -576,3 +576,20 @@ def get_investments(params: dict, headers: dict) -> List[Investment]:
     investments = response.json()
     investments = [Investment(**i) for i in investments]
     return investments
+
+
+def start_investment(
+    investment_id: str, data: dict, headers: dict
+) -> Investment:
+    response = requests.post(
+        f"{BASE_URL}/investments/{investment_id}/start",
+        headers=headers,
+        json=data,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    investment = response.json()
+    investment = Investment(**investment)
+    return investment

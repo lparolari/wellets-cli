@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
 
-import InquirerPy
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice, Separator
 from InquirerPy.prompts import (
@@ -16,16 +15,17 @@ from wellets_cli.model import (
     Accumulation,
     Asset,
     Currency,
+    Investment,
     Portfolio,
     Transaction,
     Wallet,
-    Investment
 )
-from wellets_cli.util import parse_duration
+from wellets_cli.util import get_by_id, parse_duration
 from wellets_cli.validator import (
     AndValidator,
     DateValidator,
     DurationValidator,
+    GreaterThanOrEqualValidator,
     GreaterThanValidator,
 )
 
@@ -250,17 +250,56 @@ def investment_question(
     )
 
 
-def investment_entry_question(wallets):
-    class InvestmentEntryPrompt():  # inherit BaseSimplePrompt (inquirer py)
-        def execute():
-            wallet = wallet_question(wallets).execute()
+def investment_entry_question(
+    wallets: List[Wallet], currencies: List[Currency]
+):
+    class InvestmentEntryPrompt:
+        def execute(self):
+            kind = inquirer.select(
+                message="Type",
+                choices=[
+                    Choice("input", name="Input"),
+                    Choice("output", name="Output"),
+                ],
+            ).execute()
+
+            wallet_id = wallet_question(wallets).execute()
+            wallet = get_by_id(wallets, wallet_id)
+            wallet_currency = get_by_id(currencies, wallet.currency_id)
+
+            value = inquirer.number(
+                message="Amount",
+                float_allowed=True,
+                validate=AndValidator(
+                    [EmptyInputValidator(), GreaterThanOrEqualValidator(0)]
+                ),
+                filter=lambda x: float(x),
+            ).execute()
+
+            currency_id = currency_question(
+                currencies=currencies, message="Change rate"
+            ).execute()
+            currency = get_by_id(currencies, currency_id)
+
+            change_val = change_value_question(
+                source_currency=wallet_currency,
+                target_currency=currency,
+            ).execute()
+
+            input_id = None
+
+            if kind == "output":
+                # input_id = inquirer.select(
+                #     message="Input",
+                #     choices=[Choice(i.id, name="foo") for i in entries]
+                # ).execute()
+                raise NotImplementedError("Not implemented yet")
 
             return {
-                # TODO: props
+                "wallet_id": wallet_id,
+                "value": value,
+                "dollar_rate": change_val,
+                "input_id": input_id,
             }
 
     return InvestmentEntryPrompt()
-    # wallet id
-    # value
-    # dollar rate
-    # kind (in/out) , if out `input_id` (mandatory)
