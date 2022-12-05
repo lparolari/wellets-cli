@@ -4,7 +4,7 @@ from tabulate import tabulate
 
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
-from wellets_cli.model import Investment
+from wellets_cli.model import Investment, InvestmentEntry
 from wellets_cli.question import (
     investment_entry_data_question,
     investment_question,
@@ -164,3 +164,34 @@ def close_investment(investment_id, auth_token):
     )
 
     print(investment.id)
+
+
+@investment.command(name="show")
+@click.option("-id", "--investment-id")
+@click.option("--auth-token")
+def show_investment(investment_id, auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    investments = api.get_investments(params={}, headers=headers)
+
+    if not len(investments):
+        return
+    
+    investment_id = investment_id or investment_question(investments).execute()
+
+    investment = api.get_investment(investment_id, headers=headers)
+
+    # TODO: improve view
+    def get_row(entry: InvestmentEntry):
+        return {
+            "id": entry.id,
+            "type": entry.kind,
+            "wallet": entry.wallet.alias,
+            "currency": entry.wallet.currency.acronym,
+            "value": entry.value,
+        }
+    
+    data = [get_row(entry) for entry in investment.entries]
+
+    print(tabulate(data, headers="keys"))

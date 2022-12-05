@@ -610,3 +610,19 @@ def close_investment(
     investment = response.json()
     investment = Investment(**investment)
     return investment
+
+
+def get_investment(
+    investment_id: str, headers: dict
+) -> Investment:
+    response = requests.get(
+        f"{BASE_URL}/investments/{investment_id}",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    investment = response.json()
+    investment = Investment(**investment)
+    return investment
