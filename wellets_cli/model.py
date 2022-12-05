@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any, List, Literal, Optional, Union
 
 from pydantic import BaseModel
 
@@ -187,6 +187,19 @@ class AssetAllocation(BaseModel):
     asset: Asset
 
 
+class InvestmentEntry(BaseModel):
+    id: str
+    kind: Union[Literal["input"], Literal["output"]]
+    value: float
+    dollar_rate: float
+    investment_id: str
+    wallet_id: str
+    wallet: Wallet
+    input_id: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+
+
 class Investment(BaseModel):
     CREATED = "created"
     STARTED = "started"
@@ -199,7 +212,7 @@ class Investment(BaseModel):
     ended_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
-    entries: Any = []
+    entries: List[InvestmentEntry] = []
 
     def is_active(self):
         return self.status == self.STARTED

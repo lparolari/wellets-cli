@@ -16,6 +16,7 @@ from wellets_cli.model import (
     Asset,
     Currency,
     Investment,
+    InvestmentEntry,
     Portfolio,
     Transaction,
     Wallet,
@@ -251,17 +252,39 @@ def investment_question(
 
 
 def investment_entry_question(
-    wallets: List[Wallet], currencies: List[Currency]
+    investment_entries: List[InvestmentEntry],
+    message: str = "Investment entry",
+) -> ListPrompt:
+    return inquirer.select(
+        message=message,
+        choices=[
+            Choice(
+                e.id,
+                name=f"{e.value} {e.wallet.currency.acronym} on {e.wallet.alias}",
+            )
+            for e in investment_entries
+        ],
+    )
+
+
+def investment_entry_data_question(
+    wallets: List[Wallet],
+    currencies: List[Currency],
+    investment: Investment,
+    entry_type: str,
 ):
     class InvestmentEntryPrompt:
         def execute(self):
-            kind = inquirer.select(
-                message="Type",
-                choices=[
-                    Choice("input", name="Input"),
-                    Choice("output", name="Output"),
-                ],
-            ).execute()
+            kind = (
+                entry_type
+                or inquirer.select(
+                    message="Type",
+                    choices=[
+                        Choice("input", name="Input"),
+                        Choice("output", name="Output"),
+                    ],
+                ).execute()
+            )
 
             wallet_id = wallet_question(wallets).execute()
             wallet = get_by_id(wallets, wallet_id)
@@ -289,11 +312,9 @@ def investment_entry_question(
             input_id = None
 
             if kind == "output":
-                # input_id = inquirer.select(
-                #     message="Input",
-                #     choices=[Choice(i.id, name="foo") for i in entries]
-                # ).execute()
-                raise NotImplementedError("Not implemented yet")
+                input_id = investment_entry_question(
+                    investment.entries
+                ).execute()
 
             return {
                 "wallet_id": wallet_id,
