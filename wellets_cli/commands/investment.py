@@ -9,7 +9,7 @@ from wellets_cli.question import (
     investment_entry_data_question,
     investment_question,
 )
-from wellets_cli.util import get_by_id, make_headers
+from wellets_cli.util import get_by_id, make_headers, pp
 from wellets_cli.validator import EmptyInputValidator
 
 
@@ -182,14 +182,12 @@ def show_investment(investment_id, auth_token):
 
     investment = api.get_investment(investment_id, headers=headers)
 
-    # TODO: improve view
     def get_row(entry: InvestmentEntry):
         return {
             "id": entry.id,
             "type": entry.kind,
             "wallet": entry.wallet.alias,
-            "currency": entry.wallet.currency.acronym,
-            "value": entry.value,
+            "amount": f"{entry.wallet.currency.acronym} {pp(entry.value, decimals=1)}",
         }
     
     data = [get_row(entry) for entry in investment.entries]
