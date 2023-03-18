@@ -18,11 +18,7 @@ def validate(validator: Validator2, value: Any):
 
 
 def percent_validator(val: str):
-    return (
-        True
-        if float(val) >= 0 and float(val) <= 100
-        else "Should be a percentage"
-    )
+    return True if float(val) >= 0 and float(val) <= 100 else "Should be a percentage"
 
 
 def not_empty_validator(val: str):
@@ -209,9 +205,7 @@ class TextLengthValidator(Validator):
 
 
 class PasswordMatchValidator(Validator):
-    def __init__(
-        self, password: str, message: str = "Passwords do not match"
-    ) -> None:
+    def __init__(self, password: str, message: str = "Passwords do not match") -> None:
         self._password = password
         self._message = message
 
@@ -222,3 +216,29 @@ class PasswordMatchValidator(Validator):
                 message=self._message,
                 cursor_position=document.cursor_position,
             )
+
+
+class UrlValidator(Validator):
+    def __init__(
+        self,
+        message: str = "Input should be a URL",
+        scheme: str = None,
+        message_scheme: str = None,
+    ) -> None:
+        self._message = message
+        self._scheme = scheme
+        self._message_scheme = message_scheme
+
+    def validate(self, document):
+        if "://" not in document.text:
+            raise ValidationError(
+                message=self._message,
+                cursor_position=document.cursor_position,
+            )
+    
+        if self._scheme is not None:
+            if not document.text.startswith(self._scheme):
+                raise ValidationError(
+                    message=self._message_scheme,
+                    cursor_position=document.cursor_position,
+                )

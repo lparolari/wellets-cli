@@ -1,11 +1,14 @@
 import click
 from tabulate import tabulate
 
+from InquirerPy import inquirer
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
-from wellets_cli.config import Config
+from wellets_cli.config import ConfigManager
 from wellets_cli.question import currency_question
 from wellets_cli.util import make_headers
+from wellets_cli.util import get_currency_by_id
+from wellets_cli.validator import AndValidator, EmptyInputValidator, UrlValidator
 
 CONFIG_API_URL = "api.url"
 CONFIG_API_USERNAME = "api.username"
@@ -19,22 +22,56 @@ def config():
     pass
 
 
+@config.command(name="keys")
+def show_config_keys():
+    data = ConfigManager.configs()
+
+    data = [
+        {
+            "config": config.key(),
+            "description": config.description(),
+            "settable": config.is_settable(),
+            "server_side": config.is_server_side(),
+            "sensitive": config.is_sensitive(),
+        }
+        for config in data
+    ]
+
+    print(tabulate(data, headers="keys"))
+
+
 @config.command(name="show")
+@click.option(
+    "--config",
+    default="local",
+    help="One of the config keys, 'local' or 'all'. Default: 'local'",
+)
+@click.option("--nonsensitive", is_flag=True)
 @click.option("--auth-token")
-def show_config(auth_token):
+def show_config(config, nonsensitive, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    preferred_currency = api.get_preferred_currency(headers=headers)
+    if config in ["all"]:
+        keys = ConfigManager.keys()
+    elif config in ["local"]:
+        keys = ConfigManager.keys(server_side=False)
+    elif ConfigManager.has_key(config):
+        keys = [config]
+    else:
+        print(f"Config '{config}' does not exist")
+        return
+
+    data = ConfigManager.configs(keys)
 
     data = [
-        {"config": CONFIG_API_URL, "value": Config.api_url},
-        {"config": CONFIG_API_USERNAME, "value": Config.api_username},
-        {"config": CONFIG_API_PASSWORD, "value": "<sensitive>"},
         {
-            "config": CONFIG_USER_PREFERRED_CURRENCY,
-            "value": preferred_currency.acronym,
-        },
+            "key": config.key(),
+            "value": config.value(headers=headers)
+            if nonsensitive or not config.is_sensitive()
+            else "<sensitive>",
+        }
+        for config in data
     ]
 
     print(tabulate(data, headers="keys"))
@@ -47,7 +84,15 @@ def set_config(config, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    if CONFIG_USER_PREFERRED_CURRENCY in config:
+    if not ConfigManager.has_key(config):
+        print(f"Config '{config}' does not exist")
+        return
+
+    if config not in ConfigManager.keys(settable=True):
+        print(f"Config '{config}' is not settable")
+        return
+
+    if config == "user-settings.preferred-currency":
         preferred_currency = api.get_preferred_currency(headers=headers)
         currencies = api.get_currencies(headers=headers)
 
@@ -59,4 +104,4 @@ def set_config(config, auth_token):
             data={"currency_id": currency_id}, headers=headers
         )
 
-    print(user_settings.id)
+        print(user_settings.id)

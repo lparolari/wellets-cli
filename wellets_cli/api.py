@@ -3,7 +3,7 @@ from typing import List, Optional
 import requests
 
 from wellets_cli.auth import UserSession
-from wellets_cli.config import Config
+from wellets_cli.config import ConfigManager
 from wellets_cli.model import (
     Accumulation,
     Asset,
@@ -26,7 +26,7 @@ from wellets_cli.model import (
     WalletHistory,
 )
 
-BASE_URL = Config.api_url
+base_url = lambda: ConfigManager.get("api.url")
 
 
 class APIError(ValueError):
@@ -35,7 +35,7 @@ class APIError(ValueError):
 
 def login(email: str, password: str) -> UserSession:
     response = requests.post(
-        f"{BASE_URL}/users/sessions",
+        f"{base_url()}/users/sessions",
         json={"email": email, "password": password},
     )
 
@@ -49,7 +49,7 @@ def login(email: str, password: str) -> UserSession:
 
 def get_currencies(headers: dict) -> List[UserCurrency]:
     response = requests.get(
-        f"{BASE_URL}/currencies",
+        f"{base_url()}/currencies",
         headers=headers,
     )
 
@@ -64,7 +64,7 @@ def get_currencies(headers: dict) -> List[UserCurrency]:
 
 def get_wallets(headers: dict, params: Optional[dict] = None) -> List[Wallet]:
     response = requests.get(
-        f"{BASE_URL}/wallets",
+        f"{base_url()}/wallets",
         headers=headers,
         params=params,
     )
@@ -80,7 +80,7 @@ def get_wallets(headers: dict, params: Optional[dict] = None) -> List[Wallet]:
 
 def create_wallet(data: dict, headers: dict) -> Wallet:
     response = requests.post(
-        f"{BASE_URL}/wallets",
+        f"{base_url()}/wallets",
         json=data,
         headers=headers,
     )
@@ -95,7 +95,7 @@ def create_wallet(data: dict, headers: dict) -> Wallet:
 
 def update_wallet(wallet_id, data: dict, headers: dict) -> Wallet:
     response = requests.patch(
-        f"{BASE_URL}/wallets/{wallet_id}",
+        f"{base_url()}/wallets/{wallet_id}",
         json=data,
         headers=headers,
     )
@@ -110,7 +110,7 @@ def update_wallet(wallet_id, data: dict, headers: dict) -> Wallet:
 
 def delete_wallet(wallet_id: str, headers: dict) -> Wallet:
     response = requests.delete(
-        f"{BASE_URL}/wallets/{wallet_id}",
+        f"{base_url()}/wallets/{wallet_id}",
         headers=headers,
     )
 
@@ -126,7 +126,7 @@ def get_wallet_average_load_price(
     params: dict, headers: dict
 ) -> WalletAverageLoadPrice:
     response = requests.get(
-        f"{BASE_URL}/wallets/average-load-price",
+        f"{base_url()}/wallets/average-load-price",
         params=params,
         headers=headers,
     )
@@ -141,7 +141,7 @@ def get_wallet_average_load_price(
 
 def get_user_settings(headers: dict) -> UserSettings:
     response = requests.get(
-        f"{BASE_URL}/users/settings",
+        f"{base_url()}/users/settings",
         headers=headers,
     )
 
@@ -163,7 +163,7 @@ def get_portfolios(params: dict, headers: dict) -> List[Portfolio]:
     show_all = params.get("show_all")
 
     response = requests.get(
-        f"{BASE_URL}/portfolios"
+        f"{base_url()}/portfolios"
         f"/{portfolio_id if portfolio_id else ''}"
         f"{'/all' if show_all else ''}",
         headers=headers,
@@ -180,7 +180,7 @@ def get_portfolios(params: dict, headers: dict) -> List[Portfolio]:
 
 def get_portfolio(portfolio_id: str, headers: dict) -> Portfolio:
     response = requests.get(
-        f"{BASE_URL}/portfolios/{portfolio_id}/details",
+        f"{base_url()}/portfolios/{portfolio_id}/details",
         headers=headers,
     )
 
@@ -194,7 +194,7 @@ def get_portfolio(portfolio_id: str, headers: dict) -> Portfolio:
 
 def create_portfolio(data: dict, headers: dict) -> Portfolio:
     response = requests.post(
-        f"{BASE_URL}/portfolios",
+        f"{base_url()}/portfolios",
         json=data,
         headers=headers,
     )
@@ -209,7 +209,7 @@ def create_portfolio(data: dict, headers: dict) -> Portfolio:
 
 def edit_portfolio(portfolio_id: str, data: dict, headers: dict) -> Portfolio:
     response = requests.put(
-        f"{BASE_URL}/portfolios/{portfolio_id}",
+        f"{base_url()}/portfolios/{portfolio_id}",
         json=data,
         headers=headers,
     )
@@ -224,7 +224,7 @@ def edit_portfolio(portfolio_id: str, data: dict, headers: dict) -> Portfolio:
 
 def delete_portfolio(portfolio_id: str, headers: dict) -> Portfolio:
     response = requests.delete(
-        f"{BASE_URL}/portfolios/{portfolio_id}",
+        f"{base_url()}/portfolios/{portfolio_id}",
         headers=headers,
     )
 
@@ -238,7 +238,7 @@ def delete_portfolio(portfolio_id: str, headers: dict) -> Portfolio:
 
 def get_wallet_balance(wallet_id: str, headers: dict) -> Balance:
     response = requests.get(
-        f"{BASE_URL}/wallets/balance",
+        f"{base_url()}/wallets/balance",
         params={"wallet_id": wallet_id},
         headers=headers,
     )
@@ -253,7 +253,7 @@ def get_wallet_balance(wallet_id: str, headers: dict) -> Balance:
 
 def get_total_balance(headers: dict) -> Balance:
     response = requests.get(
-        f"{BASE_URL}/wallets/total-balance",
+        f"{base_url()}/wallets/total-balance",
         headers=headers,
     )
 
@@ -267,7 +267,7 @@ def get_total_balance(headers: dict) -> Balance:
 
 def get_wallets_total_balance(headers: dict) -> Balance:
     response = requests.get(
-        f"{BASE_URL}/wallets/total-balance",
+        f"{base_url()}/wallets/total-balance",
         headers=headers,
     )
 
@@ -281,7 +281,7 @@ def get_wallets_total_balance(headers: dict) -> Balance:
 
 def get_portfolios_balance(params: dict, headers: dict) -> Balance:
     response = requests.get(
-        f"{BASE_URL}/portfolios/balance",
+        f"{base_url()}/portfolios/balance",
         params=params,
         headers=headers,
     )
@@ -300,7 +300,7 @@ def get_portfolios_rebalance(
     portfolio_id = params["portfolio_id"]
 
     response = requests.get(
-        f"{BASE_URL}/portfolios/{portfolio_id}/rebalance",
+        f"{base_url()}/portfolios/{portfolio_id}/rebalance",
         headers=headers,
     )
 
@@ -314,7 +314,7 @@ def get_portfolios_rebalance(
 
 def get_transactions(params: dict, headers: dict) -> List[Transaction]:
     response = requests.get(
-        f"{BASE_URL}/transactions/",
+        f"{base_url()}/transactions/",
         params=params,
         headers=headers,
     )
@@ -329,7 +329,7 @@ def get_transactions(params: dict, headers: dict) -> List[Transaction]:
 
 def create_transaction(data: dict, headers: dict) -> Transaction:
     response = requests.post(
-        f"{BASE_URL}/transactions",
+        f"{base_url()}/transactions",
         json=data,
         headers=headers,
     )
@@ -344,7 +344,7 @@ def create_transaction(data: dict, headers: dict) -> Transaction:
 
 def get_wallet(wallet_id: str, headers: dict) -> Wallet:
     response = requests.get(
-        f"{BASE_URL}/wallets/{wallet_id}",
+        f"{base_url()}/wallets/{wallet_id}",
         headers=headers,
     )
 
@@ -358,7 +358,7 @@ def get_wallet(wallet_id: str, headers: dict) -> Wallet:
 
 def get_accumulations(params: dict, headers: dict) -> List[Accumulation]:
     response = requests.get(
-        f"{BASE_URL}/accumulations/",
+        f"{base_url()}/accumulations/",
         headers=headers,
         params=params,
     )
@@ -375,7 +375,7 @@ def get_next_accumulation_entry(
     accumulation_id: str, headers: dict
 ) -> NextAccumulationEntry:
     response = requests.get(
-        f"{BASE_URL}/accumulations/{accumulation_id}/next-entry",
+        f"{base_url()}/accumulations/{accumulation_id}/next-entry",
         headers=headers,
     )
 
@@ -389,7 +389,7 @@ def get_next_accumulation_entry(
 
 def create_accumulation(data: dict, headers: dict) -> Accumulation:
     response = requests.post(
-        f"{BASE_URL}/accumulations",
+        f"{base_url()}/accumulations",
         json=data,
         headers=headers,
     )
@@ -404,7 +404,7 @@ def create_accumulation(data: dict, headers: dict) -> Accumulation:
 
 def delete_accumulation(accumulation_id: str, headers: dict) -> Accumulation:
     response = requests.delete(
-        f"{BASE_URL}/accumulations/{accumulation_id}",
+        f"{base_url()}/accumulations/{accumulation_id}",
         headers=headers,
     )
 
@@ -418,7 +418,7 @@ def delete_accumulation(accumulation_id: str, headers: dict) -> Accumulation:
 
 def create_transfer(data: dict, headers: dict) -> Transfer:
     response = requests.post(
-        f"{BASE_URL}/transfers",
+        f"{base_url()}/transfers",
         json=data,
         headers=headers,
     )
@@ -433,7 +433,7 @@ def create_transfer(data: dict, headers: dict) -> Transfer:
 
 def get_assets(headers: dict) -> List[Asset]:
     response = requests.get(
-        f"{BASE_URL}/assets",
+        f"{base_url()}/assets",
         headers=headers,
     )
 
@@ -449,7 +449,7 @@ def get_asset_average_load_price(
     params: dict, headers: dict
 ) -> AverageLoadPrice:
     response = requests.get(
-        f"{BASE_URL}/assets/average-load-price",
+        f"{base_url()}/assets/average-load-price",
         params=params,
         headers=headers,
     )
@@ -464,7 +464,7 @@ def get_asset_average_load_price(
 
 def get_asset_balance(params: dict, headers: dict) -> Balance:
     response = requests.get(
-        f"{BASE_URL}/assets/balance",
+        f"{base_url()}/assets/balance",
         params=params,
         headers=headers,
     )
@@ -479,7 +479,7 @@ def get_asset_balance(params: dict, headers: dict) -> Balance:
 
 def get_asset_allocations(headers: dict) -> List[AssetAllocation]:
     response = requests.get(
-        f"{BASE_URL}/assets/allocations",
+        f"{base_url()}/assets/allocations",
         headers=headers,
     )
 
@@ -493,7 +493,7 @@ def get_asset_allocations(headers: dict) -> List[AssetAllocation]:
 
 def get_total_asset_balance(headers: dict) -> Balance:
     response = requests.get(
-        f"{BASE_URL}/assets/total-balance",
+        f"{base_url()}/assets/total-balance",
         headers=headers,
     )
 
@@ -507,7 +507,7 @@ def get_total_asset_balance(headers: dict) -> Balance:
 
 def revert_transaction(transaction_id: str, headers: dict) -> Transaction:
     response = requests.post(
-        f"{BASE_URL}/transactions/{transaction_id}/revert",
+        f"{base_url()}/transactions/{transaction_id}/revert",
         headers=headers,
     )
 
@@ -521,7 +521,7 @@ def revert_transaction(transaction_id: str, headers: dict) -> Transaction:
 
 def set_preferred_currency(data: dict, headers: dict) -> UserSettings:
     response = requests.put(
-        f"{BASE_URL}/users/settings",
+        f"{base_url()}/users/settings",
         json=data,
         headers=headers,
     )
@@ -536,7 +536,7 @@ def set_preferred_currency(data: dict, headers: dict) -> UserSettings:
 
 def register(data: dict, headers: dict) -> User:
     response = requests.post(
-        f"{BASE_URL}/users",
+        f"{base_url()}/users",
         json=data,
         headers=headers,
     )
@@ -551,7 +551,7 @@ def register(data: dict, headers: dict) -> User:
 
 def create_investment(data: dict, headers: dict) -> Investment:
     response = requests.post(
-        f"{BASE_URL}/investments",
+        f"{base_url()}/investments",
         json=data,
         headers=headers,
     )
@@ -566,7 +566,7 @@ def create_investment(data: dict, headers: dict) -> Investment:
 
 def get_investments(headers: dict) -> List[Investment]:
     response = requests.get(
-        f"{BASE_URL}/investments",
+        f"{base_url()}/investments",
         headers=headers,
     )
 
@@ -580,7 +580,7 @@ def get_investments(headers: dict) -> List[Investment]:
 
 def get_wallet_history(params: dict, headers: dict) -> List[WalletHistory]:
     response = requests.get(
-        f"{BASE_URL}/wallets-balances/history",
+        f"{base_url()}/wallets-balances/history",
         params=params,
         headers=headers,
     )

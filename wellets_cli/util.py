@@ -1,9 +1,12 @@
+import os
 import re
 from datetime import datetime
 from typing import List, Optional, TypeVar
 
 from dateutil.relativedelta import relativedelta
 
+import wellets_cli.api as api
+from wellets_cli.config import Config, ConfigManager
 from wellets_cli.model import Duration
 
 
@@ -51,9 +54,7 @@ def percent(x: float) -> float:
     return x * 100
 
 
-def pp(
-    x: float, percent=False, decimals=2, fixed=True, with_rounding=True
-) -> str:
+def pp(x: float, percent=False, decimals=2, fixed=True, with_rounding=True) -> str:
     if x is None:
         return ""  # ignore None values
 
@@ -114,9 +115,7 @@ def parse_duration(duration_str: str):
         )
 
     duration_params = {
-        name: float(param)
-        for name, param in parts.groupdict().items()
-        if param
+        name: float(param) for name, param in parts.groupdict().items() if param
     }
 
     delta = relativedelta(**duration_params)  # type: ignore
@@ -139,9 +138,7 @@ def change_from(from_dollar_rate: float, to_dollar_rate: float) -> float:
     return from_dollar_rate / to_dollar_rate
 
 
-def change_value(
-    from_dollar_rate: float, to_dollar_rate: float, value: float
-) -> float:
+def change_value(from_dollar_rate: float, to_dollar_rate: float, value: float) -> float:
     return 1 / change_from(from_dollar_rate, to_dollar_rate) * value
 
 
@@ -149,3 +146,41 @@ def change_val(from_currency, to_currency, value):
     from_dollar_rate = from_currency.dollar_rate
     to_dollar_rate = to_currency.dollar_rate
     return change_value(from_dollar_rate, to_dollar_rate, value)
+
+
+def add_configs():
+    API_URL = "api.url"
+    API_USERNAME = "api.username"
+    API_PASSWORD = "api.password"
+    USER_PREFERRED_CURRENCY = "user-settings.preferred-currency"
+
+    ConfigManager.add_configs(
+        [
+            Config[str](
+                key=API_URL,
+                value=os.getenv("API_URL") or "https://wellets-backend.herokuapp.com",
+                description="The wellets API URL",
+            ),
+            Config[str](
+                key=API_USERNAME,
+                value=os.getenv("API_USERNAME"),
+                description="Wellets username",
+            ),
+            Config[str](
+                key=API_PASSWORD,
+                value=os.getenv("API_PASSWORD"),
+                description="wellets password",
+                sensitive=True,
+            ),
+            Config[str](
+                key=USER_PREFERRED_CURRENCY,
+                description="The user's preferred currency",
+                settable=True,
+                server_side=True,
+                getter=lambda _, **kwargs: api.get_preferred_currency(
+                    headers=kwargs["headers"]
+                ).acronym,
+                setter=False,
+            ),
+        ]
+    )
