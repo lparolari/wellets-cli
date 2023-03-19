@@ -4,6 +4,12 @@ Changelog
 
 (unreleased)
 ------------
+- Feat: sync currency rates. [lparolari]
+- Chore: update config manager. [lparolari]
+
+
+1.2.0 (2022-12-04)
+------------------
 
 Fix
 ~~~
@@ -11,6 +17,7 @@ Fix
 
 Other
 ~~~~~
+- Release: v1.2.0. [lparolari]
 - Feat: show wallet balances. [lparolari]
 - Feat: create/list investments. [lparolari]
 
