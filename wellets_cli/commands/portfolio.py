@@ -68,7 +68,7 @@ def list_portfolios(portfolio_id, flatten, show_all, interactive, auth_token):
         return {
             "id": portfolio.id,
             "alias": portfolio.alias,
-            "weight": pp(portfolio.weight, percent=True, decimals=0),
+            "weight (%)": pp(portfolio.weight, 0, percent=True),
             "parent": portfolio.parent.alias if portfolio.parent else None,
             "children": ", ".join(
                 [child.alias for child in portfolio.children]
@@ -313,9 +313,9 @@ def show_portfolio_rebalance(portfolio_id, show_all, auth_token):
     def get_row_value(change: RebalanceChange):
         return {
             "portfolio": change.portfolio.alias,
-            "desired": f"{pp(change.portfolio.weight, percent=True, decimals=0)}",
-            "current": pp(change.weight, percent=True, decimals=2),
-            "off_by": pp(change.off_by, percent=True),
+            "desired (%)": f"{pp(change.portfolio.weight, 0, percent=True)}",
+            "current (%)": pp(change.weight, 1, percent=True),
+            "off_by (%)": pp(change.off_by, 1, percent=True),
             "target": pp(change.target),
             "actual": pp(change.actual),
             "rebalance": f"{change.action.type} {pp(change.action.amount)} {result.currency.acronym}",

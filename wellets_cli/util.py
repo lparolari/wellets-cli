@@ -54,13 +54,13 @@ def percent(x: float) -> float:
     return x * 100
 
 
-def pp(x: float, percent=False, decimals=2, fixed=True, with_rounding=True) -> str:
+def pp(x: float, decimals=2, percent=False, fixed=True, with_symbol=False, with_rounding=False) -> str:
     if x is None:
         return ""  # ignore None values
 
     # make percentage, if needed
     x = x * 100 if percent else x
-    p = "%" if percent else ""
+    p = "%" if percent and with_symbol else ""
 
     # round x to given number of decimals
     x_rounded = round(x, decimals)

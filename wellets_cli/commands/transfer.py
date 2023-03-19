@@ -65,7 +65,7 @@ def create_transfer(
         value
         or inquirer.number(
             message=f"Value ({from_wallet.currency.alias})",
-            default=from_wallet.balance if use_max_balance else "",
+            default=from_wallet.balance if use_max_balance else 0,
             float_allowed=True,
             transformer=lambda x: pp(float(x), fixed=False),
             filter=lambda x: float(x),
@@ -85,7 +85,7 @@ def create_transfer(
             message=f"Percentual fee ({from_wallet.currency.alias})",
             float_allowed=True,
             transformer=lambda x: pp(
-                float(x) / 100, percent=True, fixed=False
+                float(x) / 100, percent=True, fixed=False, with_symbol=True,
             ),
             filter=lambda x: float(x) / 100,
             validate=AndValidator(

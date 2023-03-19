@@ -96,7 +96,7 @@ def show_asset_allocations(auth_token):
             "id": f"{allocation.asset.id}",
             "asset": f"{allocation.asset.currency.acronym}",
             "balance": f"{currency.acronym} {pp(allocation.balance)}",
-            "allocation": f"{pp(allocation.allocation, percent=True, decimals=0)}",
+            "allocation (%)": f"{pp(allocation.allocation, 0, percent=True)}",
         }
 
     data = [get_row_value(allocation) for allocation in allocations]
