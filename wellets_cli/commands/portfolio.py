@@ -11,7 +11,7 @@ from wellets_cli.question import (
     portfolio_question,
     wallets_question,
 )
-from wellets_cli.util import make_headers, pp, wrapt
+from wellets_cli.util import make_headers, pp
 from wellets_cli.validator import (
     AndValidator,
     GreaterThanOrEqualValidator,
