@@ -34,3 +34,14 @@ def list_currencies(auth_token):
     data = list(map(get_row_value, currencies))
 
     print(tabulate(data, headers="keys"))
+
+
+@currency.command(name="sync")
+@click.option("--auth-token")
+def sync_currencies(auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    sync_status = api.sync_currencies(headers=headers)
+
+    print(f"Currencies sync completed with status '{sync_status}'")

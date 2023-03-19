@@ -62,6 +62,22 @@ def get_currencies(headers: dict) -> List[UserCurrency]:
     return currencies
 
 
+def sync_currencies(headers: dict) -> None:
+    response = requests.post(
+        f"{base_url()}/currencies/rate/sync",
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+    
+    if response.status_code == 201:
+        return "synced"
+    if response.status_code == 200:
+        return "already synced"
+    return "unknown"
+
+
 def get_wallets(headers: dict, params: Optional[dict] = None) -> List[Wallet]:
     response = requests.get(
         f"{base_url()}/wallets",
