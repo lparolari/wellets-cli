@@ -11,7 +11,7 @@ from wellets_cli.question import (
     portfolio_question,
     wallets_question,
 )
-from wellets_cli.util import make_headers, pp
+from wellets_cli.util import make_headers, pp, wrapt
 from wellets_cli.validator import (
     AndValidator,
     GreaterThanOrEqualValidator,
@@ -33,8 +33,9 @@ def portfolio():
 @click.option("-f", "--flatten", is_flag=True)
 @click.option("-a", "--all", "show_all", is_flag=True)
 @click.option("-i", "--interactive", is_flag=True)
+@click.option("-v", "--verbose", is_flag=True)
 @click.option("--auth-token")
-def list_portfolios(portfolio_id, flatten, show_all, interactive, auth_token):
+def list_portfolios(portfolio_id, flatten, show_all, interactive, verbose, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -65,18 +66,57 @@ def list_portfolios(portfolio_id, flatten, show_all, interactive, auth_token):
         portfolios = [p for p in flatten_portfolios()]
 
     def get_row_value(portfolio: Portfolio):
+        if verbose:
+            children = ", ".join(sorted([child.alias for child in portfolio.children]))
+            wallets = ", ".join(sorted([wallet.alias for wallet in portfolio.wallets]))
+        else:
+            children = f"{len(portfolio.children)} children" if len(portfolio.children) > 0 else ""
+            wallets = f"{len(portfolio.wallets)} wallets" if len(portfolio.wallets) > 0 else ""
+
         return {
             "id": portfolio.id,
             "alias": portfolio.alias,
             "weight (%)": pp(portfolio.weight, 0, percent=True),
             "parent": portfolio.parent.alias if portfolio.parent else None,
-            "children": ", ".join(
-                [child.alias for child in portfolio.children]
-            ),
-            "wallets": ", ".join([w.alias for w in portfolio.wallets]),
+            "children": children,
+            "wallets": wallets,
         }
 
     data = list(map(get_row_value, portfolios))
+
+    print(tabulate(data, headers="keys"))
+
+
+@portfolio.command(name="show")
+@click.option("-n", "--alias", type=str)
+@click.option("--auth-token")
+def show_portfolio(alias, auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    alias = alias or ""
+
+    # TODO: replace with the proper API call
+    portfolios = api.get_portfolios(
+        params={"portfolio_id": None, "show_all": True},
+        headers=headers,
+    )
+
+    search = [p for p in portfolios if alias.lower() in p.alias.lower()]
+
+    if len(search) == 0:
+        print("No portfolio found")
+    
+    portfolio = search[0]
+
+    data = [
+        {"key": "id", "value": portfolio.id},
+        {"key": "alias", "value": portfolio.alias},
+        {"key": "weight", "value": pp(portfolio.weight, 0, percent=True)},
+        {"key": "parent", "value": portfolio.parent.alias if portfolio.parent else "-"},
+        {"key": "children", "value": "\n".join(sorted([child.alias for child in portfolio.children])) or "-"},
+        {"key": "wallets", "value": "\n".join(sorted([w.alias for w in portfolio.wallets])) or "-"},
+    ]
 
     print(tabulate(data, headers="keys"))
 
@@ -89,9 +129,7 @@ def list_portfolios(portfolio_id, flatten, show_all, interactive, auth_token):
 @click.option(
     "--wallet-ids",
     multiple=True,
-    callback=lambda _1, _2, value: validate(
-        each_validator(uuid_validator), value
-    ),
+    callback=lambda _1, _2, value: validate(each_validator(uuid_validator), value),
 )
 @click.option("-y", "--yes", is_flag=True, type=bool)
 def create_portfolio(alias, weight, parent_id, wallet_ids, auth_token, yes):
@@ -130,8 +168,7 @@ def create_portfolio(alias, weight, parent_id, wallet_ids, auth_token, yes):
         ).execute()
     )
     wallet_ids = (
-        wallet_ids
-        or wallets_question(wallets=wallets, allow_none=True).execute()
+        wallet_ids or wallets_question(wallets=wallets, allow_none=True).execute()
     )
 
     data = {
@@ -158,14 +195,10 @@ def create_portfolio(alias, weight, parent_id, wallet_ids, auth_token, yes):
 @click.option(
     "--wallet-ids",
     multiple=True,
-    callback=lambda _1, _2, value: validate(
-        each_validator(uuid_validator), value
-    ),
+    callback=lambda _1, _2, value: validate(each_validator(uuid_validator), value),
 )
 @click.option("-y", "--yes", is_flag=True, type=bool)
-def edit_portfolio(
-    portfolio_id, alias, weight, parent_id, wallet_ids, auth_token, yes
-):
+def edit_portfolio(portfolio_id, alias, weight, parent_id, wallet_ids, auth_token, yes):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
