@@ -149,11 +149,12 @@ def show_asset_entries(asset_id, auth_token):
 
         return {
             "id": entry.id,
-            "amount": f"{asset.currency.acronym} {pp(entry.value, decimals=8, fixed=False)}",
-            "buy_price": f"{currency.acronym} {pp(buy_price)}",
-            "buy_amount": f"{currency.acronym} {pp(buy_equivalent)}",
-            "equivalent": f"{currency.acronym} {pp(equivalent)} ({pp(gain_wrt_buy_price, percent=True, decimals=0)})",
-            "created_at": entry.created_at.strftime("%Y-%m-%d %H:%M"),
+            f"amount\n({asset.currency.acronym})": pp(entry.value, 8, fixed=False),
+            f"buy_price\n({currency.acronym})": pp(buy_price, 0),
+            f"buy_amount\n({currency.acronym})": pp(buy_equivalent),
+            f"equivalent\n({currency.acronym})": pp(equivalent),
+            f"profit\n(%)": pp(gain_wrt_buy_price, percent=True, decimals=0),
+            "created_at": entry.created_at.strftime("%b %d, %Y"),
         }
 
     data = [get_row_value(entry) for entry in entries]
