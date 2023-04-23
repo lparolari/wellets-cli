@@ -3,15 +3,11 @@ from tabulate import tabulate
 
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
+from wellets_cli.chart import show_chart, plot_balance, mk_fig
+from wellets_cli.config import settings
 from wellets_cli.model import Asset, AssetAllocation, AssetEntry
-from wellets_cli.question import asset_question, interval_question, date_range_question
-from wellets_cli.util import (
-    change_val,
-    change_value,
-    get_by_id,
-    make_headers,
-    pp,
-)
+from wellets_cli.question import asset_question, date_range_question, interval_question
+from wellets_cli.util import change_val, change_value, get_by_id, make_headers, pp
 
 
 @click.group()
@@ -187,30 +183,16 @@ def show_asset_history(asset_id, interval, start_date, end_date, path, auth_toke
     history = api.get_asset_history(params=params, headers=headers)
     asset = get_by_id(assets, asset_id)
 
-    import matplotlib.pyplot as plt
-    import numpy as np
+    data = [
+        {
+            "timestamp": h.timestamp.strftime(settings.app.date_format),
+            f"balance\n({asset.currency.acronym})": pp(h.balance, 8, fixed=False),
+        }
+        for h in history
+    ]
 
-    xs = np.array([x.timestamp for x in history])
-    ys = np.array([x.balance for x in history])
+    print(tabulate(data, headers="keys"))
 
-    fig, ax = plt.subplots()
-    fig.autofmt_xdate()
-    ax.plot(xs, ys, "-o", label=asset.currency.acronym)
-    ax.legend()
-    ax.set_xlabel("Date")
-    ax.set_ylabel("Balance")
-
-    for i, balance in enumerate(ys):
-        ax.annotate(
-            f"{balance:.2f}",
-            (xs[i], balance),
-            xytext=(0, 6),
-            textcoords="offset points",
-            ha="center",
-        )
-
-    if path:
-        plt.savefig(path)
-        print("Saved to", path)
-    else:
-        plt.show()
+    fig = mk_fig()
+    fig = plot_balance(fig, history, label=asset.currency.acronym)
+    fig = show_chart(fig, path)
