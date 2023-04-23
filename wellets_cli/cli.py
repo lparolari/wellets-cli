@@ -28,16 +28,25 @@ def cli():
 
 
 def main():  # pragma: no cover
-    cli.add_command(wallet)
+
+    # user
     cli.add_command(login)
-    cli.add_command(whoami)
-    cli.add_command(portfolio)
-    cli.add_command(transaction)
-    cli.add_command(currency)
-    cli.add_command(accumulation)
-    cli.add_command(transfer)
-    cli.add_command(asset)
     cli.add_command(register)
-    cli.add_command(investment)
+    cli.add_command(whoami)
+
+    # wallets and transactions
+    cli.add_command(wallet)
+    cli.add_command(transaction)
+    cli.add_command(transfer)
+
+    # assets
+    cli.add_command(asset)
+    cli.add_command(portfolio)
+
+    # currency
+    cli.add_command(currency)
+
+    cli.add_command(accumulation)  # DEPRECATED
+    cli.add_command(investment)  # PREVIEW
 
     cli()

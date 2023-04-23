@@ -24,7 +24,7 @@ from wellets_cli.validator import (
 )
 
 
-@click.group()
+@click.group(deprecated=True)
 def accumulation():
     pass
 
