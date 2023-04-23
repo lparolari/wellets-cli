@@ -4,6 +4,23 @@ Changelog
 
 (unreleased)
 ------------
+
+Fix
+~~~
+- Unused import. [lparolari]
+
+Other
+~~~~~
+- Feat: show asset history. [lparolari]
+- Feat: prettify asset allocation. [lparolari]
+- Feat: prettify asset entries. [lparolari]
+- Feat: improve readability of portfolio list. [lparolari]
+- Feat: enhance percent number print. [lparolari]
+
+
+1.3.0 (2023-03-19)
+------------------
+- Release: v1.3.0. [lparolari]
 - Feat: sync currency rates. [lparolari]
 - Chore: update config manager. [lparolari]
 
