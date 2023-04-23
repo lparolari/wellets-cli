@@ -24,6 +24,7 @@ from wellets_cli.model import (
     Wallet,
     WalletAverageLoadPrice,
     WalletHistory,
+    AssetHistory,
 )
 
 base_url = lambda: ConfigManager.get("api.url")
@@ -70,7 +71,7 @@ def sync_currencies(headers: dict) -> None:
 
     if not response.ok:
         raise APIError(response.json())
-    
+
     if response.status_code == 201:
         return "synced"
     if response.status_code == 200:
@@ -310,9 +311,7 @@ def get_portfolios_balance(params: dict, headers: dict) -> Balance:
     return balance
 
 
-def get_portfolios_rebalance(
-    params: dict, headers: dict
-) -> PortfolioRebalance:
+def get_portfolios_rebalance(params: dict, headers: dict) -> PortfolioRebalance:
     portfolio_id = params["portfolio_id"]
 
     response = requests.get(
@@ -461,9 +460,7 @@ def get_assets(headers: dict) -> List[Asset]:
     return assets
 
 
-def get_asset_average_load_price(
-    params: dict, headers: dict
-) -> AverageLoadPrice:
+def get_asset_average_load_price(params: dict, headers: dict) -> AverageLoadPrice:
     response = requests.get(
         f"{base_url()}/assets/average-load-price",
         params=params,
@@ -607,4 +604,20 @@ def get_wallet_history(params: dict, headers: dict) -> List[WalletHistory]:
 
     history = response.json()
     history = [WalletHistory(**h) for h in history]
+    return history
+
+
+def get_asset_history(params: dict, headers: dict) -> List[AssetHistory]:
+    response = requests.get(
+        f"{base_url()}/assets/history",
+        params=params,
+        headers=headers,
+    )
+
+    if not response.ok:
+        print(response.status_code)
+        raise APIError(response.json())
+
+    history = response.json()
+    history = [AssetHistory(**h) for h in history]
     return history

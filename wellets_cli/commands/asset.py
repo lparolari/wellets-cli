@@ -4,7 +4,7 @@ from tabulate import tabulate
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
 from wellets_cli.model import Asset, AssetAllocation, AssetEntry
-from wellets_cli.question import asset_question
+from wellets_cli.question import asset_question, interval_question, date_range_question
 from wellets_cli.util import (
     change_val,
     change_value,
@@ -143,9 +143,7 @@ def show_asset_entries(asset_id, auth_token):
             currency.dollar_rate,
             entry.value,
         )
-        gain_wrt_buy_price = (equivalent - buy_equivalent) / (
-            buy_equivalent or 1
-        )
+        gain_wrt_buy_price = (equivalent - buy_equivalent) / (buy_equivalent or 1)
 
         return {
             "id": entry.id,
@@ -160,3 +158,59 @@ def show_asset_entries(asset_id, auth_token):
     data = [get_row_value(entry) for entry in entries]
 
     print(tabulate(data, headers="keys"))
+
+
+@asset.command(name="history")
+@click.option("--asset-id")
+@click.option("--interval", type=click.Choice(["1d", "1w"], case_sensitive=True))
+@click.option("--start-date", type=click.DateTime())
+@click.option("--end-date", type=click.DateTime())
+@click.option("--path", type=click.Path())
+@click.option("--auth-token")
+def show_asset_history(asset_id, interval, start_date, end_date, path, auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    assets = api.get_assets(headers=headers)
+
+    asset_id = asset_id or asset_question(assets).execute()
+    interval = interval or interval_question(default="1d").execute()
+    start_date, end_date = (start_date and end_date) or date_range_question().execute()
+
+    params = {
+        "asset_id": asset_id,
+        "start": start_date,
+        "end": end_date,
+        "interval": interval,
+    }
+
+    history = api.get_asset_history(params=params, headers=headers)
+    asset = get_by_id(assets, asset_id)
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    xs = np.array([x.timestamp for x in history])
+    ys = np.array([x.balance for x in history])
+
+    fig, ax = plt.subplots()
+    fig.autofmt_xdate()
+    ax.plot(xs, ys, "-o", label=asset.currency.acronym)
+    ax.legend()
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Balance")
+
+    for i, balance in enumerate(ys):
+        ax.annotate(
+            f"{balance:.2f}",
+            (xs[i], balance),
+            xytext=(0, 6),
+            textcoords="offset points",
+            ha="center",
+        )
+
+    if path:
+        plt.savefig(path)
+        print("Saved to", path)
+    else:
+        plt.show()

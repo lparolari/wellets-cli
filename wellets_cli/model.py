@@ -214,3 +214,8 @@ class Investment(BaseModel):
 class WalletHistory(BaseModel):
     timestamp: datetime
     balance: float
+
+
+class AssetHistory(BaseModel):
+    timestamp: datetime
+    balance: float
