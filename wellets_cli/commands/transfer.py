@@ -24,9 +24,7 @@ def transfer():
 @click.option("--percentual-fee", type=float)
 @click.option("--static-fee", type=float)
 @click.option("--value", type=float)
-@click.option(
-    "-m", "--use-max-balance", type=bool, is_flag=True, default=False
-)
+@click.option("-m", "--use-max-balance", type=bool, is_flag=True, default=False)
 @click.option("-y", "--yes", is_flag=True, type=bool)
 @click.option("--auth-token")
 def create_transfer(
@@ -53,9 +51,7 @@ def create_transfer(
         to_wallet_id
         or wallet_question(
             message="To wallet",
-            wallets=[
-                wallet for wallet in wallets if wallet.id != from_wallet_id
-            ],
+            wallets=[wallet for wallet in wallets if wallet.id != from_wallet_id],
         ).execute()
     )
 
@@ -85,7 +81,10 @@ def create_transfer(
             message=f"Percentual fee ({from_wallet.currency.alias})",
             float_allowed=True,
             transformer=lambda x: pp(
-                float(x) / 100, percent=True, fixed=False, with_symbol=True,
+                float(x) / 100,
+                percent=True,
+                fixed=False,
+                with_symbol=True,
             ),
             filter=lambda x: float(x) / 100,
             validate=AndValidator(

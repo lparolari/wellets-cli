@@ -70,8 +70,16 @@ def list_portfolios(portfolio_id, flatten, show_all, interactive, verbose, auth_
             children = ", ".join(sorted([child.alias for child in portfolio.children]))
             wallets = ", ".join(sorted([wallet.alias for wallet in portfolio.wallets]))
         else:
-            children = f"{len(portfolio.children)} children" if len(portfolio.children) > 0 else ""
-            wallets = f"{len(portfolio.wallets)} wallets" if len(portfolio.wallets) > 0 else ""
+            children = (
+                f"{len(portfolio.children)} children"
+                if len(portfolio.children) > 0
+                else ""
+            )
+            wallets = (
+                f"{len(portfolio.wallets)} wallets"
+                if len(portfolio.wallets) > 0
+                else ""
+            )
 
         return {
             "id": portfolio.id,
@@ -106,7 +114,7 @@ def show_portfolio(alias, auth_token):
 
     if len(search) == 0:
         print("No portfolio found")
-    
+
     portfolio = search[0]
 
     data = [
@@ -114,8 +122,15 @@ def show_portfolio(alias, auth_token):
         {"key": "alias", "value": portfolio.alias},
         {"key": "weight", "value": pp(portfolio.weight, 0, percent=True)},
         {"key": "parent", "value": portfolio.parent.alias if portfolio.parent else "-"},
-        {"key": "children", "value": "\n".join(sorted([child.alias for child in portfolio.children])) or "-"},
-        {"key": "wallets", "value": "\n".join(sorted([w.alias for w in portfolio.wallets])) or "-"},
+        {
+            "key": "children",
+            "value": "\n".join(sorted([child.alias for child in portfolio.children]))
+            or "-",
+        },
+        {
+            "key": "wallets",
+            "value": "\n".join(sorted([w.alias for w in portfolio.wallets])) or "-",
+        },
     ]
 
     print(tabulate(data, headers="keys"))

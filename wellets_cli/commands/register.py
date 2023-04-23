@@ -19,9 +19,7 @@ from wellets_cli.validator import (
 @click.option("--email")
 @click.option("--password")
 @click.option("--auth-token")
-def register(
-    email: Optional[str], password: Optional[str], auth_token: Optional[str]
-):
+def register(email: Optional[str], password: Optional[str], auth_token: Optional[str]):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -36,9 +34,7 @@ def register(
         password
         or inquirer.secret(
             message="Password",
-            validate=AndValidator(
-                [EmptyInputValidator(), TextLengthValidator(6)]
-            ),
+            validate=AndValidator([EmptyInputValidator(), TextLengthValidator(6)]),
         ).execute()
     )
 
@@ -53,8 +49,6 @@ def register(
         ),
     ).execute()
 
-    user = api.register(
-        data={"email": email, "password": password}, headers=headers
-    )
+    user = api.register(data={"email": email, "password": password}, headers=headers)
 
     print(user.id)

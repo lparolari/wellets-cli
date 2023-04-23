@@ -46,10 +46,7 @@ def list_transactions(wallet_id, auth_token):
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    wallet_id = (
-        wallet_id
-        or wallet_question(api.get_wallets(headers=headers)).execute()
-    )
+    wallet_id = wallet_id or wallet_question(api.get_wallets(headers=headers)).execute()
 
     transactions = api.get_transactions(
         {"wallet_id": wallet_id, "limit": 25, "page": 1}, headers=headers
@@ -138,15 +135,12 @@ def create_transaction(
             validate=AndValidator(
                 [EmptyInputValidator(), GreaterThanOrEqualValidator(0)]
             ),
-            filter=lambda x: float(x)
-            * (1 if transaction_type == "Income" else -1),
+            filter=lambda x: float(x) * (1 if transaction_type == "Income" else -1),
         ).execute()
     )
 
     if not dollar_rate:
-        usd_currency = get_currency_by_acronym(
-            currencies, acronym="USD", safe=True
-        )
+        usd_currency = get_currency_by_acronym(currencies, acronym="USD", safe=True)
 
         currency_id = (
             change_currency_id
@@ -214,9 +208,7 @@ def create_transaction(
 @click.option(
     "--transaction-ids",
     multiple=True,
-    callback=lambda _1, _2, value: validate(
-        each_validator(uuid_validator), value
-    ),
+    callback=lambda _1, _2, value: validate(each_validator(uuid_validator), value),
 )
 @click.option("--auth-token")
 @click.option("-y", "--yes", is_flag=True, type=bool, default=False)
@@ -227,13 +219,9 @@ def revert_transaction(wallet_id, transaction_ids, auth_token, yes):
     wallets = api.get_wallets(headers=headers)
     wallet_id = wallet_id or wallet_question(wallets).execute()
 
-    transactions = api.get_transactions(
-        {"wallet_id": wallet_id}, headers=headers
-    )
+    transactions = api.get_transactions({"wallet_id": wallet_id}, headers=headers)
 
-    transaction_ids = (
-        transaction_ids or transactions_question(transactions).execute()
-    )
+    transaction_ids = transaction_ids or transactions_question(transactions).execute()
 
     if not yes and not confirm_question().execute():
         return

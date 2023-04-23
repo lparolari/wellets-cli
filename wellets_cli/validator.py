@@ -235,7 +235,7 @@ class UrlValidator(Validator):
                 message=self._message,
                 cursor_position=document.cursor_position,
             )
-    
+
         if self._scheme is not None:
             if not document.text.startswith(self._scheme):
                 raise ValidationError(

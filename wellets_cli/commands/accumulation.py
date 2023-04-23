@@ -43,9 +43,7 @@ def list_accumulations(asset_id, interactive, auth_token):
         asset_question(wallets=wallets).execute() if interactive else None
     )
 
-    accumulations = api.get_accumulations(
-        {"asset_id": asset_id}, headers=headers
-    )
+    accumulations = api.get_accumulations({"asset_id": asset_id}, headers=headers)
 
     def get_accumulation_row(accumulation: Accumulation):
         return {
@@ -164,9 +162,7 @@ def create_accumulation(
 
     strategy = (
         strategy
-        or inquirer.text(
-            message="Strategy", validate=EmptyInputValidator()
-        ).execute()
+        or inquirer.text(message="Strategy", validate=EmptyInputValidator()).execute()
     )
 
     quote = (
@@ -270,9 +266,7 @@ def create_entry(ctx, **kwargs):
     if not accumulation:
         return
 
-    next_entry = api.get_next_accumulation_entry(
-        accumulation.id, headers=headers
-    )
+    next_entry = api.get_next_accumulation_entry(accumulation.id, headers=headers)
 
     description = (
         description
@@ -292,17 +286,14 @@ def create_entry(ctx, **kwargs):
     ctx.invoke(create_transaction, **params)
 
 
-def __prompt_accumulation(
-    accumulation_id: str, headers
-) -> Optional[Accumulation]:
+def __prompt_accumulation(accumulation_id: str, headers) -> Optional[Accumulation]:
     accumulations = api.get_accumulations(params={}, headers=headers)
 
     if len(accumulations) == 0:
         return None
 
     accumulation_id = (
-        accumulation_id
-        or accumulation_question(accumulations=accumulations).execute()
+        accumulation_id or accumulation_question(accumulations=accumulations).execute()
     )
 
     accumulation = get_by_id(accumulations, accumulation_id)  # type: ignore

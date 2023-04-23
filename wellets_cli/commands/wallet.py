@@ -177,9 +177,7 @@ def show_wallets_total_balance(auth_token):
 
 @wallet.command(name="history")
 @click.option("--wallet-id")
-@click.option(
-    "--interval", type=click.Choice(["1d", "1w"], case_sensitive=True)
-)
+@click.option("--interval", type=click.Choice(["1d", "1w"], case_sensitive=True))
 @click.option("--start-date", type=click.DateTime())
 @click.option("--end-date", type=click.DateTime())
 @click.option("--path", type=click.Path())
@@ -192,9 +190,7 @@ def show_wallet_history(wallet_id, interval, start_date, end_date, path, auth_to
 
     wallet_id = wallet_id or wallet_question(wallets).execute()
     interval = interval or interval_question().execute()
-    start_date, end_date = (
-        start_date and end_date
-    ) or date_range_question().execute()
+    start_date, end_date = (start_date and end_date) or date_range_question().execute()
 
     params = {
         "wallet_id": wallet_id,
@@ -214,7 +210,7 @@ def show_wallet_history(wallet_id, interval, start_date, end_date, path, auth_to
     fig, ax = plt.subplots()
     fig.autofmt_xdate()
     ax.plot(xs, ys)
-    
+
     if path:
         plt.savefig(path)
         print("Saved to", path)
