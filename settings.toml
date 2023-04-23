@@ -1,1 +1,9 @@
+[default]
+[default.app]
+always_show_charts = true
+
+[production]
 api_url = "https://wellets-backend.herokuapp.com"
+
+[development]
+api_url = "http://localhost:3333"
