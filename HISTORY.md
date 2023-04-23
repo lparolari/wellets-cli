@@ -7,10 +7,29 @@ Changelog
 
 Fix
 ~~~
+- Allow credential not in .secrets.toml. [lparolari]
+
+Other
+~~~~~
+- Chore: fix linting. [lparolari]
+- Chore: formatter. [lparolari]
+- Chore: accumulation command deprecated. [lparolari]
+- Chore: remove config command. [lparolari]
+- Feat: show chart based on settings. [lparolari]
+- Chore: update configs with env. [lparolari]
+- Chore: replace custom config impl with dynaconf (#1) [lparolari]
+
+
+1.4.0 (2023-04-23)
+------------------
+
+Fix
+~~~
 - Unused import. [lparolari]
 
 Other
 ~~~~~
+- Release: v1.4.0. [lparolari]
 - Feat: show asset history. [lparolari]
 - Feat: prettify asset allocation. [lparolari]
 - Feat: prettify asset entries. [lparolari]
