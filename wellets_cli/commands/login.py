@@ -5,7 +5,7 @@ from InquirerPy import inquirer
 
 import wellets_cli.api as api
 from wellets_cli.auth import persist_auth
-from wellets_cli.config import ConfigManager
+from wellets_cli.config import settings
 
 
 @click.command()
@@ -14,12 +14,12 @@ from wellets_cli.config import ConfigManager
 def login(email: Optional[str], password: Optional[str]):
     email = (
         email
-        or ConfigManager.get("api.username", throw=False)
+        or settings.api_username
         or inquirer.text(message="Email").execute()
     )
     password = (
         password
-        or ConfigManager.get("api.password", throw=False)
+        or settings.api_password
         or inquirer.secret(message="Password").execute()
     )
 

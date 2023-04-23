@@ -14,7 +14,6 @@ from wellets_cli.commands.transaction import transaction
 from wellets_cli.commands.transfer import transfer
 from wellets_cli.commands.wallet import wallet
 from wellets_cli.commands.whoami import whoami
-from wellets_cli.util import add_configs
 
 try:
     VERSION_PATH = pathlib.Path(__file__).parent / "VERSION"
@@ -30,8 +29,6 @@ def cli():
 
 
 def main():  # pragma: no cover
-    add_configs()
-
     cli.add_command(wallet)
     cli.add_command(login)
     cli.add_command(whoami)

@@ -2,8 +2,8 @@ from typing import List, Optional
 
 import requests
 
+from wellets_cli.config import settings
 from wellets_cli.auth import UserSession
-from wellets_cli.config import ConfigManager
 from wellets_cli.model import (
     Accumulation,
     Asset,
@@ -27,7 +27,7 @@ from wellets_cli.model import (
     AssetHistory,
 )
 
-base_url = lambda: ConfigManager.get("api.url")
+base_url = lambda: settings.api_url
 
 
 class APIError(ValueError):
