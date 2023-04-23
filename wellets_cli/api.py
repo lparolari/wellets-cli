@@ -63,7 +63,7 @@ def get_currencies(headers: dict) -> List[UserCurrency]:
     return currencies
 
 
-def sync_currencies(headers: dict) -> None:
+def sync_currencies(headers: dict) -> str:
     response = requests.post(
         f"{base_url()}/currencies/rate/sync",
         headers=headers,

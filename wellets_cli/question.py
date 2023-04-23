@@ -262,7 +262,7 @@ def date_range_question(
         def execute(self) -> Any:
             choices = (
                 [Choice(value, name) for (name, value) in self.predefined_ranges]
-                + [Separator()]
+                + [Separator()]  # type: ignore
                 + [Choice(None, "Custom")]
             )
 
