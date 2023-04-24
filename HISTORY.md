@@ -4,6 +4,14 @@ Changelog
 
 (unreleased)
 ------------
+- Chore: update codecov dep. [lparolari]
+
+  should fix ci error on `make install` saying "Unable to find installation candidates for codecov (2.1.12)"
+- Chore: remove rename workflow. [lparolari]
+
+
+1.5.0 (2023-04-23)
+------------------
 
 Fix
 ~~~
@@ -11,6 +19,7 @@ Fix
 
 Other
 ~~~~~
+- Release: v1.5.0. [lparolari]
 - Chore: fix linting. [lparolari]
 - Chore: formatter. [lparolari]
 - Chore: accumulation command deprecated. [lparolari]
