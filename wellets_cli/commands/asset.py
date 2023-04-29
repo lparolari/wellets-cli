@@ -3,7 +3,7 @@ from tabulate import tabulate
 
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
-from wellets_cli.chart import show_chart, plot_balance, mk_fig
+from wellets_cli.chart import show_chart, plot_balance, plot_allocation, mk_fig
 from wellets_cli.config import settings
 from wellets_cli.model import Asset, AssetAllocation, AssetEntry
 from wellets_cli.question import asset_question, date_range_question, interval_question
@@ -98,6 +98,10 @@ def show_asset_allocations(auth_token):
     data = [get_row_value(allocation) for allocation in allocations]
 
     print(tabulate(data, headers="keys"))
+
+    fig = mk_fig()
+    fig = plot_allocation(fig, allocations)
+    fig = show_chart(fig)
 
 
 @asset.command(name="total-balance")
