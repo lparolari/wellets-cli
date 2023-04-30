@@ -1,9 +1,20 @@
+from datetime import timedelta
+
 import click
 from tabulate import tabulate
 
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
-from wellets_cli.chart import show_chart, plot_balance, plot_allocation, mk_fig
+from wellets_cli.chart import (
+    mk_fig,
+    plot_allocation,
+    plot_balance,
+    plot_exposition,
+    plot_position,
+    plot_price,
+    show_chart,
+    xdate_fmt,
+)
 from wellets_cli.config import settings
 from wellets_cli.model import Asset, AssetAllocation, AssetEntry
 from wellets_cli.question import asset_question, date_range_question, interval_question
@@ -200,3 +211,63 @@ def show_asset_history(asset_id, interval, start_date, end_date, path, auth_toke
     fig = mk_fig()
     fig = plot_balance(fig, history, label=asset.currency.acronym)
     fig = show_chart(fig, path)
+
+
+@asset.command(name="visualize")
+@click.option("-id", "--asset-id")
+@click.option("--auth-token")
+def visualize(asset_id, auth_token):
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    assets = api.get_assets(headers=headers)
+    base_currency = api.get_preferred_currency(headers=headers)
+
+    asset_id = asset_id or asset_question(assets=assets).execute()
+
+    asset: Asset = get_by_id(assets, asset_id)
+    currency = asset.currency
+    entries = asset.entries
+    exposition = api.get_asset_average_load_price(
+        params={"asset_id": asset_id},
+        headers=headers,
+    )
+
+    date_min = min([e.created_at for e in entries])
+    date_max = max([e.created_at for e in entries]) + timedelta(days=1)
+
+    history = api.get_currency_history(
+        {
+            "currency_id": asset.currency_id,
+            "interval": "1d",
+            "start_time": date_min.strftime("%Y-%m-%d"),
+            "end_time": date_max.strftime("%Y-%m-%d"),
+        },
+        headers=headers,
+    )
+
+    price_date = [h.open_time for h in history]
+    price = [
+        change_value(1 / h.close_price, base_currency.dollar_rate, 1) for h in history
+    ]
+
+    position_date = [e.created_at for e in entries]
+    position = [
+        change_value(e.dollar_rate, base_currency.dollar_rate, 1) for e in entries
+    ]
+    size_max = max([abs(e.value) for e in entries])
+    size = [abs(e.value) / size_max for e in entries]
+    kind = ["buy" if e.value >= 0 else "sell" for e in entries]
+
+    fig = mk_fig()
+    fig = plot_price(
+        fig,
+        price_date,
+        price,
+        label=currency.acronym,
+        ylabel=f"Price ({base_currency.acronym})",
+    )
+    fig = plot_exposition(fig, exposition.average_load_price)
+    fig = plot_position(fig, position_date, position, size, kind)
+    fig = xdate_fmt(fig)
+    show_chart(fig)

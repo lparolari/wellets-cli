@@ -25,6 +25,7 @@ from wellets_cli.model import (
     WalletAverageLoadPrice,
     WalletHistory,
     AssetHistory,
+    KLines,
 )
 
 base_url = lambda: settings.api_url
@@ -620,4 +621,23 @@ def get_asset_history(params: dict, headers: dict) -> List[AssetHistory]:
 
     history = response.json()
     history = [AssetHistory(**h) for h in history]
+    return history
+
+
+def get_currency_history(params: dict, headers: dict) -> List[KLines]:
+    currency_id = params.pop("currency_id")
+
+    response = requests.get(
+        f"{base_url()}/currencies/{currency_id}/klines",
+        params=params,
+        headers=headers,
+    )
+
+    if not response.ok:
+        print(response.status_code)
+        raise APIError(response.json())
+
+    history = response.json()
+    history = [KLines(**h) for h in history]
+
     return history

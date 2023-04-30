@@ -1,5 +1,6 @@
 import tempfile
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -55,5 +56,68 @@ def plot_allocation(fig, allocation):
     ax = fig.add_subplot(1, 1, 1)
     ax.pie(values, labels=labels, autopct="%1.1f%%", startangle=90)
     ax.axis("equal")
+
+    return fig
+
+
+def plot_price(fig, date, price, *, label, xlabel="Date", ylabel="Price"):
+    from matplotlib.dates import DateFormatter
+
+    xs = np.array(date)
+    ys = np.array(price)
+
+    ax = fig.gca()
+
+    ax.plot(xs, ys, label=label, linewidth=0.8)
+
+    ax.legend()
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+
+    return fig
+
+
+def plot_exposition(fig, exposition: float):
+    ax = fig.gca()
+    ax.axhline(y=exposition, color="black", linestyle="--", label="Exposition")
+
+    xmin, _ = ax.get_xlim()
+
+    ax.annotate(
+        f"{exposition:.2f}",
+        (xmin, exposition),
+        xytext=(0, 4),
+        textcoords="offset points",
+        ha="left",
+    )
+    return fig
+
+
+def plot_position(fig, date, position, size, kind):
+    markersize = mpl.rcParams["lines.markersize"] ** 2
+
+    xs = np.array(date)
+    ys = np.array(position)
+    color = np.array(["green" if k == "buy" else "red" for k in kind])
+    size = markersize / 4 + 1.2 * np.array(size) * markersize
+    ci = 1.96 * np.std(ys) / np.sqrt(len(xs))
+
+    ax = fig.gca()
+
+    ax.scatter(xs, ys, s=size, color=color)
+    ax.fill_between(xs, (ys - ci), (ys + ci), color="b", alpha=0.1)
+
+    return fig
+
+
+def xdate_fmt(fig):
+    from matplotlib.dates import DateFormatter
+
+    date_fmt = DateFormatter(settings.app.date_format)
+
+    fig.autofmt_xdate()
+
+    ax = fig.gca()
+    ax.xaxis.set_major_formatter(date_fmt)
 
     return fig

@@ -219,3 +219,12 @@ class WalletHistory(BaseModel):
 class AssetHistory(BaseModel):
     timestamp: datetime
     balance: float
+
+
+class KLines(BaseModel):
+    open_time: datetime
+    open_price: float
+    high_price: float
+    low_price: float
+    close_price: float
+    volume: float
