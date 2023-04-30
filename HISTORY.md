@@ -4,6 +4,13 @@ Changelog
 
 (unreleased)
 ------------
+- Feat: add asset visualize command. [lparolari]
+- Feat: plot asset allocation. [lparolari]
+
+
+1.5.1 (2023-04-24)
+------------------
+- Release: v1.5.1. [lparolari]
 - Chore: update codecov dep. [lparolari]
 
   should fix ci error on `make install` saying "Unable to find installation candidates for codecov (2.1.12)"
