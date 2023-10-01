@@ -23,12 +23,18 @@ from wellets_cli.util import change_val, change_value, get_by_id, make_headers, 
 
 @click.group()
 def asset():
+    """
+    Manage financial assets.
+    """
     pass
 
 
 @asset.command(name="list")
 @click.option("--auth-token")
 def list_assets(auth_token):
+    """
+    List all assets.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -53,6 +59,9 @@ def list_assets(auth_token):
 @click.option("--asset-id")
 @click.option("--auth-token")
 def show_asset_exposition(asset_id, auth_token):
+    """
+    Show the average cost basis of an asset.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -73,6 +82,9 @@ def show_asset_exposition(asset_id, auth_token):
 @click.option("--asset-id")
 @click.option("--auth-token")
 def show_asset_balance(asset_id, auth_token):
+    """
+    Show the total balance of an asset.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -92,6 +104,9 @@ def show_asset_balance(asset_id, auth_token):
 @asset.command(name="allocation")
 @click.option("--auth-token")
 def show_asset_allocations(auth_token):
+    """
+    Show a chart of the asset allocations.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -118,6 +133,9 @@ def show_asset_allocations(auth_token):
 @asset.command(name="total-balance")
 @click.option("--auth-token")
 def show_total_asset_balance(auth_token):
+    """
+    Show the total balance of all assets.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -131,6 +149,9 @@ def show_total_asset_balance(auth_token):
 @click.option("--asset-id")
 @click.option("--auth-token")
 def show_asset_entries(asset_id, auth_token):
+    """
+    List all income/outcome transactions of an asset.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -179,6 +200,9 @@ def show_asset_entries(asset_id, auth_token):
 @click.option("--path", type=click.Path())
 @click.option("--auth-token")
 def show_asset_history(asset_id, interval, start_date, end_date, path, auth_token):
+    """
+    Show the balance history of an asset.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -217,6 +241,9 @@ def show_asset_history(asset_id, interval, start_date, end_date, path, auth_toke
 @click.option("-id", "--asset-id")
 @click.option("--auth-token")
 def visualize(asset_id, auth_token):
+    """
+    Visualize transactions cost basis on the asset price chart.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
