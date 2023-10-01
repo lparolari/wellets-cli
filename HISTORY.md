@@ -4,6 +4,43 @@ Changelog
 
 (unreleased)
 ------------
+
+Fix
+~~~
+- Use settings' date_format in wallets list. [lparolari]
+
+Other
+~~~~~
+- Chore: rename get wallet balance command. [lparolari]
+- Feat: add set wallet balance command. [lparolari]
+- Chore: cosmetic. [lparolari]
+- Feat: remove accumulation id from transaction create. [lparolari]
+- Merge branch 'feature/command-docs' (#4) [lparolari]
+
+  * feature/command-docs:
+    feat: add docs for transfer
+    feat: add docs for transaction
+    feat: add docs for portfolio
+    feat: marked as deprecated investment command
+    feat: add docs for currency
+    feat: add docs for asset
+    feat: add docs for login and register
+    feat: add docs for wallet
+    feat: add docs for whoami
+- Feat: add docs for transfer. [lparolari]
+- Feat: add docs for transaction. [lparolari]
+- Feat: add docs for portfolio. [lparolari]
+- Feat: marked as deprecated investment command. [lparolari]
+- Feat: add docs for currency. [lparolari]
+- Feat: add docs for asset. [lparolari]
+- Feat: add docs for login and register. [lparolari]
+- Feat: add docs for wallet. [lparolari]
+- Feat: add docs for whoami. [lparolari]
+
+
+1.6.0 (2023-04-30)
+------------------
+- Release: v1.6.0. [lparolari]
 - Feat: add asset visualize command. [lparolari]
 - Feat: plot asset allocation. [lparolari]
 
