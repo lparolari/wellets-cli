@@ -187,7 +187,7 @@ def delete_wallet(auth_token, wallet_id, yes):
     print(wallet.id)
 
 
-@wallet.command(name="balance")
+@wallet.command(name="balance:get")
 @click.option("--wallet-id")
 @click.option("--auth-token")
 def show_wallet_balance(wallet_id, auth_token):
@@ -227,7 +227,7 @@ def set_wallet_balance(
     auth_token,
 ):
     """
-    The the balance of a wallet.
+    Set the balance of a wallet.
 
     A new transaction is created with the value of the difference between the
     new balance and the wallet balance before the change.
