@@ -15,6 +15,9 @@ from wellets_cli.validator import (
 
 @click.group()
 def transfer():
+    """
+    Manage transfers.
+    """
     pass
 
 
@@ -37,6 +40,9 @@ def create_transfer(
     use_max_balance,
     yes,
 ):
+    """
+    Create a transfer.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
