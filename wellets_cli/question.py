@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Any, List, Optional, Tuple
 
+import click
 from InquirerPy import inquirer
 from InquirerPy.base.control import Choice, Separator
 from InquirerPy.prompts import ConfirmPrompt, InputPrompt, ListPrompt, NumberPrompt
@@ -22,6 +23,9 @@ from wellets_cli.validator import (
     GreaterThanValidator,
 )
 
+
+def warning_message(message="") -> str:
+    return click.style(message, fg="yellow")
 
 def confirm_question(message="Confirm", default=True) -> ConfirmPrompt:
     return inquirer.confirm(message, default=default)

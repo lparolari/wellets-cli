@@ -5,7 +5,6 @@ from tabulate import tabulate
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
 from wellets_cli.model import Wallet
-from wellets_cli.prompt import prompt_wallet
 from wellets_cli.question import (
     confirm_question,
     currency_question,
@@ -13,6 +12,7 @@ from wellets_cli.question import (
     date_range_question,
     interval_question,
     wallet_question,
+    warning_message,
 )
 from wellets_cli.util import change_value, get_currency_by_id, make_headers, pp
 from wellets_cli.validator import (
@@ -24,12 +24,18 @@ from wellets_cli.validator import (
 
 @click.group()
 def wallet():
+    """
+    Manage money accounts (aka wallet).
+    """
     pass
 
 
 @wallet.command(name="list")
 @click.option("--auth-token")
 def list_wallets(auth_token):
+    """
+    List all wallets.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -60,6 +66,9 @@ def list_wallets(auth_token):
 @click.option("--alias")
 @click.option("--currency-id")
 def create_wallet(auth_token, alias, currency_id):
+    """
+    Create a new wallet.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -86,6 +95,9 @@ def create_wallet(auth_token, alias, currency_id):
 @click.option("--balance")
 @click.option("-y", "--yes", is_flag=True, default=False)
 def edit_wallet(auth_token, wallet_id, alias, balance, yes):
+    """
+    Edit a wallet.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -130,15 +142,29 @@ def edit_wallet(auth_token, wallet_id, alias, balance, yes):
 @wallet.command(name="delete")
 @click.option("--auth-token")
 @click.option("--wallet-id")
-def delete_wallet(auth_token, wallet_id):
+@click.option("-y", "--yes", is_flag=True, default=False)
+def delete_wallet(auth_token, wallet_id, yes):
+    """
+    Delete a wallet.
+
+    WARNING: This action is irreversible and will delete all transactions
+    associated with the wallet.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
-    requires_interaction = wallet_id is None
 
     wallets = api.get_wallets(headers=headers)
+    wallet_id: str = wallet_id or wallet_question(wallets).execute()
 
-    if requires_interaction:
-        wallet_id = prompt_wallet(wallets)
+    click.echo(
+        warning_message(
+            "This action is irreversible and will delete all transactions associated "
+            "with the wallet."
+        )
+    )
+
+    if not yes and not confirm_question(default=False).execute():
+        return
 
     wallet = api.delete_wallet(
         wallet_id=wallet_id,
@@ -152,12 +178,14 @@ def delete_wallet(auth_token, wallet_id):
 @click.option("--wallet-id")
 @click.option("--auth-token")
 def show_wallet_balance(wallet_id, auth_token):
+    """
+    Show the balance of a wallet.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
-    requires_interaction = wallet_id is None
 
-    if requires_interaction:
-        wallet_id = prompt_wallet(api.get_wallets(headers=headers))
+    wallets = api.get_wallets(headers=headers)
+    wallet_id: str = wallet_id or wallet_question(wallets).execute()
 
     result = api.get_wallet_balance(wallet_id, headers=headers)
 
@@ -167,6 +195,9 @@ def show_wallet_balance(wallet_id, auth_token):
 @wallet.command(name="total-balance")
 @click.option("--auth-token")
 def show_wallets_total_balance(auth_token):
+    """
+    Show the sum of all wallets' balance.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -183,6 +214,9 @@ def show_wallets_total_balance(auth_token):
 @click.option("--path", type=click.Path())
 @click.option("--auth-token")
 def show_wallet_history(wallet_id, interval, start_date, end_date, path, auth_token):
+    """
+    Show a chart with the wallet balance history.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
