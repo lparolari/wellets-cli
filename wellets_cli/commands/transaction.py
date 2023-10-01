@@ -9,7 +9,6 @@ import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
 from wellets_cli.model import Transaction
 from wellets_cli.question import (
-    accumulation_question,
     change_value_question,
     confirm_question,
     currency_question,
@@ -39,7 +38,7 @@ def transaction():
     """
     Manage transactions.
 
-    Transactions (along with transfers, a special case of transaction) are the 
+    Transactions (along with transfers, a special case of transaction) are the
     designated way to modify the balance of a wallet.
     """
     pass
@@ -113,13 +112,7 @@ def create_transaction(
     currencies = api.get_currencies(headers=headers)
     preferred_currency = api.get_preferred_currency(headers=headers)
 
-    wallet_id = (
-        wallet_id
-        or wallet_question(
-            wallets=wallets,
-            message="Wallet",
-        ).execute()
-    )
+    wallet_id = wallet_id or wallet_question(wallets).execute()
     wallet = get_by_id(wallets, wallet_id)
     wallet_currency = get_by_id(currencies, wallet.currency_id)
 
@@ -216,8 +209,8 @@ def create_transaction(
 def revert_transaction(wallet_id, transaction_ids, auth_token, yes):
     """
     Revert a transaction.
-    
-    The transaction reverted is not deleted from the system. Instead, a new 
+
+    The transaction reverted is not deleted from the system. Instead, a new
     transaction is created with the same value but the opposite sign. The asset
     balance is also affected and an asset entry is created accordingly.
     """
