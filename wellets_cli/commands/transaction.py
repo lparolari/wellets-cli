@@ -89,7 +89,6 @@ def list_transactions(wallet_id, auth_token):
 @click.option("--change-currency-id", type=click.UUID)
 @click.option("--change-val", type=float)
 @click.option("--description", type=str)
-@click.option("--accumulation-id", type=str)
 @click.option("--created-at", type=click.DateTime(formats=["%Y-%m-%d %H:%M"]))
 @click.option("-y", "--yes", is_flag=True, type=bool)
 @click.option("--auth-token")
@@ -101,7 +100,6 @@ def create_transaction(
     change_val,
     description,
     created_at,
-    accumulation_id,
     yes,
     auth_token,
 ):
@@ -124,14 +122,6 @@ def create_transaction(
     )
     wallet = get_by_id(wallets, wallet_id)
     wallet_currency = get_by_id(currencies, wallet.currency_id)
-
-    accumulations = api.get_accumulations(params={}, headers=headers)
-
-    accumulation_id = accumulation_id or (
-        accumulation_question(accumulations, allow_none=True).execute()
-        if len(accumulations) > 0
-        else None
-    )
 
     transaction_type = inquirer.select(
         message="Transaction type",
@@ -203,7 +193,6 @@ def create_transaction(
 
     data = {
         "wallet_id": wallet_id,
-        "accumulation_id": accumulation_id,
         "value": value,
         "dollar_rate": dollar_rate,
         "description": description,
