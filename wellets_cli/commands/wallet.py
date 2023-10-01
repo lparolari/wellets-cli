@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import click
 from InquirerPy import inquirer
 from tabulate import tabulate
@@ -7,15 +9,30 @@ from wellets_cli.auth import get_auth_token
 from wellets_cli.config import settings
 from wellets_cli.model import Wallet
 from wellets_cli.question import (
+    change_value_question,
     confirm_question,
     currency_question,
+    date_question,
     date_range_question,
+    dollar_rate_question,
     interval_question,
     wallet_question,
     warning_message,
 )
-from wellets_cli.util import change_value, get_currency_by_id, make_headers, pp
-from wellets_cli.validator import AndValidator, EmptyInputValidator, NumberValidator
+from wellets_cli.util import (
+    change_value,
+    get_by_id,
+    get_currency_by_acronym,
+    get_currency_by_id,
+    make_headers,
+    pp,
+)
+from wellets_cli.validator import (
+    AndValidator,
+    EmptyInputValidator,
+    GreaterThanOrEqualValidator,
+    NumberValidator,
+)
 
 
 @click.group()
@@ -186,6 +203,126 @@ def show_wallet_balance(wallet_id, auth_token):
     result = api.get_wallet_balance(wallet_id, headers=headers)
 
     print(f"{result.balance} {result.currency.acronym}")
+
+
+@wallet.command(name="balance:set")
+@click.option("--wallet-id")
+@click.option("--new-balance", type=float)
+@click.option("--dollar-rate", type=float)
+@click.option("--change-currency-id", type=click.UUID)
+@click.option("--change-val", type=float)
+@click.option("--description", type=str)
+@click.option("--created-at", type=click.DateTime(formats=["%Y-%m-%d %H:%M"]))
+@click.option("-y", "--yes", is_flag=True, default=False)
+@click.option("--auth-token")
+def set_wallet_balance(
+    wallet_id,
+    new_balance,
+    dollar_rate,
+    change_currency_id,
+    change_val,
+    description,
+    created_at,
+    yes,
+    auth_token,
+):
+    """
+    The the balance of a wallet.
+
+    A new transaction is created with the value of the difference between the
+    new balance and the wallet balance before the change.
+    """
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    wallets = api.get_wallets(headers=headers)
+    currencies = api.get_currencies(headers=headers)
+    preferred_currency = api.get_preferred_currency(headers=headers)
+
+    wallet_id: str = wallet_id or wallet_question(wallets).execute()
+    wallet: Wallet = get_by_id(wallets, wallet_id)
+    wallet_currency = get_by_id(currencies, wallet.currency_id)
+
+    prev_balance = wallet.balance
+
+    new_balance = (
+        new_balance
+        or inquirer.number(
+            message=f"New balance ({wallet_currency.acronym})",
+            default=prev_balance,
+            float_allowed=True,
+            validate=AndValidator(
+                [EmptyInputValidator(), GreaterThanOrEqualValidator(0)]
+            ),
+            filter=lambda x: float(x),
+        ).execute()
+    )
+
+    value = new_balance - prev_balance
+
+    if not dollar_rate:
+        usd_currency = get_currency_by_acronym(currencies, acronym="USD", safe=True)
+
+        currency_id = (
+            change_currency_id
+            or currency_question(
+                currencies=currencies,
+                message="Change rate",
+                default=usd_currency,
+                mandatory=False,
+            ).execute()
+        )
+        currency = currency_id and get_by_id(currencies, currency_id)
+
+        change_val = change_val or (
+            currency
+            and change_value_question(
+                source_currency=wallet_currency,
+                target_currency=currency,
+            ).execute()
+        )
+
+    dollar_rate = dollar_rate or change_val or dollar_rate_question().execute()
+
+    description = (
+        description
+        or inquirer.text(
+            message="Description",
+            default="Balance change",
+            validate=EmptyInputValidator(),
+        ).execute()
+    )
+
+    created_at = (
+        created_at
+        or date_question(
+            message="Created at (yyyy-MM-dd HH:mm)",
+            default=datetime.now(),
+            date_fmt="%Y-%m-%d %H:%M",
+        ).execute()
+    )
+
+    if (
+        not yes
+        and not confirm_question(
+            message=f"Confirm buy/sell of {wallet_currency.acronym} {pp(value)} ~ {preferred_currency.acronym} {pp(change_value(dollar_rate, preferred_currency.dollar_rate, value))} "
+            f"({wallet_currency.acronym} {pp(prev_balance)} ~ {preferred_currency.acronym} {pp(change_value(dollar_rate, preferred_currency.dollar_rate, prev_balance))} -> "
+            f"{wallet_currency.acronym} {pp(new_balance)} ~ {preferred_currency.acronym} {pp(change_value(dollar_rate, preferred_currency.dollar_rate, new_balance))})"
+        ).execute()
+    ):
+        return
+
+    data = {
+        "wallet_id": wallet_id,
+        "value": value,
+        "dollar_rate": dollar_rate,
+        "description": description,
+        "created_at": created_at,
+    }
+
+    api.create_transaction(data, headers=headers)
+
+    print(wallet_id)
 
 
 @wallet.command(name="total-balance")
