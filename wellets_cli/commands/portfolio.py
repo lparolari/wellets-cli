@@ -25,6 +25,9 @@ from wellets_cli.validator import (
 
 @click.group()
 def portfolio():
+    """
+    Manage portfolios (aka logical collection of wallets).
+    """
     pass
 
 
@@ -36,6 +39,9 @@ def portfolio():
 @click.option("-v", "--verbose", is_flag=True)
 @click.option("--auth-token")
 def list_portfolios(portfolio_id, flatten, show_all, interactive, verbose, auth_token):
+    """
+    List all portfolios.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -99,6 +105,9 @@ def list_portfolios(portfolio_id, flatten, show_all, interactive, verbose, auth_
 @click.option("-n", "--alias", type=str)
 @click.option("--auth-token")
 def show_portfolio(alias, auth_token):
+    """
+    Show portfolio details (parent, linked wallets).
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -148,6 +157,9 @@ def show_portfolio(alias, auth_token):
 )
 @click.option("-y", "--yes", is_flag=True, type=bool)
 def create_portfolio(alias, weight, parent_id, wallet_ids, auth_token, yes):
+    """
+    Create a new portfolio.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -214,6 +226,9 @@ def create_portfolio(alias, weight, parent_id, wallet_ids, auth_token, yes):
 )
 @click.option("-y", "--yes", is_flag=True, type=bool)
 def edit_portfolio(portfolio_id, alias, weight, parent_id, wallet_ids, auth_token, yes):
+    """
+    Edit an existing portfolio.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -292,6 +307,11 @@ def edit_portfolio(portfolio_id, alias, weight, parent_id, wallet_ids, auth_toke
 @click.option("-id", "--portfolio-id", type=click.UUID)
 @click.option("-y", "--yes", is_flag=True, type=bool)
 def delete_portfolio(portfolio_id, auth_token, yes):
+    """
+    Delete an existing portfolio.
+    
+    This will NOT affect your registered wallets, transactions and assets.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -316,6 +336,9 @@ def delete_portfolio(portfolio_id, auth_token, yes):
 @click.option("-a", "--show-all", is_flag=True, default=False)
 @click.option("--auth-token")
 def show_portfolio_balance(portfolio_id, show_all, auth_token):
+    """
+    Show the total balance of a portfolio.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -341,6 +364,13 @@ def show_portfolio_balance(portfolio_id, show_all, auth_token):
 @click.option("-a", "--show-all", is_flag=True, default=False)
 @click.option("--auth-token")
 def show_portfolio_rebalance(portfolio_id, show_all, auth_token):
+    """
+    Show the operation to perform on a portfolio to rebalance it.
+
+    Rebalancing a portfolio is required to keep the desired exposition on each asset.
+    Rebalancing is computed by weighting the countervalues in your base currency of 
+    the children and comparing it to the desired allocation weight.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 

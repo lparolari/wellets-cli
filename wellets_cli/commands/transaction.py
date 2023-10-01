@@ -36,6 +36,12 @@ from wellets_cli.validator import (
 
 @click.group()
 def transaction():
+    """
+    Manage transactions.
+
+    Transactions (along with transfers, a special case of transaction) are the 
+    designated way to modify the balance of a wallet.
+    """
     pass
 
 
@@ -43,6 +49,9 @@ def transaction():
 @click.option("-id", "--wallet-id", type=click.UUID)
 @click.option("--auth-token")
 def list_transactions(wallet_id, auth_token):
+    """
+    List transactions.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -96,6 +105,9 @@ def create_transaction(
     yes,
     auth_token,
 ):
+    """
+    Create a transaction.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -213,6 +225,13 @@ def create_transaction(
 @click.option("--auth-token")
 @click.option("-y", "--yes", is_flag=True, type=bool, default=False)
 def revert_transaction(wallet_id, transaction_ids, auth_token, yes):
+    """
+    Revert a transaction.
+    
+    The transaction reverted is not deleted from the system. Instead, a new 
+    transaction is created with the same value but the opposite sign. The asset
+    balance is also affected and an asset entry is created accordingly.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 

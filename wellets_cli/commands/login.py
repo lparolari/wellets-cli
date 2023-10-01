@@ -12,6 +12,9 @@ from wellets_cli.config import settings
 @click.option("--email")
 @click.option("--password")
 def login(email: Optional[str], password: Optional[str]):
+    """
+    Login with your Wellets credentials.
+    """
     email = (
         email
         or settings.get("api_username")
