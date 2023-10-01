@@ -4,22 +4,18 @@ from tabulate import tabulate
 
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
+from wellets_cli.config import settings
 from wellets_cli.model import Wallet
 from wellets_cli.question import (
     confirm_question,
     currency_question,
-    date_question,
     date_range_question,
     interval_question,
     wallet_question,
     warning_message,
 )
 from wellets_cli.util import change_value, get_currency_by_id, make_headers, pp
-from wellets_cli.validator import (
-    AndValidator,
-    EmptyInputValidator,
-    NumberValidator,
-)
+from wellets_cli.validator import AndValidator, EmptyInputValidator, NumberValidator
 
 
 @click.group()
@@ -53,7 +49,7 @@ def list_wallets(auth_token):
             "alias": wallet.alias,
             "balance": f"{currency.acronym} {pp(wallet.balance, decimals=8, fixed=False)}",
             "countervalue": f"{base_currency.acronym} {pp(countervalue, decimals=2, fixed=False)}",
-            "created_at": wallet.created_at.strftime("%Y-%m-%d"),
+            "updated_at": wallet.updated_at.strftime(settings.app.date_format),
         }
 
     data = list(map(get_row_value, wallets))
