@@ -9,12 +9,18 @@ from wellets_cli.util import change_value, make_headers
 
 @click.group()
 def currency():
+    """
+    Manage currencies.
+    """
     pass
 
 
 @currency.command(name="list")
 @click.option("--auth-token")
 def list_currencies(auth_token):
+    """
+    List all available currencies in the system.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
@@ -39,6 +45,9 @@ def list_currencies(auth_token):
 @currency.command(name="sync")
 @click.option("--auth-token")
 def sync_currencies(auth_token):
+    """
+    Get new currency rates from a provider.
+    """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
