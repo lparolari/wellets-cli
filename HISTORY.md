@@ -4,6 +4,11 @@ Changelog
 
 (unreleased)
 ------------
+- Chore: update dependencies. [lparolari]
+
+
+1.7.0 (2023-10-01)
+------------------
 
 Fix
 ~~~
@@ -11,6 +16,7 @@ Fix
 
 Other
 ~~~~~
+- Release: v1.7.0. [lparolari]
 - Chore: rename get wallet balance command. [lparolari]
 - Feat: add set wallet balance command. [lparolari]
 - Chore: cosmetic. [lparolari]
