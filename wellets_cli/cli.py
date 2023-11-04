@@ -2,6 +2,7 @@ import pathlib
 
 import click
 
+from wellets_cli.api import APIError
 from wellets_cli.commands.accumulation import accumulation
 from wellets_cli.commands.asset import asset
 from wellets_cli.commands.currency import currency
@@ -28,7 +29,6 @@ def cli():
 
 
 def main():  # pragma: no cover
-
     # user
     cli.add_command(login)
     cli.add_command(register)
@@ -49,4 +49,9 @@ def main():  # pragma: no cover
     cli.add_command(accumulation)  # DEPRECATED
     cli.add_command(investment)  # PREVIEW
 
-    cli()
+    try:
+        cli()
+    except APIError as e:
+        error = click.style("ERROR", fg="red")
+        click.echo(f"{error}: {e}")
+        exit(1)

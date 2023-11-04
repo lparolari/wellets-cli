@@ -32,7 +32,10 @@ base_url = lambda: settings.api_url
 
 
 class APIError(ValueError):
-    pass
+    def __str__(self) -> str:
+        if len(self.args) != 0 and "message" in self.args[0]:
+            return self.args[0]["message"]
+        return super().__str__()
 
 
 def login(email: str, password: str) -> UserSession:
