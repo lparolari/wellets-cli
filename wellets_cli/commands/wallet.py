@@ -77,8 +77,9 @@ def list_wallets(auth_token):
 @wallet.command(name="create")
 @click.option("--auth-token")
 @click.option("--alias")
+@click.option("--description")
 @click.option("--currency-id")
-def create_wallet(auth_token, alias, currency_id):
+def create_wallet(auth_token, alias, description, currency_id):
     """
     Create a new wallet.
     """
@@ -87,12 +88,18 @@ def create_wallet(auth_token, alias, currency_id):
 
     currencies = api.get_currencies(headers=headers)
 
-    alias = alias or inquirer.text("Alias").execute()
+    alias = alias or inquirer.text("Alias", validate=EmptyInputValidator()).execute()
+
+    description = (
+        description
+        or inquirer.text("Description", filter=lambda x: x or None).execute()
+    )
 
     currency_id = currency_id or currency_question(currencies).execute()
 
     data = {
         "alias": alias,
+        "description": description,
         "currency_id": currency_id,
     }
 
@@ -105,9 +112,10 @@ def create_wallet(auth_token, alias, currency_id):
 @click.option("--auth-token")
 @click.option("--wallet_id")
 @click.option("--alias")
+@click.option("--description")
 @click.option("--balance")
 @click.option("-y", "--yes", is_flag=True, default=False)
-def edit_wallet(auth_token, wallet_id, alias, balance, yes):
+def edit_wallet(auth_token, wallet_id, alias, description, balance, yes):
     """
     Edit a wallet.
     """
@@ -126,6 +134,14 @@ def edit_wallet(auth_token, wallet_id, alias, balance, yes):
             "Alias", default=wallet.alias, validate=EmptyInputValidator()
         ).execute()
     )
+
+    description = (
+        description
+        or inquirer.text(
+            "Description", default=wallet.description or "", filter=lambda x: x or None
+        ).execute()
+    )
+
     balance = (
         balance
         or inquirer.number(
@@ -144,6 +160,7 @@ def edit_wallet(auth_token, wallet_id, alias, balance, yes):
 
     data = {
         "alias": alias,
+        "description": description,
         "balance": balance,
     }
 
@@ -185,6 +202,44 @@ def delete_wallet(auth_token, wallet_id, yes):
     )
 
     print(wallet.id)
+
+
+@wallet.command(name="show")
+@click.option("--auth-token")
+@click.option("--wallet_id")
+def show_wallet(auth_token, wallet_id):
+    """
+    Show a wallet.
+    """
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    wallets = api.get_wallets(headers=headers)
+    wallet_id: str = wallet_id or wallet_question(wallets).execute()
+
+    wallet = api.get_wallet(wallet_id, headers=headers)
+
+    data = [
+        {"key": "id", "value": wallet.id},
+        {"key": "alias", "value": wallet.alias},
+        {"key": "balance", "value": wallet.balance},
+        {"key": "currency", "value": wallet.currency.acronym},
+        {"key": "desc", "value": wallet.description or "-"},
+        {
+            "key": "created_at",
+            "value": wallet.created_at.strftime(settings.app.datetime_format),
+        },
+        {
+            "key": "updated_at",
+            "value": wallet.updated_at.strftime(settings.app.datetime_format),
+        },
+        {
+            "key": "portfolios",
+            "value": f"{len(wallet.portfolios)} attached",
+        },
+    ]
+
+    print(tabulate(data, headers="keys"))
 
 
 @wallet.command(name="balance:get")

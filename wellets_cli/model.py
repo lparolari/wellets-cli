@@ -20,6 +20,7 @@ class UserCurrency(Currency):
 class Wallet(BaseModel):
     id: str
     alias: str
+    description: Optional[str] = None
     balance: float
     currency_id: str
     created_at: datetime
