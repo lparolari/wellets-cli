@@ -4,6 +4,13 @@ Changelog
 
 (unreleased)
 ------------
+- Feat: add wallet show + description field. [lparolari]
+- Feat: add api error handler. [lparolari]
+
+
+1.7.1 (2023-10-03)
+------------------
+- Release: v1.7.1. [lparolari]
 - Chore: update dependencies. [lparolari]
 
 
