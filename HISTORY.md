@@ -4,6 +4,12 @@ Changelog
 
 (unreleased)
 ------------
+- Feature: add show capital gain. [lparolari]
+
+
+1.8.1 (2023-12-03)
+------------------
+- Release: v1.8.1. [lparolari]
 - Feat: toggle desc for wallet. [lparolari]
 
 
