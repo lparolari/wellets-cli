@@ -45,7 +45,8 @@ def wallet():
 
 @wallet.command(name="list")
 @click.option("--auth-token")
-def list_wallets(auth_token):
+@click.option("-c", "--compact", is_flag=True, default=False)
+def list_wallets(auth_token, compact):
     """
     List all wallets.
     """
@@ -67,6 +68,7 @@ def list_wallets(auth_token):
             "balance": f"{currency.acronym} {pp(wallet.balance, decimals=8, fixed=False)}",
             "countervalue": f"{base_currency.acronym} {pp(countervalue, decimals=2, fixed=False)}",
             "updated_at": wallet.updated_at.strftime(settings.app.date_format),
+            **({} if compact else {"desc": wallet.description}),
         }
 
     data = list(map(get_row_value, wallets))
