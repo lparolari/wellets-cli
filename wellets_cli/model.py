@@ -229,3 +229,10 @@ class KLines(BaseModel):
     low_price: float
     close_price: float
     volume: float
+
+
+class CapitalGain(BaseModel):
+    current_price: float
+    basis_price: float
+    gain_amount: float
+    gain_rate: float

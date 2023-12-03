@@ -298,3 +298,42 @@ def visualize(asset_id, auth_token):
     fig = plot_position(fig, position_date, position, size, kind)
     fig = xdate_fmt(fig)
     show_chart(fig)
+
+
+@asset.command(name="capital-gain")
+@click.option("--auth-token")
+@click.option("--asset-id")
+def show_capital_gain(auth_token, asset_id):
+    """
+    Show the capital gain of an asset according to the average cost basis.
+    """
+    auth_token = auth_token or get_auth_token()
+    headers = make_headers(auth_token)
+
+    assets = api.get_assets(headers=headers)
+    currency = api.get_preferred_currency(headers=headers)
+
+    asset_id = asset_id or asset_question(assets=assets).execute()
+
+    capital_gain = api.get_capital_gain(params={"asset_id": asset_id}, headers=headers)
+
+    data = [
+        {
+            "key": "current_price",
+            "value": f"{currency.acronym} {pp(capital_gain.current_price)}",
+        },
+        {
+            "key": "basis_price",
+            "value": f"{currency.acronym} {pp(capital_gain.basis_price)}",
+        },
+        {
+            "key": "gain_amount",
+            "value": f"{currency.acronym} {pp(capital_gain.gain_amount)}",
+        },
+        {
+            "key": "gain_percent",
+            "value": f"{pp(capital_gain.gain_rate, percent=True, with_symbol=True)}",
+        },
+    ]
+
+    print(tabulate(data, headers="keys"))

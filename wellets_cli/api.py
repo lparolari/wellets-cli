@@ -11,6 +11,7 @@ from wellets_cli.model import (
     AssetBalance,
     AverageLoadPrice,
     Balance,
+    CapitalGain,
     Currency,
     Investment,
     NextAccumulationEntry,
@@ -644,3 +645,17 @@ def get_currency_history(params: dict, headers: dict) -> List[KLines]:
     history = [KLines(**h) for h in history]
 
     return history
+
+
+def get_capital_gain(params: dict, headers: dict) -> Balance:
+    response = requests.get(
+        f"{base_url()}/assets/capital-gain",
+        params=params,
+        headers=headers,
+    )
+
+    if not response.ok:
+        raise APIError(response.json())
+
+    capital_gain = response.json()
+    return CapitalGain(**capital_gain)
