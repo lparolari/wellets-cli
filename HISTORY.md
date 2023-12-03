@@ -4,6 +4,12 @@ Changelog
 
 (unreleased)
 ------------
+- Feat: toggle desc for wallet. [lparolari]
+
+
+1.8.0 (2023-11-04)
+------------------
+- Release: v1.8.0. [lparolari]
 - Feat: add wallet show + description field. [lparolari]
 - Feat: add api error handler. [lparolari]
 
