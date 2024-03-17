@@ -4,6 +4,15 @@ Changelog
 
 (unreleased)
 ------------
+- Chore: fix linting warnings. [lparolari]
+- Chore: fmt. [lparolari]
+- Chore: migrate pydantic v2. [lparolari]
+- Chore: bump packages versions. [lparolari]
+
+
+1.9.0 (2023-12-03)
+------------------
+- Release: v1.9.0. [lparolari]
 - Feature: add show capital gain. [lparolari]
 
 
