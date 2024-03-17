@@ -31,7 +31,7 @@ fmt:              ## Format code using black & isort.
 
 .PHONY: lint
 lint:             ## Run pep8, black, mypy linters.
-	$(ENV_PREFIX)flake8 wellets_cli/
+	$(ENV_PREFIX)flake8 --max-line-length=88 wellets_cli/
 	$(ENV_PREFIX)black --check wellets_cli/
 	$(ENV_PREFIX)black --check tests/
 	$(ENV_PREFIX)mypy --ignore-missing-imports wellets_cli/

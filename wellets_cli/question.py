@@ -47,7 +47,7 @@ def wallet_question(
 def wallets_question(
     wallets: List[Wallet],
     message: str = "Wallets",
-    default: List[Wallet] = None,
+    default: Optional[List[Wallet]] = None,
     allow_none: bool = False,
 ) -> ListPrompt:
     no_option = (

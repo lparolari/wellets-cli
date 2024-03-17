@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Any, Callable, List, Union
+from typing import Any, Callable, List, Union, Optional
 
 from InquirerPy.validator import ValidationError, Validator
 
@@ -222,8 +222,8 @@ class UrlValidator(Validator):
     def __init__(
         self,
         message: str = "Input should be a URL",
-        scheme: str = None,
-        message_scheme: str = None,
+        scheme: Optional[str] = None,
+        message_scheme: Optional[str] = None,
     ) -> None:
         self._message = message
         self._scheme = scheme

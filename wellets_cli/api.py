@@ -647,7 +647,7 @@ def get_currency_history(params: dict, headers: dict) -> List[KLines]:
     return history
 
 
-def get_capital_gain(params: dict, headers: dict) -> Balance:
+def get_capital_gain(params: dict, headers: dict) -> CapitalGain:
     response = requests.get(
         f"{base_url()}/assets/capital-gain",
         params=params,
