@@ -189,9 +189,9 @@ class AssetAllocation(BaseModel):
 
 
 class Investment(BaseModel):
-    CREATED = "created"
-    STARTED = "started"
-    CLOSED = "closed"
+    CREATED: str = "created"
+    STARTED: str = "started"
+    CLOSED: str = "closed"
 
     id: str
     alias: str

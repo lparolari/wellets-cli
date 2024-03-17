@@ -3,7 +3,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel
 
 from wellets_cli.util import datetime2str
 
@@ -16,11 +16,11 @@ class UserSession(BaseModel):
     token: str
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        json_encoders = {
-            datetime: datetime2str,
-        }
+    # TODO[pydantic]: The following keys were removed: `json_encoders`.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-config for more information.
+    model_config = ConfigDict(json_encoders={
+        datetime: datetime2str,
+    })
 
 
 def retrieve_auth() -> Optional[UserSession]:
