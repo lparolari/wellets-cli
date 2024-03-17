@@ -27,6 +27,7 @@ from wellets_cli.validator import (
 def warning_message(message="") -> str:
     return click.style(message, fg="yellow")
 
+
 def confirm_question(message="Confirm", default=True) -> ConfirmPrompt:
     return inquirer.confirm(message, default=default)
 

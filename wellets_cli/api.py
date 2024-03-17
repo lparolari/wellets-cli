@@ -2,18 +2,20 @@ from typing import List, Optional
 
 import requests
 
-from wellets_cli.config import settings
 from wellets_cli.auth import UserSession
+from wellets_cli.config import settings
 from wellets_cli.model import (
     Accumulation,
     Asset,
     AssetAllocation,
     AssetBalance,
+    AssetHistory,
     AverageLoadPrice,
     Balance,
     CapitalGain,
     Currency,
     Investment,
+    KLines,
     NextAccumulationEntry,
     Portfolio,
     PortfolioRebalance,
@@ -25,8 +27,6 @@ from wellets_cli.model import (
     Wallet,
     WalletAverageLoadPrice,
     WalletHistory,
-    AssetHistory,
-    KLines,
 )
 
 base_url = lambda: settings.api_url

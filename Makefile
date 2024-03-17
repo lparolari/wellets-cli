@@ -26,14 +26,14 @@ install:          ## Install the project in dev mode.
 .PHONY: fmt
 fmt:              ## Format code using black & isort.
 	$(ENV_PREFIX)isort wellets_cli/
-	$(ENV_PREFIX)black -l 79 wellets_cli/
-	$(ENV_PREFIX)black -l 79 tests/
+	$(ENV_PREFIX)black wellets_cli/
+	$(ENV_PREFIX)black tests/
 
 .PHONY: lint
 lint:             ## Run pep8, black, mypy linters.
 	$(ENV_PREFIX)flake8 wellets_cli/
-	$(ENV_PREFIX)black -l 79 --check wellets_cli/
-	$(ENV_PREFIX)black -l 79 --check tests/
+	$(ENV_PREFIX)black --check wellets_cli/
+	$(ENV_PREFIX)black --check tests/
 	$(ENV_PREFIX)mypy --ignore-missing-imports wellets_cli/
 
 .PHONY: test

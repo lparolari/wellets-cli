@@ -23,7 +23,9 @@ from wellets_cli.validator import (
 )
 
 
-@click.group(deprecated=True)  # actually, this should be in a separate feature branch (see feature/investments)
+@click.group(
+    deprecated=True
+)  # actually, this should be in a separate feature branch (see feature/investments)
 def investment():
     pass
 

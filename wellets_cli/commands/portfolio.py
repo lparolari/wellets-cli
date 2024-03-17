@@ -6,11 +6,7 @@ from tabulate import tabulate
 import wellets_cli.api as api
 from wellets_cli.auth import get_auth_token
 from wellets_cli.model import Portfolio, RebalanceChange
-from wellets_cli.question import (
-    confirm_question,
-    portfolio_question,
-    wallets_question,
-)
+from wellets_cli.question import confirm_question, portfolio_question, wallets_question
 from wellets_cli.util import make_headers, pp
 from wellets_cli.validator import (
     AndValidator,
@@ -130,7 +126,10 @@ def show_portfolio(alias, auth_token):
         {"key": "id", "value": portfolio.id},
         {"key": "alias", "value": portfolio.alias},
         {"key": "weight", "value": pp(portfolio.weight, 0, percent=True)},
-        {"key": "parent", "value": portfolio.parent.alias if portfolio.parent else "-"},
+        {
+            "key": "parent",
+            "value": portfolio.parent.alias if portfolio.parent else "-",
+        },
         {
             "key": "children",
             "value": "\n".join(sorted([child.alias for child in portfolio.children]))
@@ -309,7 +308,7 @@ def edit_portfolio(portfolio_id, alias, weight, parent_id, wallet_ids, auth_toke
 def delete_portfolio(portfolio_id, auth_token, yes):
     """
     Delete an existing portfolio.
-    
+
     This will NOT affect your registered wallets, transactions and assets.
     """
     auth_token = auth_token or get_auth_token()
@@ -368,7 +367,7 @@ def show_portfolio_rebalance(portfolio_id, show_all, auth_token):
     Show the operation to perform on a portfolio to rebalance it.
 
     Rebalancing a portfolio is required to keep the desired exposition on each asset.
-    Rebalancing is computed by weighting the countervalues in your base currency of 
+    Rebalancing is computed by weighting the countervalues in your base currency of
     the children and comparing it to the desired allocation weight.
     """
     auth_token = auth_token or get_auth_token()

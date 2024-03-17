@@ -140,7 +140,9 @@ def edit_wallet(auth_token, wallet_id, alias, description, balance, yes):
     description = (
         description
         or inquirer.text(
-            "Description", default=wallet.description or "", filter=lambda x: x or None
+            "Description",
+            default=wallet.description or "",
+            filter=lambda x: x or None,
         ).execute()
     )
 
