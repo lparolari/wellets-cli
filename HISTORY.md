@@ -4,6 +4,21 @@ Changelog
 
 (unreleased)
 ------------
+
+Fix
+~~~
+- Set production config as default. [lparolari]
+
+Other
+~~~~~
+- Chore: migrate .json() pydantic. [lparolari]
+- Feat: visualize ema on price chart. [lparolari]
+- Ci: upgrade python version to 3.12. [lparolari]
+
+
+1.9.1 (2024-03-17)
+------------------
+- Release: v1.9.1. [lparolari]
 - Chore: fix linting warnings. [lparolari]
 - Chore: fmt. [lparolari]
 - Chore: migrate pydantic v2. [lparolari]
