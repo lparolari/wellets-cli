@@ -35,9 +35,9 @@ class Settings:
         return os.environ.get("WELLETS_API_PASSWORD") or None
 
     def __str__(self):
-        return f'Settings(show_charts={self.show_charts}, save_charts={self.save_charts}, date_format="{self.date_format}", datetime_format="{self.datetime_format}", api_url="{self.api_url}", api_username="{self.api_username}", api_password=<secret>)'
+        api_username = f'"{self.api_username}"' if self.api_username else None
+        api_password = "<secret>" if self.api_password else None
+        return f'Settings(show_charts={self.show_charts}, save_charts={self.save_charts}, date_format="{self.date_format}", datetime_format="{self.datetime_format}", api_url="{self.api_url}", api_username={api_username}, api_password={api_password})'
 
 
 settings = Settings()
-
-print(settings)
