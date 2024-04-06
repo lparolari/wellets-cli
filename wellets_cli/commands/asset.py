@@ -9,6 +9,7 @@ from wellets_cli.chart import (
     mk_fig,
     plot_allocation,
     plot_balance,
+    plot_ema,
     plot_exposition,
     plot_position,
     plot_price,
@@ -296,7 +297,11 @@ def visualize(asset_id, auth_token):
     )
     fig = plot_exposition(fig, exposition.average_load_price)
     fig = plot_position(fig, position_date, position, size, kind)
+    fig = plot_ema(fig, price_date, price, window=30, color="orange")
+    fig = plot_ema(fig, price_date, price, window=100, color="orchid")
     fig = xdate_fmt(fig)
+    ax = fig.gca()
+    ax.legend()
     show_chart(fig)
 
 

@@ -79,7 +79,9 @@ def plot_price(fig, date, price, *, label, xlabel="Date", ylabel="Price"):
 
 def plot_exposition(fig, exposition: float):
     ax = fig.gca()
-    ax.axhline(y=exposition, color="black", linestyle="--", label="Exposition")
+    ax.axhline(
+        y=exposition, color="black", linestyle="--", label="Exposition", linewidth=0.8
+    )
 
     xmin, _ = ax.get_xlim()
 
@@ -100,12 +102,22 @@ def plot_position(fig, date, position, size, kind):
     ys = np.array(position)
     color = np.array(["green" if k == "buy" else "red" for k in kind])
     size = markersize / 4 + 1.2 * np.array(size) * markersize
-    ci = 1.96 * np.std(ys) / np.sqrt(len(xs))
 
     ax = fig.gca()
 
     ax.scatter(xs, ys, s=size, color=color)
-    ax.fill_between(xs, (ys - ci), (ys + ci), color="b", alpha=0.1)
+
+    return fig
+
+
+def plot_ema(fig, x, y, window, color):
+    ax = fig.gca()
+
+    y = np.array(y)
+    y = np.convolve(y, np.ones(window), "valid") / window
+    x = x[window - 1 :]
+
+    ax.plot(x, y, label=f"EMA {window}", linewidth=0.6, linestyle="--", color=color)
 
     return fig
 
