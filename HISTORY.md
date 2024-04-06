@@ -7,10 +7,19 @@ Changelog
 
 Fix
 ~~~
+- Remove settings file dependency. [lparolari]
+
+
+1.9.2 (2024-04-06)
+------------------
+
+Fix
+~~~
 - Set production config as default. [lparolari]
 
 Other
 ~~~~~
+- Release: v1.9.2. [lparolari]
 - Chore: migrate .json() pydantic. [lparolari]
 - Feat: visualize ema on price chart. [lparolari]
 - Ci: upgrade python version to 3.12. [lparolari]
