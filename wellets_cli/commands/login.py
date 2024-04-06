@@ -28,4 +28,4 @@ def login(email: Optional[str], password: Optional[str]):
 
     user_session = api.login(email, password)
 
-    persist_auth(user_session.json())
+    persist_auth(user_session.model_dump_json())
