@@ -17,12 +17,12 @@ def login(email: Optional[str], password: Optional[str]):
     """
     email = (
         email
-        or settings.get("api_username")
+        or settings.api_username
         or inquirer.text(message="Email").execute()
     )
     password = (
         password
-        or settings.get("api_password")
+        or settings.api_password
         or inquirer.secret(message="Password").execute()
     )
 

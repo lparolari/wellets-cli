@@ -1,9 +1,0 @@
-[default]
-show_charts = true
-save_charts = false
-date_format = "%b %d, %Y"
-datetime_format = "%b %d, %Y %H:%M"
-api_url = "https://wellets-backend.herokuapp.com"
-
-[development]
-api_url = "http://localhost:3333"

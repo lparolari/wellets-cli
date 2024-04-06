@@ -67,7 +67,7 @@ def list_wallets(auth_token, compact):
             "alias": wallet.alias,
             "balance": f"{currency.acronym} {pp(wallet.balance, decimals=8, fixed=False)}",
             "countervalue": f"{base_currency.acronym} {pp(countervalue, decimals=2, fixed=False)}",
-            "updated_at": wallet.updated_at.strftime(settings.app.date_format),
+            "updated_at": wallet.updated_at.strftime(settings.date_format),
             **({} if compact else {"desc": wallet.description}),
         }
 
@@ -231,11 +231,11 @@ def show_wallet(auth_token, wallet_id):
         {"key": "desc", "value": wallet.description or "-"},
         {
             "key": "created_at",
-            "value": wallet.created_at.strftime(settings.app.datetime_format),
+            "value": wallet.created_at.strftime(settings.datetime_format),
         },
         {
             "key": "updated_at",
-            "value": wallet.updated_at.strftime(settings.app.datetime_format),
+            "value": wallet.updated_at.strftime(settings.datetime_format),
         },
         {
             "key": "portfolios",

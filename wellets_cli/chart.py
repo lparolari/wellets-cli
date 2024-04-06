@@ -15,10 +15,10 @@ def show_chart(fig, path=None):
     if not path:
         path = tempfile.mktemp(suffix=".png")
 
-    if settings.app.show_charts:
+    if settings.show_charts:
         plt.show()
 
-    if settings.app.save_charts:
+    if settings.save_charts:
         fig.savefig(path)
         print("Saved to", path)
 
