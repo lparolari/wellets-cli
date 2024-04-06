@@ -15,11 +15,7 @@ def login(email: Optional[str], password: Optional[str]):
     """
     Login with your Wellets credentials.
     """
-    email = (
-        email
-        or settings.api_username
-        or inquirer.text(message="Email").execute()
-    )
+    email = email or settings.api_username or inquirer.text(message="Email").execute()
     password = (
         password
         or settings.api_password

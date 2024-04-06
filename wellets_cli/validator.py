@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Any, Callable, List, Union, Optional
+from typing import Any, Callable, List, Optional, Union
 
 from InquirerPy.validator import ValidationError, Validator
 
