@@ -8,6 +8,7 @@ settings = Dynaconf(
     validators=[
         Validator("api_url", required=True),
     ],
+    env="production",
 )
 
 # `envvar_prefix` = export envvars with `export DYNACONF_FOO=bar`.

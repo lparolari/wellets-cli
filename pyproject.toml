@@ -3,6 +3,7 @@ name = "wellets_cli"
 version = "1.9.1"
 description = "wellets-cli is the command line interface for Wellets, a crypto-oriented financial management tool that allows you to keep your money under control."
 authors = ["lparolari"]
+include = ["settings.toml"]
 
 [tool.poetry.dependencies]
 python = "^3.12"
