@@ -6,11 +6,11 @@ class Settings:
 
     @property
     def show_charts(self) -> bool:
-        return os.environ.get("WELLETS_API_URL") or True
+        return bool(os.environ.get("WELLETS_API_URL")) or True
 
     @property
     def save_charts(self) -> bool:
-        return os.environ.get("WELLETS_SAVE_CHARTS") or False
+        return bool(os.environ.get("WELLETS_SAVE_CHARTS")) or False
 
     @property
     def date_format(self) -> str:
