@@ -125,7 +125,7 @@ def plot_ema(fig, x, y, window, color):
 def xdate_fmt(fig):
     from matplotlib.dates import DateFormatter
 
-    date_fmt = DateFormatter(settings.app.date_format)
+    date_fmt = DateFormatter(settings.date_format)
 
     fig.autofmt_xdate()
 

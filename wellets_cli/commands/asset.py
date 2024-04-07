@@ -225,7 +225,7 @@ def show_asset_history(asset_id, interval, start_date, end_date, path, auth_toke
 
     data = [
         {
-            "timestamp": h.timestamp.strftime(settings.app.date_format),
+            "timestamp": h.timestamp.strftime(settings.date_format),
             f"balance\n({asset.currency.acronym})": pp(h.balance, 8, fixed=False),
         }
         for h in history

@@ -22,9 +22,7 @@ class Settings:
 
     @property
     def api_url(self) -> str:
-        return (
-            os.environ.get("WELLETS_API_URL") or "https://wellets-backend.herokuapp.com"
-        )
+        return os.environ.get("WELLETS_API_URL") or "http://lparolari.xyz:3333"
 
     @property
     def api_username(self) -> Optional[str]:
