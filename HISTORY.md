@@ -7,7 +7,23 @@ Changelog
 
 Fix
 ~~~
+- Default api url. [lparolari]
+
+Other
+~~~~~
+- Docs: update readme. [lparolari]
+
+
+1.9.4 (2024-04-06)
+------------------
+
+Fix
+~~~
 - Remove print. [lparolari]
+
+Other
+~~~~~
+- Release: v1.9.4. [lparolari]
 
 
 1.9.3 (2024-04-06)
