@@ -13,8 +13,6 @@ financial management tool that allows you to keep under control your money.
 
 ## Install
 
-* With **pip**
-
 ```bash
 pip install wellets-cli
 ```
@@ -26,33 +24,20 @@ $ wellets_cli --help
 Usage: wellets_cli [OPTIONS] COMMAND [ARGS]...
 
 Options:
-  --help  Show this message and exit.
+  --version  Show the version and exit.
+  --help     Show this message and exit.
 
 Commands:
-  accumulation
-  asset
-  config
-  currency
-  login
-  portfolio
-  transaction
-  transfer
-  wallet
-  whoami
+  asset         Manage financial assets.
+  currency      Manage currencies.
+  login         Login with your Wellets credentials.
+  portfolio     Manage portfolios (aka logical collection of wallets).
+  register      Register a new Wellets account.
+  transaction   Manage transactions.
+  transfer      Manage transfers.
+  wallet        Manage money accounts (aka wallet).
+  whoami        Print the information of current user.
 ```
-
-### Commands
-
-* `accumulation` - manage accumulations with different strategies (e.g., DCA)
-* `asset` - manage assets: balances, allocations, average load price, entries.
-* `config` - manage client config
-* `currency` - manage currencies
-* `login` - login to wellets
-* `portfolio` - manage portfolio: group wallets, show allocation and rebalance.
-* `transaction` - manage transactions
-* `transfer` - manage transfer across wallets
-* `wallet` - manage wallets
-* `whoami` - show current logged in user
 
 ## Development
 
