@@ -98,29 +98,21 @@ def list_portfolios(portfolio_id, flatten, show_all, interactive, verbose, auth_
 
 
 @portfolio.command(name="show")
-@click.option("-n", "--alias", type=str)
+@click.option("-id", "--portfolio-id", type=click.UUID)
 @click.option("--auth-token")
-def show_portfolio(alias, auth_token):
+def show_portfolio(portfolio_id, auth_token):
     """
     Show portfolio details (parent, linked wallets).
     """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    alias = alias or ""
-
-    # TODO: replace with the proper API call
     portfolios = api.get_portfolios(
         params={"portfolio_id": None, "show_all": True},
         headers=headers,
     )
-
-    search = [p for p in portfolios if alias.lower() in p.alias.lower()]
-
-    if len(search) == 0:
-        print("No portfolio found")
-
-    portfolio = search[0]
+    portfolio_id = portfolio_id or (portfolio_question(portfolios=portfolios).execute())
+    portfolio = api.get_portfolio(portfolio_id, headers=headers)
 
     data = [
         {"key": "id", "value": portfolio.id},
