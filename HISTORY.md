@@ -4,6 +4,14 @@ Changelog
 
 (unreleased)
 ------------
+- Feat: simplify list portfolio interface. [lparolari]
+- Feat: simplify show portfolio interface. [lparolari]
+- Feat: simplify show portfolio balance interface. [lparolari]
+- Feat: simplify show portfolio rebalance interface. [lparolari]
+
+
+1.9.5 (2024-04-07)
+------------------
 
 Fix
 ~~~
@@ -11,6 +19,7 @@ Fix
 
 Other
 ~~~~~
+- Release: v1.9.5. [lparolari]
 - Docs: update readme. [lparolari]
 
 
