@@ -360,9 +360,8 @@ def show_portfolio_balance(portfolio_id, show_all, auth_token):
 
 @portfolio.command(name="rebalance")
 @click.option("-id", "--portfolio-id", type=click.UUID)
-@click.option("-a", "--show-all", is_flag=True, default=False)
 @click.option("--auth-token")
-def show_portfolio_rebalance(portfolio_id, show_all, auth_token):
+def show_portfolio_rebalance(portfolio_id, auth_token):
     """
     Show the operation to perform on a portfolio to rebalance it.
 
@@ -377,7 +376,7 @@ def show_portfolio_rebalance(portfolio_id, show_all, auth_token):
         portfolio_id
         or portfolio_question(
             portfolios=api.get_portfolios(
-                params={"show_all": show_all},
+                params={"show_all": True},
                 headers=headers,
             )
         ).execute()
