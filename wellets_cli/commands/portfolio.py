@@ -332,9 +332,8 @@ def delete_portfolio(portfolio_id, auth_token, yes):
 
 @portfolio.command(name="balance")
 @click.option("-id", "--portfolio-id", type=click.UUID)
-@click.option("-a", "--show-all", is_flag=True, default=False)
 @click.option("--auth-token")
-def show_portfolio_balance(portfolio_id, show_all, auth_token):
+def show_portfolio_balance(portfolio_id, auth_token):
     """
     Show the total balance of a portfolio.
     """
@@ -345,7 +344,7 @@ def show_portfolio_balance(portfolio_id, show_all, auth_token):
         portfolio_id
         or portfolio_question(
             portfolios=api.get_portfolios(
-                params={"show_all": show_all},
+                params={"show_all": True},
                 headers=headers,
             )
         ).execute()
@@ -355,7 +354,7 @@ def show_portfolio_balance(portfolio_id, show_all, auth_token):
         params={"portfolio_id": portfolio_id}, headers=headers
     )
 
-    print(f"{result.balance} {result.currency.acronym}")
+    print(f"{result.currency.acronym} {pp(result.balance)}")
 
 
 @portfolio.command(name="rebalance")
