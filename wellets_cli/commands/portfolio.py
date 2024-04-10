@@ -28,64 +28,57 @@ def portfolio():
 
 
 @portfolio.command(name="list")
-@click.option("-id", "--portfolio-id", type=click.UUID)
-@click.option("-f", "--flatten", is_flag=True)
-@click.option("-a", "--all", "show_all", is_flag=True)
-@click.option("-i", "--interactive", is_flag=True)
-@click.option("-v", "--verbose", is_flag=True)
+@click.option(
+    "--detail",
+    is_flag=True,
+    help="Show details about children and wallets instead of aggregated information.",
+)
 @click.option("--auth-token")
-def list_portfolios(portfolio_id, flatten, show_all, interactive, verbose, auth_token):
+def list_portfolios(detail, auth_token):
     """
     List all portfolios.
     """
     auth_token = auth_token or get_auth_token()
     headers = make_headers(auth_token)
 
-    portfolio_id = portfolio_id or (
-        interactive
-        and portfolio_question(
-            portfolios=api.get_portfolios(
-                params={"show_all": True},
-                headers=headers,
-            )
-        ).execute()
-    )
-
     portfolios = api.get_portfolios(
-        params={"portfolio_id": portfolio_id, "show_all": show_all},
+        params={"show_all": True},
         headers=headers,
     )
 
-    def flatten_portfolios():
-        for portfolio in portfolios:
-            if portfolio.parent:
-                yield portfolio.parent
-            yield portfolio
-            for child in portfolio.children:
-                yield child
-
-    if flatten:
-        portfolios = [p for p in flatten_portfolios()]
-
-    def get_row_value(portfolio: Portfolio):
-        if verbose:
-            children = ", ".join(sorted([child.alias for child in portfolio.children]))
-            wallets = ", ".join(sorted([wallet.alias for wallet in portfolio.wallets]))
+    def pp_children(portfolio: Portfolio):
+        if detail:
+            return ", ".join(sorted([child.alias for child in portfolio.children]))
         else:
-            children = (
+            return (
                 f"{len(portfolio.children)} children"
                 if len(portfolio.children) > 0
                 else ""
             )
-            wallets = (
+
+    def pp_wallets(portfolio: Portfolio):
+        if detail:
+            return ", ".join(sorted([wallet.alias for wallet in portfolio.wallets]))
+        else:
+            return (
                 f"{len(portfolio.wallets)} wallets"
                 if len(portfolio.wallets) > 0
                 else ""
             )
 
+    def pp_alias(portfolio: Portfolio):
+        if not portfolio.parent:
+            return portfolio.alias
+        return f"{pp_alias(portfolio.parent)} > {portfolio.alias}"
+
+    def get_row_value(portfolio: Portfolio):
+        alias = pp_alias(portfolio)
+        children = pp_children(portfolio)
+        wallets = pp_wallets(portfolio)
+
         return {
             "id": portfolio.id,
-            "alias": portfolio.alias,
+            "alias": alias,
             "weight (%)": pp(portfolio.weight, 0, percent=True),
             "parent": portfolio.parent.alias if portfolio.parent else None,
             "children": children,
