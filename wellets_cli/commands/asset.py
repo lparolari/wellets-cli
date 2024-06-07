@@ -308,7 +308,7 @@ def visualize(asset_id, auth_token):
 @asset.command(name="capital-gain")
 @click.option("--auth-token")
 @click.option("--asset-id")
-def show_capital_gain(auth_token, asset_id):
+def show_capital_gain(asset_id, auth_token):
     """
     Show the capital gain of an asset according to the average cost basis.
     """
