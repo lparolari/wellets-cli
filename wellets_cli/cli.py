@@ -6,6 +6,7 @@ from wellets_cli.api import APIError
 from wellets_cli.commands.accumulation import accumulation
 from wellets_cli.commands.asset import asset
 from wellets_cli.commands.currency import currency
+from wellets_cli.commands.dashboard import dashboard
 from wellets_cli.commands.investment import investment
 from wellets_cli.commands.login import login
 from wellets_cli.commands.portfolio import portfolio
@@ -46,8 +47,11 @@ def main():  # pragma: no cover
     # currency
     cli.add_command(currency)
 
+    cli.add_command(dashboard)
+
+    # deprecated
     cli.add_command(accumulation)  # DEPRECATED
-    cli.add_command(investment)  # PREVIEW
+    cli.add_command(investment)  # DEPRECATED
 
     try:
         cli()
