@@ -4,6 +4,14 @@ Changelog
 
 (unreleased)
 ------------
+- Feat: update api. [lparolari]
+- Feat: add dashboard command. [lparolari]
+- Refactor: minor. [lparolari]
+
+
+1.10.0 (2024-04-10)
+-------------------
+- Release: v1.10.0. [lparolari]
 - Feat: simplify list portfolio interface. [lparolari]
 - Feat: simplify show portfolio interface. [lparolari]
 - Feat: simplify show portfolio balance interface. [lparolari]
