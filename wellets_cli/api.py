@@ -22,7 +22,6 @@ from wellets_cli.model import (
     Transaction,
     Transfer,
     User,
-    UserCurrency,
     UserSettings,
     Wallet,
     WalletAverageLoadPrice,
@@ -53,7 +52,7 @@ def login(email: str, password: str) -> UserSession:
     return user_session
 
 
-def get_currencies(headers: dict) -> List[UserCurrency]:
+def get_currencies(headers: dict) -> List[Currency]:
     response = requests.get(
         f"{base_url()}/currencies",
         headers=headers,
@@ -63,7 +62,7 @@ def get_currencies(headers: dict) -> List[UserCurrency]:
         raise APIError(response.json())
 
     currencies = response.json()
-    currencies = map(lambda c: UserCurrency(**c), currencies)
+    currencies = map(lambda c: Currency(**c), currencies)
     currencies = list(currencies)
     return currencies
 

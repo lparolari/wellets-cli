@@ -13,10 +13,6 @@ class Currency(BaseModel):
     updated_at: datetime
 
 
-class UserCurrency(Currency):
-    favorite: bool
-
-
 class Wallet(BaseModel):
     id: str
     alias: str
