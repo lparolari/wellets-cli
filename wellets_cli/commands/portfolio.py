@@ -373,7 +373,7 @@ def show_portfolio_rebalance(portfolio_id, auth_token):
     def get_row_value(change: RebalanceChange):
         return {
             "portfolio": change.portfolio.alias,
-            "desired (%)": f"{pp(change.portfolio.weight, 0, percent=True)}",
+            "desired (%)": f"{pp(change.portfolio.weight, 1, percent=True)}",
             "current (%)": pp(change.weight, 1, percent=True),
             "off_by (%)": pp(change.off_by, 1, percent=True),
             "target": pp(change.target),
