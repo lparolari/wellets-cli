@@ -6,6 +6,8 @@ import numpy as np
 
 from wellets_cli.config import settings
 
+mpl.use('QtAgg')
+
 
 def mk_fig():
     return plt.figure(figsize=(10, 6))
